@@ -31,13 +31,20 @@ public IntakePivot() {
 }
 
 public Command ToPosition(double position){
-  return runOnce(() -> {
+  return run(() -> {
     motor.setControl(request.withPosition(position));
-  });
+  }).until(() -> Math.abs(motor.getPosition().getValueAsDouble() - position) < 0.02);
 }
 
 public Command dropIntake(){return ToPosition(Constants.IntakePivotConstants.DOWN_POSITION);}
 public Command bringUpIntake(){return ToPosition(0);}
+
+public Command ifNotDownPutDown(){
+  return runOnce(() -> {
+    if(!(Math.abs(motor.getPosition().getValueAsDouble() - Constants.IntakePivotConstants.DOWN_POSITION) < 0.02)){
+      dropIntake();
+    }});
+}
 
   @Override
   public void periodic() {

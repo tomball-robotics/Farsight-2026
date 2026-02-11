@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.NeutralOut;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -37,6 +39,8 @@ public class Climber extends SubsystemBase {
 
   public Command climberUp(){return runClimber(Constants.ClimberConstants.CLIMBER_SPEED);}
   public Command climberDown(){return runClimber(-Constants.ClimberConstants.CLIMBER_SPEED);}
+
+  public Command stop(){return runOnce(() -> motor.setControl(new NeutralOut()));}
 
   @Override
   public void periodic() {
