@@ -26,7 +26,7 @@ public class Climber extends SubsystemBase {
     config.Slot0.kD = 0;
 
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     motor.getConfigurator().apply(config);
   }
