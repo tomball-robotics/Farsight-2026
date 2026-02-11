@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     angleMotor.getConfigurator().apply(config);
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     velocityMotor.getConfigurator().apply(config);
   }
 
