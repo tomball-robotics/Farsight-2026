@@ -12,13 +12,25 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
+
+
 
 public class Shooter extends SubsystemBase {
   TalonFX velocityMotor = new TalonFX(Constants.ShooterConstants.SHOOTER_VELOCITY_MOTOR_ID);
   TalonFX angleMotor = new TalonFX(Constants.ShooterConstants.SHOOTER_ANGLE_MOTOR_ID);
   final PositionVoltage request = new PositionVoltage(0).withSlot(0);
   double[][] distanceSolutions;
+
+  private final SysIdRoutine routine = new SysIdRoutine(
+    new SysIdRoutine.Config(),//May have to customize it
+    new SysIdRoutine.Mechanism(
+        output -> {velocityMotor.setControl(new VoltageOut(output));},
+        null,
+        this
+    )
+);
 
 
   public Shooter() {
@@ -60,6 +72,14 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+
   }
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction){
+    return routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction){
+    return routine.dynamic(direction);
+  }
+  
 }

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
   //Subsystem declerations
   Shooter shooter = new Shooter();
   Climber climber = new Climber();
@@ -54,6 +55,8 @@ public class RobotContainer {
     //Intake
     driver.leftTrigger().onTrue(intakePivot.ifNotDownPutDown().andThen(new ParallelCommandGroup(intakeRollers.run(1), treadmill.run(1))));
     driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop()));
+
+    
     
     //Drop Intake
     driver.povDown().onTrue(intakePivot.dropIntake());
