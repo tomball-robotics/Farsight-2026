@@ -11,7 +11,6 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -24,7 +23,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -58,8 +56,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final Field2d field = new Field2d();
 
     private PIDController xController, yController, yawController;
-    private boolean lockY = false;
-    private boolean lockAngle = false;
+
 
     public SwerveDrivePoseEstimator m_poseEstimator;
 
@@ -79,8 +76,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
-    private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
-    private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+    //private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
+    //private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
 
 private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -103,6 +100,7 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
 
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
+    /* 
     private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
         new SysIdRoutine.Config(
             null,        // Use default ramp rate (1 V/s)
@@ -123,6 +121,8 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
      * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
      * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
      */
+
+     /* 
     private final SysIdRoutine m_sysIdRoutineRotation =
     new SysIdRoutine(
         new SysIdRoutine.Config(
@@ -149,7 +149,8 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
             this
         )
     );
-
+    */
+    
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
@@ -507,8 +508,6 @@ public boolean atSetpoint(){
     else if (useMegaTag2 == true)
     {
 
-
-    double yawDeg = getPigeon2().getRotation2d().getDegrees();
     
       LimelightHelpers.SetRobotOrientation("limelight-front", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         //LimelightHelpers.SetIMUMode("limelight-front", 4);
@@ -555,7 +554,7 @@ public boolean atSetpoint(){
   }
 
   public Command allignToTrench(){
-    return driveTo(()->new Pose2d(m_poseEstimator.getEstimatedPosition().getX(), 7.25, m_poseEstimator.getEstimatedPosition().getRotation())).andThen(runOnce(()->{lockY = true;}));
+    return driveTo(()->new Pose2d(m_poseEstimator.getEstimatedPosition().getX(), 7.25, m_poseEstimator.getEstimatedPosition().getRotation()));
   }
 
   public Command holdAllignmentToTrench(CommandXboxController joystick){
