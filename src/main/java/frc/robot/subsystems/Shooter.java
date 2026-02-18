@@ -35,17 +35,34 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
 
-    TalonFXConfiguration config = new TalonFXConfiguration();
+    TalonFXConfiguration AngleConfig = new TalonFXConfiguration();
+    TalonFXConfiguration VelocityConfig = new TalonFXConfiguration();
 
-    config.Slot0.kP = 0.01;
-    config.Slot0.kI = 0;
-    config.Slot0.kD = 0;
+    AngleConfig.Slot0.kP = 0.01;
+    AngleConfig.Slot0.kI = 0;
+    AngleConfig.Slot0.kD = 0;
 
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    angleMotor.getConfigurator().apply(config);
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    velocityMotor.getConfigurator().apply(config);
+    VelocityConfig.Slot0.kP = 0.01;
+    VelocityConfig.Slot0.kI = 0;
+    VelocityConfig.Slot0.kD = 0;
+
+    AngleConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    AngleConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    VelocityConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    VelocityConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+    AngleConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ShooterConstants.SHOOTER_MAX_ANGLE * Constants.ShooterConstants.TICKS_TO_DEGREES;
+    AngleConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+
+    AngleConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Constants.ShooterConstants.SHOOTER_MIN_ANGLE * Constants.ShooterConstants.TICKS_TO_DEGREES;
+    AngleConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+
+
+    angleMotor.getConfigurator().apply(AngleConfig);
+    velocityMotor.getConfigurator().apply(VelocityConfig);
+
+    
   }
 
   public Command setVelocity(double mps){
@@ -59,7 +76,7 @@ public class Shooter extends SubsystemBase {
   public double[] solveForPosition(double distance){
     double[] out = new double[2];
 
-    out[0] = interpolate(Math.floor(distance*10)/10.0, Math.ceil(distance*10)/10.0, distanceSolutions[(int)Math.floor(distance * 10)][0], distanceSolutions[(int)Math.ceil(distance*10)][0], distance);
+    out[0] = clamp(interpolate(Math.floor(distance*10)/10.0, Math.ceil(distance*10)/10.0, distanceSolutions[(int)Math.floor(distance * 10)][0], distanceSolutions[(int)Math.ceil(distance*10)][0], distance), Constants.ShooterConstants.SHOOTER_MIN_ANGLE, Constants.ShooterConstants.SHOOTER_MAX_ANGLE);
     out[1] = interpolate(Math.floor(distance*10)/10.0, Math.ceil(distance*10)/10.0, distanceSolutions[(int)Math.floor(distance * 10)][1], distanceSolutions[(int)Math.ceil(distance*10)][1], distance);
     return out;
   }
@@ -82,4 +99,8 @@ public class Shooter extends SubsystemBase {
     return routine.dynamic(direction);
   }
   
+  public static double clamp(double value, double min, double max) {
+        // Ensures the value is not less than 'min' and not greater than 'max'.
+        return Math.max(min, Math.min(max, value));
+    }
 }

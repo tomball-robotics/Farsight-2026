@@ -19,6 +19,11 @@ public final class Constants {
   }
 
   public static final class ShooterConstants{
+    public static final double SHOOTER_MAX_ANGLE = 0.0;//TODO tune
+    public static final double SHOOTER_MIN_ANGLE = 0.0;//TODO tune
+    
+
+
     public static final int SHOOTER_VELOCITY_MOTOR_ID = -1; //TODO tune
     public static final int SHOOTER_ANGLE_MOTOR_ID = -1; //TODO tune
     public static final double VOLTS_TO_MPS = 0.0; //TODO calculate

@@ -23,12 +23,19 @@ public class Climber extends SubsystemBase {
 
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.Slot0.kP = 1;
+    config.Slot0.kP = 0.01;
     config.Slot0.kI = 0;
     config.Slot0.kD = 0;
 
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ClimberConstants.TOP_POSITION;
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+
+    
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     motor.getConfigurator().apply(config);
   }
@@ -44,7 +51,6 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(motor.getPosition().getValueAsDouble() <= 1 && motor.getVelocity().getValueAsDouble() <= 0){motor.setControl(new VoltageOut(0));}
-    if(motor.getPosition().getValueAsDouble() >= ClimberConstants.MAX_LENGTH && motor.getVelocity().getValueAsDouble() >= 0){motor.setControl(new VoltageOut(0));}
+    
   }
 }
