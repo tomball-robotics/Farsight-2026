@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -45,6 +46,7 @@ public class Shooter extends SubsystemBase {
     VelocityConfig.Slot0.kP = 0.01;
     VelocityConfig.Slot0.kI = 0;
     VelocityConfig.Slot0.kD = 0;
+    VelocityConfig.Slot0.kV = 0;
 
     AngleConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     AngleConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -66,11 +68,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command setVelocity(double mps){
-    return runOnce(() -> velocityMotor.setControl(new VoltageOut(mps * Constants.ShooterConstants.VOLTS_TO_MPS)));
+    return run(() -> velocityMotor.setControl(new VelocityVoltage(mps * Constants.ShooterConstants.VOLTS_TO_MPS).withSlot(0)));
   }
 
   public Command setAngle(double degrees){
-    return runOnce(() -> angleMotor.setControl(request.withPosition(degrees * Constants.ShooterConstants.TICKS_TO_DEGREES)));
+    return run(() -> angleMotor.setControl(request.withPosition(degrees * Constants.ShooterConstants.TICKS_TO_DEGREES)));
   }
 
   public double[] solveForPosition(double distance){

@@ -21,7 +21,7 @@ public final class Constants {
   public static final class ShooterConstants{
     public static final double SHOOTER_MAX_ANGLE = 0.0;//TODO tune
     public static final double SHOOTER_MIN_ANGLE = 0.0;//TODO tune
-    
+
 
 
     public static final int SHOOTER_VELOCITY_MOTOR_ID = -1; //TODO tune
@@ -50,7 +50,8 @@ public final class Constants {
   }
 
   public static final class IntakePivotConstants{
-    public static final int INTAKE_PIVOT_ID = -1; //TODO tune
+    public static final int INTAKE_PIVOT_LEADER_ID = -1; //TODO tune
+    public static final int INTAKE_PIVOT_FOLLOWER_ID = -1; //TODO tune
     public static final double DOWN_POSITION = -1; //TODO tune
   }
 
