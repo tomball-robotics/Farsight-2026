@@ -59,8 +59,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
 
     public SwerveDrivePoseEstimator m_poseEstimator;
-
-     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    public boolean slowModeEnabled = false;
+    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
       
 
@@ -315,7 +315,7 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         }
     }
 
-    /**
+    /**s
      * Returns a command that applies the specified control request to this swerve drivetrain.
      *
      * @param request Function returning the request to apply
@@ -600,7 +600,15 @@ public boolean atSetpoint(){
                 )
         );
     });
+
+    
 }
+
+public Command toggleSlowMode(){
+        return runOnce(() -> {
+            slowModeEnabled = !slowModeEnabled;
+        });
+    }
   }
 
 
