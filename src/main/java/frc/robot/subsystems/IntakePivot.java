@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -53,6 +54,6 @@ public Command ifNotDownPutDown(){
 
   @Override
   public void periodic() {
-    
+    SmartDashboard.putBoolean("Intake/Extended", Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakePivotConstants.DOWN_POSITION) < 0.02);
   }
 }
