@@ -599,16 +599,25 @@ public boolean atSetpoint(){
                     )
                 )
         );
-    });
+        });
+    }
 
-    
-}
-
-public Command toggleSlowMode(){
+    public Command toggleSlowMode(){
         return runOnce(() -> {
             slowModeEnabled = !slowModeEnabled;
         });
     }
-  }
+
+    public double distanceToHub(){
+        double robotX = m_poseEstimator.getEstimatedPosition().getX();
+        double robotY = m_poseEstimator.getEstimatedPosition().getY();
+
+        double dx = 11.75 - robotX;
+        double dy = 4.0  - robotY;
+        return Math.hypot(dx, dy);
+    }
+}
+
+
 
 

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -86,6 +88,14 @@ public class Shooter extends SubsystemBase {
   public double interpolate(double x1, double x2, double y1, double y2, double x3){
     if(x1==x2){return y1;}
     return y1 + (x3 - x1) * (y2 - y1)/(x2-x1);
+  }
+
+  public Command aimForHub(Supplier<Double> distance){
+    return run(() -> {
+      double[] target = solveForPosition(distance.get());
+      setAngle(target[0]);
+      setVelocity(target[1]);
+    });
   }
 
 

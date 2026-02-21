@@ -14,7 +14,6 @@ import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -100,6 +99,9 @@ public class RobotContainer {
     //Climber Down
     operator.rightBumper().onTrue(climber.climberDown()); 
     operator.rightBumper().onFalse(climber.stop());
+
+    //Shooter
+    operator.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.pointTowardsHub(driver), shooter.aimForHub(() -> drivetrain.distanceToHub())));
 
 
   }
