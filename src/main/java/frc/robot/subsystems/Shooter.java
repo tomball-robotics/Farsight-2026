@@ -13,6 +13,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -23,8 +24,13 @@ import frc.robot.Constants;
 public class Shooter extends SubsystemBase {
   TalonFX velocityMotor = new TalonFX(Constants.ShooterConstants.SHOOTER_VELOCITY_MOTOR_ID);
   TalonFX angleMotor = new TalonFX(Constants.ShooterConstants.SHOOTER_ANGLE_MOTOR_ID);
+
   final PositionVoltage request = new PositionVoltage(0).withSlot(0);
+  
   double[][] distanceSolutions;
+
+  private double targetAngleDegrees = 0.0;
+  private double targetVelocityMPS = 0.0;
 
   private final SysIdRoutine routine = new SysIdRoutine(
     new SysIdRoutine.Config(),//May have to customize it
@@ -70,11 +76,18 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command setVelocity(double mps){
-    return run(() -> velocityMotor.setControl(new VelocityVoltage(mps * Constants.ShooterConstants.VOLTS_TO_MPS).withSlot(0)));
+    return run(() -> {
+      targetVelocityMPS = mps * Constants.ShooterConstants.VOLTS_TO_MPS;
+      velocityMotor.setControl(new VelocityVoltage(mps * Constants.ShooterConstants.VOLTS_TO_MPS).withSlot(0));
+      
+    });
   }
 
   public Command setAngle(double degrees){
-    return run(() -> angleMotor.setControl(request.withPosition(degrees * Constants.ShooterConstants.TICKS_TO_DEGREES)));
+    return run(() -> {
+      targetAngleDegrees = degrees * Constants.ShooterConstants.TICKS_TO_DEGREES;
+      angleMotor.setControl(request.withPosition(degrees * Constants.ShooterConstants.TICKS_TO_DEGREES));
+    });
   }
 
   public double[] solveForPosition(double distance){
@@ -101,6 +114,8 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("Shooter/At Angle", Math.abs(targetVelocityMPS - velocityMotor.getVelocity().getValueAsDouble()) < 0.1);
+    SmartDashboard.putBoolean("Shooter/At Velociy", Math.abs(targetAngleDegrees - angleMotor.getPosition().getValueAsDouble()) < 0.1);
 
   }
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction){

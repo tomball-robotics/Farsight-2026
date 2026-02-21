@@ -377,6 +377,9 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         SmartDashboard.putNumber("Target X: ", AutoBuilder.getCurrentPose().getX());
         SmartDashboard.putNumber("Target Y: ", AutoBuilder.getCurrentPose().getY());
 
+        SmartDashboard.putBoolean("Pointing Hub", yawController.atSetpoint());
+
+
         //System.out.println(m_poseEstimator.getEstimatedPosition());
     }
 
@@ -584,7 +587,6 @@ public boolean atSetpoint(){
 
         SmartDashboard.putNumber("dx", dx);
         SmartDashboard.putNumber("dy", dy);
-        SmartDashboard.putNumber("Target Angle (deg)", targetAngle.getDegrees());
 
         this.setControl(
             new SwerveRequest.FieldCentric()
