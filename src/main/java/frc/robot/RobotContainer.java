@@ -77,6 +77,8 @@ public class RobotContainer {
     driver.rightBumper().whileTrue(drivetrain.applyRequest(() -> brake)); //X-lock
 
     driver.leftTrigger().whileTrue(drivetrain.holdAllignmentToTrench(driver)); //Allign to nearest trench
+
+    driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
     
 
     /*Driver Controls*/
