@@ -15,6 +15,7 @@ import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -44,6 +45,7 @@ public class RobotContainer {
   private CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.2).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveDriveBrake brake = new SwerveDriveBrake();
 
 
   //Controllers
@@ -71,19 +73,22 @@ public class RobotContainer {
             )
         );
 
-    driver.leftBumper().onTrue(drivetrain.toggleSlowMode());
-    driver.leftTrigger().whileTrue(drivetrain.holdAllignmentToTrench(driver));
+    driver.leftBumper().onTrue(drivetrain.toggleSlowMode()); //Slowmode
+    driver.rightBumper().whileTrue(drivetrain.applyRequest(() -> brake)); //X-lock
+
+    driver.leftTrigger().whileTrue(drivetrain.holdAllignmentToTrench(driver)); //Allign to nearest trench
+    
 
     /*Driver Controls*/
 
     //Intake
-    driver.leftTrigger().onTrue(intakePivot.ifNotDownPutDown().andThen(new ParallelCommandGroup(intakeRollers.run(1), treadmill.run(1))));
-    driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop()));
+    driver.leftTrigger().onTrue(intakePivot.ifNotDownPutDown().andThen(new ParallelCommandGroup(intakeRollers.run(1), treadmill.run(1)))); //Feed balls to shoot
+    driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop())); //Stop feeding
     
     //Intake
 
-    driver.povDown().onTrue(intakePivot.dropIntake());
-    driver.povUp().onTrue(intakePivot.bringUpIntake());
+    driver.povDown().onTrue(intakePivot.dropIntake()); //Intake down
+    driver.povUp().onTrue(intakePivot.bringUpIntake()); //Intake up
 
     /*Operator Controls*/
 
