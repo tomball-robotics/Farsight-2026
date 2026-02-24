@@ -129,5 +129,10 @@ public class Shooter extends SubsystemBase {
   public static double clamp(double value, double min, double max) {
         // Ensures the value is not less than 'min' and not greater than 'max'.
         return Math.max(min, Math.min(max, value));
-    }
+  }
+
+  public Command putDown(){
+    return setAngle(Constants.ShooterConstants.SHOOTER_MAX_ANGLE * Constants.ShooterConstants.TICKS_TO_DEGREES);
+  }
+
 }

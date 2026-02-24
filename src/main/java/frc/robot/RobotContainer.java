@@ -24,12 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
- */
+
 public class RobotContainer {
 
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -76,7 +71,7 @@ public class RobotContainer {
     driver.leftBumper().onTrue(drivetrain.toggleSlowMode()); //Slowmode
     driver.rightBumper().whileTrue(drivetrain.applyRequest(() -> brake)); //X-lock
 
-    driver.leftTrigger().whileTrue(drivetrain.holdAllignmentToTrench(driver)); //Allign to nearest trench
+    driver.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.holdAllignmentToTrench(driver), shooter.putDown())); //Allign to nearest trench
 
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
     
@@ -109,8 +104,6 @@ public class RobotContainer {
 
     //Shooter
     operator.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.pointTowardsHub(driver), shooter.aimForHub(() -> drivetrain.distanceToHub())));
-
-
   }
    
   public Command getAutonomousCommand() {
