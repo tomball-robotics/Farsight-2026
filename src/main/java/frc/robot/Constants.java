@@ -17,7 +17,11 @@ public final class Constants {
     public static final int DRIVER_CONTROLLER_ID = 0;
     public static final int OPERATOR_CONTROLLER_ID = 1;
   }
+  public static final class SwervePositions{
+    public static final double leftTrenchY = 0.0; //TODO tune
+    public static final double rightTrenchY = 7.2;
 
+  }
   public static final class ShooterConstants{
     public static final double SHOOTER_MAX_ANGLE = 0.0;//TODO tune
     public static final double SHOOTER_MIN_ANGLE = 0.0;//TODO tune

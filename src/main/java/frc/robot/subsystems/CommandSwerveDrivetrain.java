@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -567,10 +568,12 @@ public boolean atSetpoint(){
         if (Math.abs(xInput) < deadband) {
             xInput = 0;
         }
+    
+        double targetY = m_poseEstimator.getEstimatedPosition().getY() > (Constants.SwervePositions.rightTrenchY + Constants.SwervePositions.leftTrenchY)/2 ? Constants.SwervePositions.rightTrenchY : Constants.SwervePositions.leftTrenchY;
     this.setControl(new SwerveRequest.FieldCentric()
     .withRotationalDeadband(MaxAngularRate * 0.2).withDriveRequestType(DriveRequestType.OpenLoopVoltage)
     .withVelocityX(xInput * MaxSpeed)
-    .withVelocityY(yController.calculate(m_poseEstimator.getEstimatedPosition().getY(), 7.2))
+    .withVelocityY(yController.calculate(m_poseEstimator.getEstimatedPosition().getY(), targetY))
     .withRotationalRate(-joystick.getRightX() * MaxAngularRate));} );
   }
 
