@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.Scanner;
 import java.util.function.Supplier;
+
+import java.io.*;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -42,7 +45,7 @@ public class Shooter extends SubsystemBase {
 );
 
 
-  public Shooter() {
+  public Shooter(){
 
     TalonFXConfiguration AngleConfig = new TalonFXConfiguration();
     TalonFXConfiguration VelocityConfig = new TalonFXConfiguration();
@@ -71,6 +74,23 @@ public class Shooter extends SubsystemBase {
 
     angleMotor.getConfigurator().apply(AngleConfig);
     velocityMotor.getConfigurator().apply(VelocityConfig);
+
+    try{
+      Scanner scan = new Scanner(new File(""));
+      distanceSolutions = new double[(int)((Constants.ShooterConstants.SHOOTER_MAX_ANGLE - Constants.ShooterConstants.SHOOTER_MIN_ANGLE) * 10)][2];
+      int i = 0;
+      while(scan.hasNextLine()){
+        String[] raw = scan.nextLine().split(",");
+        distanceSolutions[i][0] = Double.parseDouble(raw[0]);
+        distanceSolutions[i][1] = Double.parseDouble(raw[1]);
+
+        i++;
+
+      }
+      scan.close();
+
+    }catch(Exception e){e.printStackTrace();}
+
 
     
   }
