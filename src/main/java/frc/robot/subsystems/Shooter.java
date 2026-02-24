@@ -36,7 +36,7 @@ public class Shooter extends SubsystemBase {
   private double targetVelocityMPS = 0.0;
 
   private final SysIdRoutine routine = new SysIdRoutine(
-    new SysIdRoutine.Config(),//May have to customize it
+    new SysIdRoutine.Config(), //May have to customize it
     new SysIdRoutine.Mechanism(
         output -> {velocityMotor.setControl(new VoltageOut(output));},
         null,
@@ -65,10 +65,10 @@ public class Shooter extends SubsystemBase {
     VelocityConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     VelocityConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-    AngleConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ShooterConstants.SHOOTER_MAX_ANGLE * Constants.ShooterConstants.TICKS_TO_DEGREES;
+    AngleConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = degreesToRotations(Constants.ShooterConstants.SHOOTER_MAX_ANGLE);
     AngleConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
-    AngleConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Constants.ShooterConstants.SHOOTER_MIN_ANGLE * Constants.ShooterConstants.TICKS_TO_DEGREES;
+    AngleConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = degreesToRotations(Constants.ShooterConstants.SHOOTER_MIN_ANGLE);
     AngleConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
 
@@ -76,8 +76,8 @@ public class Shooter extends SubsystemBase {
     velocityMotor.getConfigurator().apply(VelocityConfig);
 
     try{
-      Scanner scan = new Scanner(new File(""));
-      distanceSolutions = new double[(int)((Constants.ShooterConstants.SHOOTER_MAX_ANGLE - Constants.ShooterConstants.SHOOTER_MIN_ANGLE) * 10)][2];
+      Scanner scan = new Scanner(new File("C:\\RobotCode\\Farsight-2026\\src\\main\\java\\frc\\robot\\subsystems\\shootingData.txtC:\\RobotCode\\Farsight-2026\\src\\main\\java\\frc\\robot\\subsystems\\shootingData.txt"));
+      distanceSolutions = new double[96][2];
       int i = 0;
       while(scan.hasNextLine()){
         String[] raw = scan.nextLine().split(",");
@@ -105,8 +105,8 @@ public class Shooter extends SubsystemBase {
 
   public Command setAngle(double degrees){
     return run(() -> {
-      targetAngleDegrees = degrees * Constants.ShooterConstants.TICKS_TO_DEGREES;
-      angleMotor.setControl(request.withPosition(degrees * Constants.ShooterConstants.TICKS_TO_DEGREES));
+      targetAngleDegrees = degreesToRotations(degrees);
+      angleMotor.setControl(request.withPosition(degreesToRotations(degrees)));
     });
   }
 
@@ -152,7 +152,10 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command putDown(){
-    return setAngle(Constants.ShooterConstants.SHOOTER_MAX_ANGLE * Constants.ShooterConstants.TICKS_TO_DEGREES);
+    return setAngle(degreesToRotations(Constants.ShooterConstants.SHOOTER_MAX_ANGLE));
   }
 
+  public double degreesToRotations(double degrees){
+    return Constants.ShooterConstants.ROTATIONS_PER_DEGREE * (degrees - Constants.ShooterConstants.SHOOTER_MAX_ANGLE);
+  }
 }
