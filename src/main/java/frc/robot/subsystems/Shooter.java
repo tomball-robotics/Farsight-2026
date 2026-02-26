@@ -16,6 +16,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -76,7 +77,9 @@ public class Shooter extends SubsystemBase {
     velocityMotor.getConfigurator().apply(VelocityConfig);
 
     try{
-      Scanner scan = new Scanner(new File("C:\\RobotCode\\Farsight-2026\\src\\main\\java\\frc\\robot\\subsystems\\shootingData.txtC:\\RobotCode\\Farsight-2026\\src\\main\\java\\frc\\robot\\subsystems\\shootingData.txt"));
+      File file = new File(Filesystem.getDeployDirectory(), "shootingData.txt");
+
+      Scanner scan = new Scanner(file);
       distanceSolutions = new double[96][2];
       int i = 0;
       while(scan.hasNextLine()){
@@ -126,16 +129,16 @@ public class Shooter extends SubsystemBase {
   public Command aimForHub(Supplier<Double> distance){
     return run(() -> {
       double[] target = solveForPosition(distance.get());
-      setAngle(target[0]);
-      setVelocity(target[1]);
+      angleMotor.setControl(request.withPosition(degreesToRotations(target[0])));
+      velocityMotor.setControl(new VelocityVoltage(target[1] * Constants.ShooterConstants.VOLTS_TO_MPS).withSlot(0));
     });
   }
 
 
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Shooter/At Angle", Math.abs(targetVelocityMPS - velocityMotor.getVelocity().getValueAsDouble()) < 0.1);
-    SmartDashboard.putBoolean("Shooter/At Velociy", Math.abs(targetAngleDegrees - angleMotor.getPosition().getValueAsDouble()) < 0.1);
+    SmartDashboard.putBoolean("Shooter/At Velocity", Math.abs(targetVelocityMPS - velocityMotor.getVelocity().getValueAsDouble()) < 0.1);
+    SmartDashboard.putBoolean("Shooter/At Angle", Math.abs(targetAngleDegrees - angleMotor.getPosition().getValueAsDouble()) < 0.1);
 
   }
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction){
@@ -152,7 +155,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command putDown(){
-    return setAngle(degreesToRotations(Constants.ShooterConstants.SHOOTER_MAX_ANGLE));
+    return setAngle(Constants.ShooterConstants.SHOOTER_MAX_ANGLE);
   }
 
   public double degreesToRotations(double degrees){

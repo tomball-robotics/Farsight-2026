@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -46,10 +47,11 @@ public Command dropIntake(){return ToPosition(Constants.IntakePivotConstants.DOW
 public Command bringUpIntake(){return ToPosition(0);}
 
 public Command ifNotDownPutDown(){
-  return runOnce(() -> {
-    if(!(Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakePivotConstants.DOWN_POSITION) < 0.02)){
-      dropIntake();
-    }});
+  return Commands.either(
+    dropIntake(),
+    Commands.none(),
+    () -> Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakePivotConstants.DOWN_POSITION) >= 0.02
+  );
 }
 
   @Override
