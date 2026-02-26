@@ -622,7 +622,3 @@ public boolean atSetpoint(){
         return Math.hypot(dx, dy);
     }
 }
-
-
-
-

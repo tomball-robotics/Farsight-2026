@@ -30,7 +30,7 @@ public final class Constants {
 
     public static final int SHOOTER_VELOCITY_MOTOR_ID = -1; //TODO tune
     public static final int SHOOTER_ANGLE_MOTOR_ID = -1; //TODO tune
-    public static final double VOLTS_TO_MPS = 0.0; //TODO calculate
+    public static final double MPS_TO_ROTATIONS = 0.0; //TODO calculate
     public static final double ROTATIONS_PER_DEGREE = 0.0; //TODO calculate
 
   }

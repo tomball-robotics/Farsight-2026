@@ -100,8 +100,8 @@ public class Shooter extends SubsystemBase {
 
   public Command setVelocity(double mps){
     return run(() -> {
-      targetVelocityMPS = mps * Constants.ShooterConstants.VOLTS_TO_MPS;
-      velocityMotor.setControl(new VelocityVoltage(mps * Constants.ShooterConstants.VOLTS_TO_MPS).withSlot(0));
+      targetVelocityMPS = mps * Constants.ShooterConstants.MPS_TO_ROTATIONS;
+      velocityMotor.setControl(new VelocityVoltage(mps * Constants.ShooterConstants.MPS_TO_ROTATIONS).withSlot(0));
       
     });
   }
@@ -130,7 +130,7 @@ public class Shooter extends SubsystemBase {
     return run(() -> {
       double[] target = solveForPosition(distance.get());
       angleMotor.setControl(request.withPosition(degreesToRotations(target[0])));
-      velocityMotor.setControl(new VelocityVoltage(target[1] * Constants.ShooterConstants.VOLTS_TO_MPS).withSlot(0));
+      velocityMotor.setControl(new VelocityVoltage(target[1] * Constants.ShooterConstants.MPS_TO_ROTATIONS).withSlot(0));
     });
   }
 
