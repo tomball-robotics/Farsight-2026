@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
 
   final PositionVoltage request = new PositionVoltage(0).withSlot(0);
   
-  double[][] distanceSolutions;
+  ArrayList<> distanceSolutions;
 
   private double targetAngleDegrees = 0.0;
   private double targetVelocityMPS = 0.0;
@@ -140,6 +140,9 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putBoolean("Shooter/At Velocity", Math.abs(targetVelocityMPS - velocityMotor.getVelocity().getValueAsDouble()) < 0.1);
     SmartDashboard.putBoolean("Shooter/At Angle", Math.abs(targetAngleDegrees - angleMotor.getPosition().getValueAsDouble()) < 0.1);
 
+
+    SmartDashboard.putNumber("Shooter/Shooter velocity", velocityMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter/Shooter angle", angleMotor.getPosition().getValueAsDouble());
   }
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction){
     return routine.quasistatic(direction);
@@ -160,5 +163,18 @@ public class Shooter extends SubsystemBase {
 
   public double degreesToRotations(double degrees){
     return Constants.ShooterConstants.ROTATIONS_PER_DEGREE * (degrees - Constants.ShooterConstants.SHOOTER_MAX_ANGLE);
+  }
+}
+
+
+class DistanceSolution{
+  double distance;
+  double angle;
+  double velocity;
+
+  public DistanceSolution(double d, double a, double v){
+    distance = d;
+    angle = a;
+    velocity = v;
   }
 }
