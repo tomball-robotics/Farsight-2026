@@ -367,7 +367,7 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-        updateOdometry();
+        //updateOdometry();
         SmartDashboard.putBoolean("FieldAlive", true);
 
         field.setRobotPose(m_poseEstimator.getEstimatedPosition());

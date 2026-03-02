@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.T3Lib;
 
 public class Roller extends SubsystemBase {
   TalonFX motor;
@@ -28,9 +29,10 @@ public class Roller extends SubsystemBase {
     config.Slot0.kD = 0;
 
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.SupplyCurrentLimit = 50;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-    motor.getConfigurator().apply(config);
+    T3Lib.applyConfig(motor, config);
   }
 
   public Command run(int sign){

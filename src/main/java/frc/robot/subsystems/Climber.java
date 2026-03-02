@@ -11,9 +11,11 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.T3Lib;
 
 public class Climber extends SubsystemBase {
   TalonFX motor;
@@ -35,8 +37,7 @@ public class Climber extends SubsystemBase {
     
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-
-    motor.getConfigurator().apply(config);
+    T3Lib.applyConfig(motor, config);
   }
 
   public Command runClimber(double velocity){
@@ -50,6 +51,6 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
+    SmartDashboard.putNumber("Climber/Climber Position", motor.getPosition().getValueAsDouble());
   }
 }

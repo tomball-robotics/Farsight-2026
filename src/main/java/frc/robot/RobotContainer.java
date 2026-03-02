@@ -14,6 +14,7 @@ import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -21,8 +22,11 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 
 public class RobotContainer {
@@ -59,6 +63,12 @@ public class RobotContainer {
 
   private void configureBindings() {
 
+    driver.a().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    driver.b().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    driver.y().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    driver.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+
     //Swerve Controls
     drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
@@ -68,30 +78,50 @@ public class RobotContainer {
             )
         );
 
-    driver.leftBumper().onTrue(drivetrain.toggleSlowMode()); //Slowmode
-    driver.rightBumper().whileTrue(drivetrain.applyRequest(() -> brake)); //X-lock
+    //driver.leftBumper().onTrue(drivetrain.toggleSlowMode()); //Slowmode
+    //driver.rightBumper().whileTrue(drivetrain.applyRequest(() -> brake)); //X-lock
 
-    driver.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.holdAllignmentToTrench(driver), shooter.putDown())); //Allign to nearest trench
+    // driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    //driver.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
-    driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
+    driver.leftTrigger().onTrue(shooter.setAngleAndVelocity(6,-50));
+    driver.leftTrigger().onFalse(shooter.setAngleAndVelocity(0, 0));
+
+    driver.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1)));
+    driver.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop()));
+
+    driver.rightBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
+    driver.rightBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop()));
+
+    
+    //driver.rightBumper().onFalse(shooter.stop());
+    //driver.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.holdAllignmentToTrench(driver), shooter.putDown())); //Allign to nearest trench
+
+    // driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
     
 
     /*Driver Controls*/
 
     //Intake
-    driver.leftTrigger().onTrue(intakePivot.ifNotDownPutDown().andThen(new ParallelCommandGroup(intakeRollers.run(1), treadmill.run(1)))); //Feed balls to shoot
-    driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop())); //Stop feeding
+    //driver.leftTrigger().onTrue(intakePivot.ifNotDownPutDown().andThen(new ParallelCommandGroup(intakeRollers.run(1), treadmill.run(1)))); //Feed balls to shoot
+    // driver.leftTrigger().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
+    // driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop())); //Stop feeding
     
+
+
     //Intake
 
-    driver.povDown().onTrue(intakePivot.dropIntake()); //Intake down
-    driver.povUp().onTrue(intakePivot.bringUpIntake()); //Intake up
+    driver.leftBumper().onFalse(new InstantCommand(() -> intakePivot.dropIntake())); //Intake down
+    driver.leftBumper().onTrue(new InstantCommand(() -> intakePivot.bringUpIntake()));
+
+    
+    // driver.povUp().onTrue(intakePivot.bringUpIntake()); //Intake up
 
     /*Operator Controls*/
 
     //Run Indexer --> Shoot ball
-    operator.rightTrigger().whileTrue(indexer.run(1));
-    operator.rightTrigger().onFalse(indexer.stop());
+    driver.rightTrigger().whileTrue(indexer.run(1));
+    driver.rightTrigger().onFalse(indexer.stop());
     
 
     //Climber Up

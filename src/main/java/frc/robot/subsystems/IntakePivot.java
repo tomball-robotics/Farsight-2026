@@ -8,43 +8,48 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.T3Lib;
 
 public class IntakePivot extends SubsystemBase {
+
 TalonFX leader;
 TalonFX follower;
-final PositionVoltage request = new PositionVoltage(0).withSlot(0);
+
 public IntakePivot() {
   leader = new TalonFX(Constants.IntakePivotConstants.INTAKE_PIVOT_LEADER_ID);
   follower = new TalonFX(Constants.IntakePivotConstants.INTAKE_PIVOT_FOLLOWER_ID);
   TalonFXConfiguration config = new TalonFXConfiguration();
 
-  config.Slot0.kP = 0.01;
+  config.Slot0.kP = .6;
   config.Slot0.kI = 0;
   config.Slot0.kD = 0;
 
-  config.CurrentLimits.SupplyCurrentLimitEnable = true;
-  config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+  T3Lib.applyConfig(leader, config);
+  T3Lib.applyConfig(follower, config);
+  
 
-  leader.getConfigurator().apply(config);
-  follower.getConfigurator().apply(config);
   follower.setControl(new Follower(Constants.IntakePivotConstants.INTAKE_PIVOT_LEADER_ID, MotorAlignmentValue.Opposed));
 }
 
-public Command ToPosition(double position){
-  return run(() -> {
-    leader.setControl(request.withPosition(position));
-  }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.02);
+ public Command toPosition(double position){
+  return runOnce(() -> {
+     System.out.println(position);
+     leader.setControl(new PositionVoltage(position).withSlot(0));
+   });
 }
 
-public Command dropIntake(){return ToPosition(Constants.IntakePivotConstants.DOWN_POSITION);}
-public Command bringUpIntake(){return ToPosition(0);}
+public Command dropIntake(){
+  return toPosition(Constants.IntakePivotConstants.DOWN_POSITION);
+}
+public Command bringUpIntake(){
+  return toPosition(Constants.IntakePivotConstants.UP_POSITION);
+}
 
 public Command ifNotDownPutDown(){
   return Commands.either(
@@ -53,9 +58,14 @@ public Command ifNotDownPutDown(){
     () -> Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakePivotConstants.DOWN_POSITION) >= 0.02
   );
 }
+  
 
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Intake/Extended", Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakePivotConstants.DOWN_POSITION) < 0.02);
+    SmartDashboard.putNumber("Intake/Position Leader", leader.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Intake/Applied Output", leader.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Intake/Position Follower", follower.getPosition().getValueAsDouble());
+
   }
 }
