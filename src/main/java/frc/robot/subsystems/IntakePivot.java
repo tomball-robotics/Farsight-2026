@@ -26,7 +26,7 @@ public IntakePivot() {
   follower = new TalonFX(Constants.IntakePivotConstants.INTAKE_PIVOT_FOLLOWER_ID);
   TalonFXConfiguration config = new TalonFXConfiguration();
 
-  config.Slot0.kP = .6;
+  config.Slot0.kP = .7;
   config.Slot0.kI = 0;
   config.Slot0.kD = 0;
 

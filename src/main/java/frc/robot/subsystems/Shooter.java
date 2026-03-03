@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.function.Supplier;
 
 
@@ -14,13 +13,11 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorOutputStatusValue;
+
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -81,8 +78,6 @@ public class Shooter extends SubsystemBase {
     T3Lib.applyConfig(angleMotor, AngleConfig);
     T3Lib.applyConfig(velocityMotor, VelocityConfig);
 
-    //VelocityConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
     //Collections.sort(distanceSolutions, (d1, d2) -> (Double.compare(d1.distance, d2.distance)));
 
     
@@ -129,7 +124,7 @@ public class Shooter extends SubsystemBase {
     return run(() -> {
       DistanceSolution target = solveForPosition(distance.get());
       angleMotor.setControl(request.withPosition(target.angle));
-      velocityMotor.setControl(new VelocityVoltage(target.velocity * Constants.ShooterConstants.MPS_TO_ROTATIONS).withSlot(0));
+      velocityMotor.setControl(new VelocityVoltage(target.velocity).withSlot(0));
     });
   }
 

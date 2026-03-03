@@ -367,7 +367,7 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-        //updateOdometry();
+        updateOdometry();
         SmartDashboard.putBoolean("FieldAlive", true);
 
         field.setRobotPose(m_poseEstimator.getEstimatedPosition());
@@ -520,7 +520,7 @@ public boolean atSetpoint(){
 
        LimelightHelpers.SetRobotOrientation("limelight-back", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         //LimelightHelpers.SetIMUMode("limelight-back", 4);
-
+        /* 
        LimelightHelpers.PoseEstimate backEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
       
       if(Math.abs(getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
@@ -531,10 +531,15 @@ public boolean atSetpoint(){
       {
         doRejectUpdate = true;
       }
+        */
+        if(Math.abs(getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720 || frontEstimate.tagCount == 0){
+            doRejectUpdate = true;
+        }
+
       if(!doRejectUpdate)
       {
         LimelightHelpers.PoseEstimate best = null;
-        
+        /* 
         if(frontEstimate.tagCount != backEstimate.tagCount){
             best = frontEstimate.tagCount > backEstimate.tagCount ? frontEstimate : backEstimate;
         }
@@ -544,8 +549,8 @@ public boolean atSetpoint(){
         else{
             best = frontEstimate;
         }
-        
-
+        */
+        best = frontEstimate;
 
         m_poseEstimator.setVisionMeasurementStdDevs(
             VecBuilder.fill(0.6, 0.6, 999999)
@@ -557,9 +562,6 @@ public boolean atSetpoint(){
     }
   }
 
-  public Command allignToTrench(){
-    return driveTo(()->new Pose2d(m_poseEstimator.getEstimatedPosition().getX(), 7.25, m_poseEstimator.getEstimatedPosition().getRotation()));
-  }
 
   public Command holdAllignmentToTrench(CommandXboxController joystick){
     return this.run(() -> { 
@@ -583,8 +585,14 @@ public boolean atSetpoint(){
         double robotX = m_poseEstimator.getEstimatedPosition().getX();
         double robotY = m_poseEstimator.getEstimatedPosition().getY();
 
-        double dx = 11.75 - robotX;
-        double dy = 4.0  - robotY;
+        //double hubX = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+        //double hubY = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
+
+
+        double hubX = Constants.SwervePositions.redHubX;
+        double hubY = Constants.SwervePositions.redHubY;
+        double dx = hubX - robotX;
+        double dy = hubY  - robotY;
 
         Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx));
 
@@ -616,9 +624,14 @@ public boolean atSetpoint(){
     public double distanceToHub(){
         double robotX = m_poseEstimator.getEstimatedPosition().getX();
         double robotY = m_poseEstimator.getEstimatedPosition().getY();
+        //double hubX = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+        //double hubY = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
 
-        double dx = 11.75 - robotX;
-        double dy = 4.0  - robotY;
+        double hubX = Constants.SwervePositions.redHubX;
+        double hubY = Constants.SwervePositions.redHubY;
+
+        double dx = hubX - robotX;
+        double dy = hubY  - robotY;
         return Math.hypot(dx, dy);
     }
 }

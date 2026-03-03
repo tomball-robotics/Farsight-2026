@@ -14,7 +14,6 @@ import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,7 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -36,7 +34,7 @@ public class RobotContainer {
 
   //Subsystem declerations
   private Shooter shooter = new Shooter();
-  private Climber climber = new Climber();
+  //private Climber climber = new Climber();
   private IntakePivot intakePivot = new IntakePivot();
   private Roller intakeRollers = new Roller(Constants.IntakeRollerConstants.INTAKE_ROLLERS_ID, Constants.IntakeRollerConstants.INTAKE_ROLLERS_SPEED);
   private Roller treadmill = new Roller(Constants.TreadmillConstants.TREADMILL_ID, Constants.TreadmillConstants.TREADMILL_SPEED);
@@ -84,20 +82,21 @@ public class RobotContainer {
     // driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
     //driver.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
-    driver.leftTrigger().onTrue(shooter.setAngleAndVelocity(6,-50));
+    driver.leftTrigger().onTrue(shooter.setAngleAndVelocity(0,-50));
     driver.leftTrigger().onFalse(shooter.setAngleAndVelocity(0, 0));
 
     driver.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1)));
     driver.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop()));
 
     driver.rightBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
-    driver.rightBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop()));
+    driver.rightBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop(), Commands.either(Commands.none(), treadmill.stop(), driver.rightTrigger())));
 
-    
+    driver.leftBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(1), treadmill.run(-1), indexer.run(1)));
+    driver.leftBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop(), indexer.stop()));
     //driver.rightBumper().onFalse(shooter.stop());
     //driver.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.holdAllignmentToTrench(driver), shooter.putDown())); //Allign to nearest trench
 
-    // driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
+    driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
     
 
     /*Driver Controls*/
@@ -111,26 +110,26 @@ public class RobotContainer {
 
     //Intake
 
-    driver.leftBumper().onFalse(new InstantCommand(() -> intakePivot.dropIntake())); //Intake down
-    driver.leftBumper().onTrue(new InstantCommand(() -> intakePivot.bringUpIntake()));
+    driver.povDown().onTrue(intakePivot.dropIntake()); //Intake down
+    driver.povUp().onTrue(intakePivot.bringUpIntake());
 
-    
+    driver.a().whileTrue(drivetrain.pointTowardsHub(driver));
     // driver.povUp().onTrue(intakePivot.bringUpIntake()); //Intake up
 
     /*Operator Controls*/
 
     //Run Indexer --> Shoot ball
-    driver.rightTrigger().whileTrue(indexer.run(1));
-    driver.rightTrigger().onFalse(indexer.stop());
+    //driver.rightTrigger().whileTrue(indexer.run(1));
+    //driver.rightTrigger().onFalse(indexer.stop());
     
 
     //Climber Up
-    operator.leftBumper().onTrue(climber.climberUp());
-    operator.leftBumper().onFalse(climber.stop());
+    //operator.leftBumper().onTrue(climber.climberUp());
+    //operator.leftBumper().onFalse(climber.stop());
     
     //Climber Down
-    operator.rightBumper().onTrue(climber.climberDown()); 
-    operator.rightBumper().onFalse(climber.stop());
+    //operator.rightBumper().onTrue(climber.climberDown()); 
+    //operator.rightBumper().onFalse(climber.stop());
 
     //Shooter
     operator.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.pointTowardsHub(driver), shooter.aimForHub(() -> drivetrain.distanceToHub())));
