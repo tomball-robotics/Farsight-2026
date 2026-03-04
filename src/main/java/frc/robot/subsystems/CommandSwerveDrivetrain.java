@@ -515,8 +515,12 @@ public boolean atSetpoint(){
     
       LimelightHelpers.SetRobotOrientation("limelight-front", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         //LimelightHelpers.SetIMUMode("limelight-front", 4);
+        LimelightHelpers.PoseEstimate frontEstimate = null;
+        try{
+            frontEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
+        }catch(Exception e){}
 
-      LimelightHelpers.PoseEstimate frontEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
+      
 
        LimelightHelpers.SetRobotOrientation("limelight-back", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
         //LimelightHelpers.SetIMUMode("limelight-back", 4);
@@ -532,7 +536,7 @@ public boolean atSetpoint(){
         doRejectUpdate = true;
       }
         */
-        if(Math.abs(getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720 || frontEstimate.tagCount == 0){
+        if(Math.abs(getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720 || frontEstimate == null || frontEstimate.tagCount == 0){
             doRejectUpdate = true;
         }
 
