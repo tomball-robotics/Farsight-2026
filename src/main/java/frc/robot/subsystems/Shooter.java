@@ -5,10 +5,18 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.function.Supplier;
+import static edu.wpi.first.units.Units.*;
+
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.Utils;
+
+
 
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -17,6 +25,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog.MotorLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -37,10 +47,19 @@ public class Shooter extends SubsystemBase {
   private double targetVelocityMPS = 0.0;
 
   private final SysIdRoutine routine = new SysIdRoutine(
-    new SysIdRoutine.Config(), //May have to customize it
+       new SysIdRoutine.Config(
+        null,
+       null,
+        null,
+        state -> {
+            SignalLogger.writeString("state", state.toString()); System.out.println(state.toString());
+        }), //May have to customize it
     new SysIdRoutine.Mechanism(
         output -> {velocityMotor.setControl(new VoltageOut(output));},
-        null,
+        log -> {log.motor("TalonFX-" + velocityMotor.getDeviceID())
+           .voltage(Volts.of(velocityMotor.getMotorVoltage().getValueAsDouble()))
+           .angularVelocity(velocityMotor.getVelocity().getValue()).angularPosition(velocityMotor.getPosition().getValue());}
+          ,
         this
     )
     );
@@ -55,10 +74,11 @@ public class Shooter extends SubsystemBase {
     AngleConfig.Slot0.kI = 0;
     AngleConfig.Slot0.kD = 0.001;
 
-    VelocityConfig.Slot0.kP = 0.3;
+    VelocityConfig.Slot0.kP = 0.03039;
     VelocityConfig.Slot0.kI = 0;
     VelocityConfig.Slot0.kD = 0;
-    VelocityConfig.Slot0.kV = 0.005;
+    VelocityConfig.Slot0.kV = 0.12664;
+    VelocityConfig.Slot0.kA = 0.017248;
 
     AngleConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     AngleConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -77,6 +97,12 @@ public class Shooter extends SubsystemBase {
 
     T3Lib.applyConfig(angleMotor, AngleConfig);
     T3Lib.applyConfig(velocityMotor, VelocityConfig);
+    distanceSolutions = new ArrayList<>();
+    distanceSolutions.add(new DistanceSolution(1.89, 0, -30));
+    distanceSolutions.add(new DistanceSolution(2.496, 0, -35));
+    distanceSolutions.add(new DistanceSolution(3.48, 0, -39));
+    distanceSolutions.add(new DistanceSolution(4.78, 3, -41.61));
+    Collections.sort(distanceSolutions, (d1, d2) -> (Double.compare(d1.distance, d2.distance)));
 
     //Collections.sort(distanceSolutions, (d1, d2) -> (Double.compare(d1.distance, d2.distance)));
 
@@ -87,6 +113,9 @@ public class Shooter extends SubsystemBase {
     return runOnce (() -> {
       System.out.println("setAngleAndVelocity");
 
+      targetVelocityMPS =velocity;
+      targetAngleDegrees = degrees;
+
       angleMotor.setControl(request.withPosition(degrees));
       velocityMotor.setControl(new VelocityVoltage(velocity).withSlot(0));
 
@@ -94,26 +123,22 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command stop(){
-    return runOnce(() -> velocityMotor.setControl(new VoltageOut(0)));
+    return runOnce(() -> {velocityMotor.setControl(new CoastOut()); targetVelocityMPS = 0;});
   }
 
-  public DistanceSolution solveForPosition(double distance){
-    
-    int left = 0;
-    int right = distanceSolutions.size() -1;
-    while(left < distanceSolutions.size() && distance <= distanceSolutions.get(left+1).distance){
-      left++;
-    }
-    while(right >= 0 && distance >= distanceSolutions.get(right-1).distance){
-      right--;
-    }
-    if(left == right){return distanceSolutions.get(left);}
+  public DistanceSolution solveForPosition(double distance) {
+    if (distance <= distanceSolutions.get(0).distance){return distanceSolutions.get(0);}
+    if (distance >= distanceSolutions.get(distanceSolutions.size() - 1).distance){ return distanceSolutions.get(distanceSolutions.size() - 1);}
 
-
-    double angle = interpolate(distanceSolutions.get(left).distance, distanceSolutions.get(right).distance, distanceSolutions.get(left).angle, distanceSolutions.get(right).angle, distance);
-    double velocity = interpolate(distanceSolutions.get(left).distance, distanceSolutions.get(right).distance, distanceSolutions.get(left).velocity, distanceSolutions.get(right).velocity, distance);
-    return new DistanceSolution(distance, angle, velocity);
-  }
+    for (int i = 0; i < distanceSolutions.size() - 1; i++) {
+        if (distance >= distanceSolutions.get(i).distance && distance <= distanceSolutions.get(i + 1).distance) {
+            double angle = interpolate(distanceSolutions.get(i).distance, distanceSolutions.get(i+1).distance, distanceSolutions.get(i).angle,    distanceSolutions.get(i+1).angle, distance);
+            double velocity = interpolate(distanceSolutions.get(i).distance, distanceSolutions.get(i+1).distance, distanceSolutions.get(i).velocity, distanceSolutions.get(i+1).velocity, distance);
+            return new DistanceSolution(distance, angle, velocity);
+        }
+    }
+    return distanceSolutions.get(distanceSolutions.size() - 1);
+}
 
   public double interpolate(double x1, double x2, double y1, double y2, double x3){
     if(x1==x2){return y1;}
@@ -123,17 +148,13 @@ public class Shooter extends SubsystemBase {
   public Command aimForHub(Supplier<Double> distance){
     return run(() -> {
       DistanceSolution target = solveForPosition(distance.get());
+      SmartDashboard.putNumber("Velocity", target.velocity);
+
+      targetVelocityMPS = target.velocity;
+      targetAngleDegrees = target.angle;
+
       angleMotor.setControl(request.withPosition(target.angle));
       velocityMotor.setControl(new VelocityVoltage(target.velocity).withSlot(0));
-
-      SmartDashboard.putBoolean("Shooter/At Velocity", targetVelocityMPS - velocityMotor.getVelocity().getValueAsDouble() < 0.1);
-      SmartDashboard.putBoolean("Shooter/At Angle", Math.abs(targetAngleDegrees - angleMotor.getPosition().getValueAsDouble()) < 0.1);
-
-
-      SmartDashboard.putNumber("Shooter/Shooter velocity", velocityMotor.getVelocity().getValueAsDouble());
-      SmartDashboard.putNumber("Shooter/Shooter angle", angleMotor.getPosition().getValueAsDouble());
-
-      SmartDashboard.putNumber("Shooter/output voltage", angleMotor.getSupplyCurrent().getValueAsDouble());
     });
   }
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction){

@@ -14,6 +14,7 @@ import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.Roller;
 import frc.robot.subsystems.Shooter;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -61,10 +62,10 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    //driver.a().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    //driver.b().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    //driver.y().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    //driver.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    //driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+    //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+    //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+    //driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
 
 
     //Swerve Controls
@@ -79,14 +80,14 @@ public class RobotContainer {
     //driver.leftBumper().onTrue(drivetrain.toggleSlowMode()); //Slowmode
     //driver.rightBumper().whileTrue(drivetrain.applyRequest(() -> brake)); //X-lock
 
-    // driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    //driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
     //driver.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
     //driver.leftTrigger().onTrue(shooter.setAngleAndVelocity(0,-35));
     driver.leftTrigger().onFalse(shooter.stop());
     driver.leftTrigger().whileTrue(shooter.aimForHub(() -> drivetrain.distanceToHub()));
-    driver.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1)));
-    driver.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop()));
+    driver.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
+    driver.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
 
     driver.rightBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
     driver.rightBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop(), Commands.either(Commands.none(), treadmill.stop(), driver.rightTrigger())));
@@ -103,8 +104,8 @@ public class RobotContainer {
 
     //Intake
     //driver.leftTrigger().onTrue(intakePivot.ifNotDownPutDown().andThen(new ParallelCommandGroup(intakeRollers.run(1), treadmill.run(1)))); //Feed balls to shoot
-    // driver.leftTrigger().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
-    // driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop())); //Stop feeding
+     //driver.leftTrigger().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
+     //driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop())); //Stop feeding
     
 
 
