@@ -5,10 +5,12 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.function.Supplier;
 
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -52,13 +54,13 @@ public class Shooter extends SubsystemBase {
     TalonFXConfiguration VelocityConfig = new TalonFXConfiguration();
 
     AngleConfig.Slot0.kP = 0.5;
-    AngleConfig.Slot0.kI = 0;
+    AngleConfig.Slot0.kI = 0.001;
     AngleConfig.Slot0.kD = 0.001;
 
-    VelocityConfig.Slot0.kP = 0.3;
-    VelocityConfig.Slot0.kI = 0;
+    VelocityConfig.Slot0.kP = 0.5;
+    VelocityConfig.Slot0.kI = 0.00;
     VelocityConfig.Slot0.kD = 0;
-    VelocityConfig.Slot0.kV = 0.005;
+    VelocityConfig.Slot0.kV = 0;
 
     AngleConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
     AngleConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -77,8 +79,12 @@ public class Shooter extends SubsystemBase {
 
     T3Lib.applyConfig(angleMotor, AngleConfig);
     T3Lib.applyConfig(velocityMotor, VelocityConfig);
-
-    //Collections.sort(distanceSolutions, (d1, d2) -> (Double.compare(d1.distance, d2.distance)));
+    distanceSolutions = new ArrayList<>();
+    distanceSolutions.add(new DistanceSolution(1.89, 0, -35));
+    distanceSolutions.add(new DistanceSolution(2.496, 0, -45));
+    distanceSolutions.add(new DistanceSolution(3.48, 0, -50));
+    distanceSolutions.add(new DistanceSolution(4.78, 3, -55));
+    Collections.sort(distanceSolutions, (d1, d2) -> (Double.compare(d1.distance, d2.distance)));
 
     
   }
@@ -94,7 +100,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command stop(){
-    return runOnce(() -> velocityMotor.setControl(new VoltageOut(0)));
+    return runOnce(() -> velocityMotor.setControl(new CoastOut()));
   }
 
   public DistanceSolution solveForPosition(double distance){
@@ -123,8 +129,9 @@ public class Shooter extends SubsystemBase {
   public Command aimForHub(Supplier<Double> distance){
     return run(() -> {
       DistanceSolution target = solveForPosition(distance.get());
-      angleMotor.setControl(request.withPosition(target.angle));
-      velocityMotor.setControl(new VelocityVoltage(target.velocity).withSlot(0));
+      SmartDashboard.putNumber("Velocity", target.velocity);
+      //angleMotor.setControl(request.withPosition(target.angle));
+      //velocityMotor.setControl(new VelocityVoltage(target.velocity).withSlot(0));
     });
   }
 

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,8 +28,11 @@ public IntakePivot() {
   TalonFXConfiguration config = new TalonFXConfiguration();
 
   config.Slot0.kP = .7;
-  config.Slot0.kI = 0;
+  config.Slot0.kI = 0.001;
   config.Slot0.kD = 0;
+
+
+  config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
   T3Lib.applyConfig(leader, config);
   T3Lib.applyConfig(follower, config);
@@ -44,8 +48,21 @@ public IntakePivot() {
    });
 }
 
+
+
 public Command dropIntake(){
-  return toPosition(Constants.IntakePivotConstants.DOWN_POSITION);
+  return run(() -> {
+    if(leader.getPosition().getValueAsDouble() < Constants.IntakePivotConstants.DOWN_POSITION/2){
+      System.out.println("Down");
+      leader.setControl(new PositionVoltage(Constants.IntakePivotConstants.DOWN_POSITION).withSlot(0));
+    }
+    else{
+        System.out.println("Up");
+
+      leader.setControl(new CoastOut());
+    }
+
+  });
 }
 public Command bringUpIntake(){
   return toPosition(Constants.IntakePivotConstants.UP_POSITION);

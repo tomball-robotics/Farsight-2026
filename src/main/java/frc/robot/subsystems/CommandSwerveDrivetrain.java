@@ -68,8 +68,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
-    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
+    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg; 
     /* Keep track if we've ever applied the operator perspective before or not */
+
+    private static final Rotation2d addedRotation = DriverStation.getAlliance().get().equals(Alliance.Blue) ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation;
     private boolean m_hasAppliedOperatorPerspective = false;
 
     /** Swerve request to apply during robot-centric path following */
@@ -257,7 +259,7 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         xController = new PIDController(0.85,0,0);
     
         yController = new PIDController(1.5,0,0);
-        yawController = new PIDController(4,0,0);
+        yawController = new PIDController(4,0,0.0001);
 
         yawController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -379,6 +381,8 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         SmartDashboard.putNumber("Target Y: ", AutoBuilder.getCurrentPose().getY());
 
         SmartDashboard.putBoolean("Pointing Hub", yawController.atSetpoint());
+
+        SmartDashboard.putNumber("Distance to Hub", distanceToHub());
 
 
         //System.out.println(m_poseEstimator.getEstimatedPosition());
@@ -570,14 +574,14 @@ public boolean atSetpoint(){
   public Command holdAllignmentToTrench(CommandXboxController joystick){
     return this.run(() -> { 
         double xInput = joystick.getLeftY();
-        double deadband = 0.2;
+        double deadband = 0.1;
         if (Math.abs(xInput) < deadband) {
             xInput = 0;
         }
     
         double targetY = m_poseEstimator.getEstimatedPosition().getY() > (Constants.SwervePositions.rightTrenchY + Constants.SwervePositions.leftTrenchY)/2 ? Constants.SwervePositions.rightTrenchY : Constants.SwervePositions.leftTrenchY;
         this.setControl(new SwerveRequest.FieldCentric()
-            .withRotationalDeadband(MaxAngularRate * 0.2).withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withRotationalDeadband(MaxAngularRate * 0.1).withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withVelocityX(xInput * MaxSpeed)
             .withVelocityY(yController.calculate(m_poseEstimator.getEstimatedPosition().getY(), targetY))
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate));} );
@@ -605,7 +609,7 @@ public boolean atSetpoint(){
 
         this.setControl(
             new SwerveRequest.FieldCentric()
-                .withDeadband(MaxSpeed * 0.2)
+                .withDeadband(MaxSpeed * 0.1)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
                 .withVelocityX(joystick.getLeftY() * MaxSpeed)
                 .withVelocityY(joystick.getLeftX() * MaxSpeed)

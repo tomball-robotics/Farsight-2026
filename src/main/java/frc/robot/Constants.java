@@ -68,6 +68,7 @@ public final class Constants {
 
   public static final class IntakeRollerConstants {
     public static final int INTAKE_ROLLERS_ID = 1; 
-    public static final double INTAKE_ROLLERS_SPEED = 7.5; //TODO tune
+    public static final double INTAKE_ROLLERS_SPEED = 8
+    ; //TODO tune
   }
 }

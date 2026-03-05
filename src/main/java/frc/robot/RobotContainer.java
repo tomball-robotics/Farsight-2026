@@ -41,7 +41,7 @@ public class RobotContainer {
   private Roller indexer = new Roller(Constants.IndexerConstants.INDEXER_ID, Constants.IndexerConstants.INDEXER_SPEED);
   private CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.2).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
 
 
@@ -61,10 +61,10 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    driver.a().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    driver.b().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    driver.y().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    driver.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    //driver.a().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    //driver.b().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    //driver.y().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    //driver.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
 
     //Swerve Controls
@@ -82,9 +82,9 @@ public class RobotContainer {
     // driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
     //driver.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
 
-    driver.leftTrigger().onTrue(shooter.setAngleAndVelocity(0,-50));
-    driver.leftTrigger().onFalse(shooter.setAngleAndVelocity(0, 0));
-
+    //driver.leftTrigger().onTrue(shooter.setAngleAndVelocity(0,-35));
+    driver.leftTrigger().onFalse(shooter.stop());
+    driver.leftTrigger().whileTrue(shooter.aimForHub(() -> drivetrain.distanceToHub()));
     driver.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1)));
     driver.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop()));
 
@@ -97,7 +97,7 @@ public class RobotContainer {
     //driver.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.holdAllignmentToTrench(driver), shooter.putDown())); //Allign to nearest trench
 
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
-    
+    driver.b().whileTrue(drivetrain.holdAllignmentToTrench(driver));
 
     /*Driver Controls*/
 
