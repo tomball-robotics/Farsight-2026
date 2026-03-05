@@ -148,7 +148,6 @@ public class Shooter extends SubsystemBase {
   public Command aimForHub(Supplier<Double> distance){
     return run(() -> {
       DistanceSolution target = solveForPosition(distance.get());
-      SmartDashboard.putNumber("Velocity", target.velocity);
 
       targetVelocityMPS = target.velocity;
       targetAngleDegrees = target.angle;
@@ -178,6 +177,15 @@ public class Shooter extends SubsystemBase {
     return Constants.ShooterConstants.ROTATIONS_PER_DEGREE * (degrees - Constants.ShooterConstants.SHOOTER_MAX_ANGLE);
   }
     */
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putBoolean("Shooter At Velocity", Math.abs(velocityMotor.getVelocity().getValueAsDouble()-targetVelocityMPS) < 2);
+    SmartDashboard.putBoolean("Shooter At Angle", Math.abs(velocityMotor.getPosition().getValueAsDouble()-targetAngleDegrees) < 0.2);
+
+    SmartDashboard.putNumber("Velocity Error", Math.abs(velocityMotor.getVelocity().getValueAsDouble()-targetVelocityMPS));
+    SmartDashboard.putNumber("Target Velocity", targetVelocityMPS);
+  }
 }
 
 
