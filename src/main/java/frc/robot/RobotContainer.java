@@ -58,6 +58,13 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     configureBindings();
+
+    SmartDashboard.putData("Intake Down", intakePivot.dropIntake());
+    SmartDashboard.putData("Intake Up", intakePivot.bringUpIntake());
+    SmartDashboard.putData("Intake Coast", intakePivot.coast());
+
+    SmartDashboard.putData("Shooter Down", shooter.setAngleAndVelocity(0, -40));
+    SmartDashboard.putData("Shooter Coast",shooter.stop());
   }
 
   private void configureBindings() {

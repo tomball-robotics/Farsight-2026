@@ -83,7 +83,11 @@ public Command shake(){
     }
   }));
 }
-  
+  public Command coast(){
+    return runOnce(() -> {
+      leader.setControl(new CoastOut());
+    });
+  }
 
   @Override
   public void periodic() {
