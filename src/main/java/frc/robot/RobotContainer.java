@@ -18,6 +18,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -65,6 +66,9 @@ public class RobotContainer {
 
     SmartDashboard.putData("Shooter Down", shooter.setAngleAndVelocity(0, -40));
     SmartDashboard.putData("Shooter Coast",shooter.stop());
+
+    NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()));
+    NamedCommands.registerCommand("Run Feeder", new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
   }
 
   private void configureBindings() {
