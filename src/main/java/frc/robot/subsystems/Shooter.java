@@ -100,7 +100,7 @@ public class Shooter extends SubsystemBase {
     distanceSolutions = new ArrayList<>();
     distanceSolutions.add(new DistanceSolution(1.89, 0, -30));
     distanceSolutions.add(new DistanceSolution(2.496, 0, -35));
-    distanceSolutions.add(new DistanceSolution(3.48, 0, -39));
+    distanceSolutions.add(new DistanceSolution(3.48, 0, -40));
     distanceSolutions.add(new DistanceSolution(4.78, 3, -41.61));
     Collections.sort(distanceSolutions, (d1, d2) -> (Double.compare(d1.distance, d2.distance)));
 

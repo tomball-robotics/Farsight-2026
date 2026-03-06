@@ -86,13 +86,13 @@ public class RobotContainer {
     //driver.leftTrigger().onTrue(shooter.setAngleAndVelocity(0,-35));
     driver.leftTrigger().onFalse(shooter.stop());
     driver.leftTrigger().whileTrue(shooter.aimForHub(() -> drivetrain.distanceToHub()));
-    driver.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
+    driver.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(0)));
     driver.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
 
     driver.rightBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
     driver.rightBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop(), Commands.either(Commands.none(), treadmill.stop(), driver.rightTrigger())));
 
-    driver.leftBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(1), treadmill.run(-1), indexer.run(1)));
+    driver.leftBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(0), treadmill.run(-1), indexer.run(1)));
     driver.leftBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop(), indexer.stop()));
     //driver.rightBumper().onFalse(shooter.stop());
     //driver.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.holdAllignmentToTrench(driver), shooter.putDown())); //Allign to nearest trench
