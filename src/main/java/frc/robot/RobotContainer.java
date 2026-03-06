@@ -69,6 +69,9 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()));
     NamedCommands.registerCommand("Run Feeder", new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
+
+    NamedCommands.registerCommand("Drop Intake", intakePivot.dropIntake());
+    NamedCommands.registerCommand("Run Intake", new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
   }
 
   private void configureBindings() {
