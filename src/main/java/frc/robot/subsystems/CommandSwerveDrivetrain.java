@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Set;
 import java.util.function.Supplier;
@@ -22,20 +25,22 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -81,6 +86,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     //private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     //private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    StructPublisher<Pose3d> posePublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Pose3D", Pose3d.struct).publish();
 
 
 private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -384,6 +392,7 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
 
         SmartDashboard.putNumber("Distance to Hub", distanceToHub());
 
+        posePublisher.set(new Pose3d(m_poseEstimator.getEstimatedPosition()));
 
         //System.out.println(m_poseEstimator.getEstimatedPosition());
     }
@@ -593,12 +602,12 @@ public boolean atSetpoint(){
         double robotX = m_poseEstimator.getEstimatedPosition().getX();
         double robotY = m_poseEstimator.getEstimatedPosition().getY();
 
-        //double hubX = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
-        //double hubY = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
+        double hubX = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+        double hubY = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
 
 
-        double hubX = Constants.SwervePositions.redHubX;
-        double hubY = Constants.SwervePositions.redHubY;
+        //double hubX = Constants.SwervePositions.redHubX;
+        //double hubY = Constants.SwervePositions.redHubY;
         double dx = hubX - robotX;
         double dy = hubY  - robotY;
 
@@ -632,14 +641,14 @@ public boolean atSetpoint(){
     public double distanceToHub(){
         double robotX = m_poseEstimator.getEstimatedPosition().getX();
         double robotY = m_poseEstimator.getEstimatedPosition().getY();
-        //double hubX = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
-        //double hubY = DriverStation.getAlliance().get() == Alliance.Blue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
+        double hubX = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+        double hubY = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
 
-        double hubX = Constants.SwervePositions.redHubX;
-        double hubY = Constants.SwervePositions.redHubY;
 
         double dx = hubX - robotX;
         double dy = hubY  - robotY;
         return Math.hypot(dx, dy);
     }
+
+
 }
