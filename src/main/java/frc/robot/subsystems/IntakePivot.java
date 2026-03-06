@@ -75,6 +75,14 @@ public Command ifNotDownPutDown(){
     () -> Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakePivotConstants.DOWN_POSITION) >= 0.02
   );
 }
+
+public Command shake(){
+  return runOnce(() -> {leader.setControl(new PositionVoltage(Constants.IntakePivotConstants.DOWN_POSITION/2).withSlot(0));}).andThen(run(() ->{
+    if(leader.getPosition().getValueAsDouble() <= Constants.IntakePivotConstants.DOWN_POSITION/2){
+      leader.setControl(new CoastOut());
+    }
+  }));
+}
   
 
   @Override

@@ -89,6 +89,8 @@ public class RobotContainer {
     driver.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
     driver.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
 
+    driver.x().onTrue(intakePivot.shake());
+
     driver.rightBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
     driver.rightBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop(), Commands.either(Commands.none(), treadmill.stop(), driver.rightTrigger())));
 

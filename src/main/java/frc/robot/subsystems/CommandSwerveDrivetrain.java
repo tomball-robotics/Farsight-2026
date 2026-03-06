@@ -474,13 +474,13 @@ public boolean atSetpoint(){
         //return runOnce(() -> {resetRotation(getState().RawHeading.rotateBy(new Rotation2d(0)));}); 
         return runOnce(() -> {
             var newYaw =
-                getState().Pose.getRotation().rotateBy(Rotation2d.k180deg);
+                getState().Pose.getRotation().rotateBy(addedRotation);
             resetRotation(newYaw);
         });
     }
 
     public void updateOdometry() {
-        m_poseEstimator.update(getPigeon2().getRotation2d().plus(Rotation2d.k180deg), getState().ModulePositions);
+        m_poseEstimator.update(getPigeon2().getRotation2d().plus(addedRotation), getState().ModulePositions);
 
 
     boolean useMegaTag2 = true; //set to false to use MegaTag1
