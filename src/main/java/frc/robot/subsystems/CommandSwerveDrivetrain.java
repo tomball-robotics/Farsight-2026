@@ -51,11 +51,8 @@ import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
-/**
- * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
- * Subsystem so it can easily be used in command-based projects.
- */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -66,6 +63,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public SwerveDrivePoseEstimator m_poseEstimator;
     public boolean slowModeEnabled = false;
+    public Pose2d pose = new Pose2d();
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
       
@@ -87,8 +85,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     //private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     //private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
-    StructPublisher<Pose3d> posePublisher = NetworkTableInstance.getDefault()
+    StructPublisher<Pose3d> pose3DPublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Pose3D", Pose3d.struct).publish();
+    StructPublisher<Pose2d> pose2DPublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("Pose2D", Pose2d.struct).publish();
+
 
 
 private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -293,16 +294,8 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
                 () -> {
-                    //System.out.println("Estimated X: " + m_poseEstimator.getEstimatedPosition().plus(new Transform2d(0, 0, Rotation2d.k180deg)).getX());
-                    //System.out.println("Estimated Y: " + m_poseEstimator.getEstimatedPosition().plus(new Transform2d(0, 0, Rotation2d.k180deg)).getY()); 
-
                     PathPlannerLogging.setLogTargetPoseCallback((pose) -> {System.out.println("X: " + pose.getX()); System.out.println("Y: " + pose.getY());});
-
-                    
-
-
-
-                    return m_poseEstimator.getEstimatedPosition();//.plus(new Transform2d(0, 0, Rotation2d.k180deg));
+                    return pose;//.plus(new Transform2d(0, 0, Rotation2d.k180deg));
                     },   // Supplier of current robot pose
                 this::resetPose,         // Consumer for seeding pose against auto
                 () -> getState().Speeds, // Supplier of current robot speeds
@@ -358,45 +351,6 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    @Override
-    public void periodic() {
-        /*
-         * Periodically try to apply the operator perspective.
-         * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
-         * This allows us to correct the perspective in case the robot code restarts mid-match.
-         * Otherwise, only check and apply the operator perspective if the DS is disabled.
-         * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
-         */
-        if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
-            DriverStation.getAlliance().ifPresent(allianceColor -> {
-                setOperatorPerspectiveForward(
-                    allianceColor == Alliance.Red
-                        ? kRedAlliancePerspectiveRotation
-                        : kBlueAlliancePerspectiveRotation
-                );
-                m_hasAppliedOperatorPerspective = true;
-            });
-        }
-        updateOdometry();
-        SmartDashboard.putBoolean("FieldAlive", true);
-
-        field.setRobotPose(m_poseEstimator.getEstimatedPosition());
-        SmartDashboard.putNumber("Robot X:", m_poseEstimator.getEstimatedPosition().getX());
-        SmartDashboard.putNumber("Robot Y:", m_poseEstimator.getEstimatedPosition().getY());
-        SmartDashboard.putNumber("Robot Yaw: ", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-
-        SmartDashboard.putNumber("Target X: ", AutoBuilder.getCurrentPose().getX());
-        SmartDashboard.putNumber("Target Y: ", AutoBuilder.getCurrentPose().getY());
-
-        SmartDashboard.putBoolean("Pointing Hub", yawController.atSetpoint());
-
-        SmartDashboard.putNumber("Distance to Hub", distanceToHub());
-
-        posePublisher.set(new Pose3d(m_poseEstimator.getEstimatedPosition()));
-
-        //System.out.println(m_poseEstimator.getEstimatedPosition());
-    }
-
     public Command driveTo(Supplier<Pose2d> t) {
         return Commands.defer(() -> {
             Pose2d target = t.get();
@@ -405,16 +359,16 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         yController.setSetpoint(target.getY());
         yawController.setSetpoint(target.getRotation().getDegrees());
         return this.run(() -> {
-            double rotationSpeed = yawController.calculate(m_poseEstimator.getEstimatedPosition().getRotation().getRadians(), target.getRotation().getRadians());
-            double xVel = xController.calculate(m_poseEstimator.getEstimatedPosition().getX(), target.getX());
-            double yVel = yController.calculate(m_poseEstimator.getEstimatedPosition().getY(), target.getY());
+            double rotationSpeed = yawController.calculate(pose.getRotation().getRadians(), target.getRotation().getRadians());
+            double xVel = xController.calculate(pose.getX(), target.getX());
+            double yVel = yController.calculate(pose.getY(), target.getY());
 
-            System.out.println(m_poseEstimator.getEstimatedPosition().getRotation().getRadians() + "       " + target.getRotation().getRadians());
+            System.out.println(pose.getRotation().getRadians() + "       " + target.getRotation().getRadians());
             //System.out.println("Y:" + (yVel > 0.01));
             //System.out.println("Yaw:" + rotationSpeed);
             
             SmartDashboard.putNumber("Target Rotation: ", target.getRotation().getRadians());
-            SmartDashboard.putNumber("Actual Rotation: ", m_poseEstimator.getEstimatedPosition().getRotation().getRadians());
+            SmartDashboard.putNumber("Actual Rotation: ", pose.getRotation().getRadians());
 
             this.setControl(new SwerveRequest.FieldCentric()
                 .withVelocityX(xVel)
@@ -526,7 +480,7 @@ public boolean atSetpoint(){
     {
 
     
-      LimelightHelpers.SetRobotOrientation("limelight-front", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation("limelight-front", pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         //LimelightHelpers.SetIMUMode("limelight-front", 4);
         LimelightHelpers.PoseEstimate frontEstimate = null;
         try{
@@ -535,7 +489,7 @@ public boolean atSetpoint(){
 
       
 
-       LimelightHelpers.SetRobotOrientation("limelight-back", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+       LimelightHelpers.SetRobotOrientation("limelight-back", pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
         //LimelightHelpers.SetIMUMode("limelight-back", 4);
         /* 
        LimelightHelpers.PoseEstimate backEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
@@ -588,19 +542,19 @@ public boolean atSetpoint(){
             xInput = 0;
         }
     
-        double targetY = m_poseEstimator.getEstimatedPosition().getY() > (Constants.SwervePositions.rightTrenchY + Constants.SwervePositions.leftTrenchY)/2 ? Constants.SwervePositions.rightTrenchY : Constants.SwervePositions.leftTrenchY;
+        double targetY = pose.getY() > (Constants.SwervePositions.rightTrenchY + Constants.SwervePositions.leftTrenchY)/2 ? Constants.SwervePositions.rightTrenchY : Constants.SwervePositions.leftTrenchY;
         this.setControl(new SwerveRequest.FieldCentric()
             .withRotationalDeadband(MaxAngularRate * 0.1).withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withVelocityX(xInput * MaxSpeed)
-            .withVelocityY(yController.calculate(m_poseEstimator.getEstimatedPosition().getY(), targetY))
+            .withVelocityY(yController.calculate(pose.getY(), targetY))
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate));} );
   }
 
   public Command pointTowardsHub(CommandXboxController joystick) {
     return this.run(() -> {
 
-        double robotX = m_poseEstimator.getEstimatedPosition().getX();
-        double robotY = m_poseEstimator.getEstimatedPosition().getY();
+        double robotX = pose.getX();
+        double robotY = pose.getY();
 
         double hubX = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
         double hubY = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
@@ -624,7 +578,7 @@ public boolean atSetpoint(){
                 .withVelocityY(joystick.getLeftX() * MaxSpeed)
                 .withRotationalRate(
                     yawController.calculate(
-                        m_poseEstimator.getEstimatedPosition().getRotation().getRadians(),
+                        pose.getRotation().getRadians(),
                         targetAngle.getRadians()
                     )
                 )
@@ -639,8 +593,8 @@ public boolean atSetpoint(){
     }
 
     public double distanceToHub(){
-        double robotX = m_poseEstimator.getEstimatedPosition().getX();
-        double robotY = m_poseEstimator.getEstimatedPosition().getY();
+        double robotX = pose.getX();
+        double robotY = pose.getY();
         double hubX = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
         double hubY = DriverStation.getAlliance().get().equals(Alliance.Blue) ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
 
@@ -650,5 +604,46 @@ public boolean atSetpoint(){
         return Math.hypot(dx, dy);
     }
 
+    @Override
+    public void periodic() {
+        /*
+         * Periodically try to apply the operator perspective.
+         * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
+         * This allows us to correct the perspective in case the robot code restarts mid-match.
+         * Otherwise, only check and apply the operator perspective if the DS is disabled.
+         * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
+         */
+        if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
+            DriverStation.getAlliance().ifPresent(allianceColor -> {
+                setOperatorPerspectiveForward(
+                    allianceColor == Alliance.Red
+                        ? kRedAlliancePerspectiveRotation
+                        : kBlueAlliancePerspectiveRotation
+                );
+                m_hasAppliedOperatorPerspective = true;
+            });
+        }
+        
+        updateOdometry();
+        pose = m_poseEstimator.getEstimatedPosition();
+
+        pose3DPublisher.set(new Pose3d(pose));
+        pose2DPublisher.set(pose);
+
+        SmartDashboard.putBoolean("FieldAlive", true);
+
+        field.setRobotPose(pose);
+        SmartDashboard.putNumber("Robot X:", pose.getX());
+        SmartDashboard.putNumber("Robot Y:", pose.getY());
+        SmartDashboard.putNumber("Robot Yaw: ", pose.getRotation().getDegrees());
+
+        SmartDashboard.putNumber("Target X: ", AutoBuilder.getCurrentPose().getX());
+        SmartDashboard.putNumber("Target Y: ", AutoBuilder.getCurrentPose().getY());
+
+        SmartDashboard.putBoolean("Pointing Hub", yawController.atSetpoint());
+
+        SmartDashboard.putNumber("Distance to Hub", distanceToHub());
+
+    }
 
 }
