@@ -53,12 +53,9 @@ public IntakePivot() {
 public Command dropIntake(){
   return run(() -> {
     if(leader.getPosition().getValueAsDouble() < Constants.IntakePivotConstants.DOWN_POSITION/2){
-      System.out.println("Down");
       leader.setControl(new PositionVoltage(Constants.IntakePivotConstants.DOWN_POSITION).withSlot(0));
     }
     else{
-        System.out.println("Up");
-
       leader.setControl(new CoastOut());
     }
 

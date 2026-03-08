@@ -18,7 +18,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -294,10 +293,10 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
                 () -> {
-                    PathPlannerLogging.setLogTargetPoseCallback((pose) -> {System.out.println("X: " + pose.getX()); System.out.println("Y: " + pose.getY());});
+                    //PathPlannerLogging.setLogTargetPoseCallback((pose) -> {System.out.println("X: " + pose.getX()); System.out.println("Y: " + pose.getY());});
                     return pose;//.plus(new Transform2d(0, 0, Rotation2d.k180deg));
                     },   // Supplier of current robot pose
-                this::resetPose,         // Consumer for seeding pose against auto
+                this::resetPose,         // Consugmer for seeding pose against auto
                 () -> getState().Speeds, // Supplier of current robot speeds
                 // Consumer of ChassisSpeeds and feedforwards to drive the robot
                 (speeds, feedforwards) -> setControl(
@@ -311,7 +310,7 @@ private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
                 ),
                 config,
                 // Assume the path needs to be flipped for Red vs Blue, this is normally the case
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                () -> !(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
                 this // Subsystem for requirements
             );
         } catch (Exception ex) {
@@ -566,7 +565,7 @@ public boolean atSetpoint(){
         double dx = hubX - robotX;
         double dy = hubY  - robotY;
 
-        Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx));
+        Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx)).rotateBy(Rotation2d.k180deg);
 
         SmartDashboard.putNumber("dx", dx);
         SmartDashboard.putNumber("dy", dy);

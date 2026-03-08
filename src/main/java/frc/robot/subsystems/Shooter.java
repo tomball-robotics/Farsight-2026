@@ -63,8 +63,8 @@ public class Shooter extends SubsystemBase {
     TalonFXConfiguration AngleConfig = new TalonFXConfiguration();
     TalonFXConfiguration VelocityConfig = new TalonFXConfiguration();
 
-    AngleConfig.Slot0.kP = 0.5;
-    AngleConfig.Slot0.kI = 0;
+    AngleConfig.Slot0.kP = 1;
+    AngleConfig.Slot0.kI = 0.209961;
     AngleConfig.Slot0.kD = 0.001;
 
     VelocityConfig.Slot0.kP = 0.03039;
@@ -97,16 +97,14 @@ public class Shooter extends SubsystemBase {
     distanceSolutions.add(new DistanceSolution(4.78, 3, -41.61));
     Collections.sort(distanceSolutions, (d1, d2) -> (Double.compare(d1.distance, d2.distance)));
 
-    //Collections.sort(distanceSolutions, (d1, d2) -> (Double.compare(d1.distance, d2.distance)));
-
-    
+    angleMotor.setPosition(0);
   }
 
   public Command setAngleAndVelocity(double degrees, double velocity){
     return runOnce (() -> {
       System.out.println("setAngleAndVelocity");
 
-      targetVelocityMPS =velocity;
+      targetVelocityMPS = velocity;
       targetAngleDegrees = degrees;
 
       angleMotor.setControl(request.withPosition(degrees));
@@ -147,6 +145,7 @@ public class Shooter extends SubsystemBase {
 
       angleMotor.setControl(request.withPosition(target.angle));
       velocityMotor.setControl(new VelocityVoltage(target.velocity).withSlot(0));
+      SmartDashboard.putNumber("Shooter Pivot Target", targetAngleDegrees);
     });
   }
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction){
@@ -175,11 +174,13 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putBoolean("Shooter At Velocity", Math.abs(velocityMotor.getVelocity().getValueAsDouble()-targetVelocityMPS) < 2);
     SmartDashboard.putBoolean("Shooter At Angle", Math.abs(velocityMotor.getPosition().getValueAsDouble()-targetAngleDegrees) < 0.2);
+    SmartDashboard.putNumber("Shooter Pivot Position", angleMotor.getPosition().getValueAsDouble());
 
     SmartDashboard.putNumber("Velocity Error", Math.abs(velocityMotor.getVelocity().getValueAsDouble()-targetVelocityMPS));
     SmartDashboard.putNumber("Target Velocity", targetVelocityMPS);
   }
 }
+
 
 
 class DistanceSolution{

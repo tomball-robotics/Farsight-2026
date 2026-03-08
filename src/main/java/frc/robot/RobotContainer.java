@@ -52,8 +52,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
     configureBindings();
 
     SmartDashboard.putData("Intake Down", intakePivot.dropIntake());
@@ -71,6 +69,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("Run Intake", new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
     NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
     NamedCommands.registerCommand("Raise Intake", intakePivot.bringUpIntake());
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   private void configureBindings() {
@@ -108,7 +109,7 @@ public class RobotContainer {
     driver.povUp().onTrue(intakePivot.bringUpIntake());
 
     operator.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.pointTowardsHub(driver), shooter.aimForHub(() -> drivetrain.distanceToHub())));
-    operator.leftTrigger().onFalse(shooter.stop());
+    operator.leftTrigger().onFalse(shooter.setAngleAndVelocity(0, 0));
 
     operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
     operator.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
