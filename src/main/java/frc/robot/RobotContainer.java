@@ -64,10 +64,13 @@ public class RobotContainer {
     SmartDashboard.putData("Shooter Coast",shooter.stop());
 
     NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()));
+    NamedCommands.registerCommand("Stop Shooter", shooter.setAngleAndVelocity(0, 0));
     NamedCommands.registerCommand("Run Feeder", new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
 
     NamedCommands.registerCommand("Drop Intake", intakePivot.dropIntake());
     NamedCommands.registerCommand("Run Intake", new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
+    NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
+    NamedCommands.registerCommand("Raise Intake", intakePivot.bringUpIntake());
   }
 
   private void configureBindings() {
@@ -77,7 +80,6 @@ public class RobotContainer {
     //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
     //driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
 
-
     //Swerve Controls
     drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
@@ -86,7 +88,6 @@ public class RobotContainer {
                     .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate - 0.25 * operator.getRightX() * MaxAngularRate * 2)) // Drive counterclockwise with negative X (left)
             )
         );
-
     
     driver.leftTrigger().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
     driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop()));
@@ -112,7 +113,6 @@ public class RobotContainer {
     operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
     operator.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
     
-
     //Climber Up
     //operator.leftBumper().onTrue(climber.climberUp());
     //operator.leftBumper().onFalse(climber.stop());
