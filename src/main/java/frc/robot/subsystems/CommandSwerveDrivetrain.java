@@ -446,7 +446,7 @@ public boolean atSetpoint(){
         m_poseEstimator.update(getPigeon2().getRotation2d().plus(addedRotation), getState().ModulePositions);
 
 
-    boolean useMegaTag2 = true; //set to false to use MegaTag1
+    boolean useMegaTag2 = false; //set to false to use MegaTag1
     boolean doRejectUpdate = false;
     if(useMegaTag2 == false)
     {
@@ -456,6 +456,7 @@ public boolean atSetpoint(){
       {
         if(mt1.rawFiducials[0].ambiguity > .7)
         {
+            
           doRejectUpdate = true;
         }
         if(mt1.rawFiducials[0].distToCamera > 3)
