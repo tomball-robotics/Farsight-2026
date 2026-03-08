@@ -12,4 +12,11 @@ public class T3Lib {
         }
     }
 
+    public static void applyConfig(TalonFX motor, TalonFXConfiguration config, int maxAttempts) {
+        boolean done = false;
+        for(int x = 0; !done && x < 5; x++) {
+            done = motor.getConfigurator().apply(config).value == 0;
+        }
+    } 
+
 }
