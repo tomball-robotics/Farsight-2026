@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
@@ -27,12 +23,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
 
+  // swerve
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-  //Subsystem declerations
+  // subsystems
   private Shooter shooter = new Shooter();
-  //private Climber climber = new Climber();
   private IntakePivot intakePivot = new IntakePivot();
   private Roller intakeRollers = new Roller(Constants.IntakeRollerConstants.INTAKE_ROLLERS_ID, Constants.IntakeRollerConstants.INTAKE_ROLLERS_SPEED);
   private Roller treadmill = new Roller(Constants.TreadmillConstants.TREADMILL_ID, Constants.TreadmillConstants.TREADMILL_SPEED);
@@ -43,14 +39,13 @@ public class RobotContainer {
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
 
 
-  //Controllers
+  // controllers
   private final CommandXboxController driver = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_ID);
   private final CommandXboxController operator = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_ID);
 
-  //Autonomous
+  // autonomous
   private final SendableChooser<Command> autoChooser;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     configureBindings();
 
@@ -58,11 +53,11 @@ public class RobotContainer {
     SmartDashboard.putData("Intake Up", intakePivot.bringUpIntake());
     SmartDashboard.putData("Intake Coast", intakePivot.coast());
 
-    SmartDashboard.putData("Shooter Down", shooter.setAngleAndVelocity(0, -40));
+    SmartDashboard.putData("Shooter Down", shooter.setVelocity(0, -40));
     SmartDashboard.putData("Shooter Coast",shooter.stop());
 
     NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()));
-    NamedCommands.registerCommand("Stop Shooter", shooter.setAngleAndVelocity(0, 0));
+    NamedCommands.registerCommand("Stop Shooter", shooter.setVelocity(0, 0));
     NamedCommands.registerCommand("Run Feeder", new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
 
     NamedCommands.registerCommand("Drop Intake", intakePivot.dropIntake());
@@ -113,17 +108,13 @@ public class RobotContainer {
     operator.povDown().onTrue(intakePivot.dropIntake());
     operator.povUp().onTrue(intakePivot.bringUpIntake());
 
-    // twerk intake with b
-    operator.b().onTrue(intakePivot.bringUpIntake());
-    operator.b().onFalse(intakePivot.dropIntake());
-
     // run shooter (manual)
-    operator.leftTrigger().whileTrue(shooter.setAngleAndVelocity(0, -45));
-    operator.leftTrigger().onFalse(shooter.setAngleAndVelocity(0, 0));
+    operator.leftTrigger().whileTrue(shooter.setVelocity(0, -45));
+    operator.leftTrigger().onFalse(shooter.setVelocity(0, 0));
 
     // run feeder & treadmill with right trigger
-    operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
-    operator.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
+    operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1), intakePivot.twerk()));
+    operator.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop(), intakePivot.dropIntake()));
 
     // reverse feeder with a
     operator.a().onTrue(indexer.run(-1));

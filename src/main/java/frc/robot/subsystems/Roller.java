@@ -29,7 +29,7 @@ public class Roller extends SubsystemBase {
     config.Slot0.kD = 0;
 
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.SupplyCurrentLimit = 50;
+    config.CurrentLimits.SupplyCurrentLimit = 30;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     T3Lib.applyConfig(motor, config);
