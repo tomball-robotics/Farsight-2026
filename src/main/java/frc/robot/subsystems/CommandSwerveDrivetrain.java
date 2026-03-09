@@ -537,14 +537,14 @@ public boolean atSetpoint(){
   public Command holdAllignmentToTrench(CommandXboxController joystick){
     return this.run(() -> { 
         double xInput = joystick.getLeftY();
-        double deadband = 0.1;
+        double deadband = 0.005;
         if (Math.abs(xInput) < deadband) {
             xInput = 0;
         }
     
         double targetY = pose.getY() > (Constants.SwervePositions.rightTrenchY + Constants.SwervePositions.leftTrenchY)/2 ? Constants.SwervePositions.rightTrenchY : Constants.SwervePositions.leftTrenchY;
         this.setControl(new SwerveRequest.FieldCentric()
-            .withRotationalDeadband(MaxAngularRate * 0.1).withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withRotationalDeadband(MaxAngularRate * 0.005).withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withVelocityX(xInput * MaxSpeed)
             .withVelocityY(yController.calculate(pose.getY(), targetY))
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate));} );
@@ -572,7 +572,7 @@ public boolean atSetpoint(){
 
         this.setControl(
             new SwerveRequest.FieldCentric()
-                .withDeadband(MaxSpeed * 0.1)
+                .withDeadband(MaxSpeed * 0.005)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
                 .withVelocityX(joystick.getLeftY() * MaxSpeed)
                 .withVelocityY(joystick.getLeftX() * MaxSpeed)
@@ -631,11 +631,6 @@ public boolean atSetpoint(){
         pose2DPublisher.set(pose);
 
         SmartDashboard.putBoolean("FieldAlive", true);
-
-        field.setRobotPose(pose);
-        SmartDashboard.putNumber("Robot X:", pose.getX());
-        SmartDashboard.putNumber("Robot Y:", pose.getY());
-        SmartDashboard.putNumber("Robot Yaw: ", pose.getRotation().getDegrees());
 
         SmartDashboard.putNumber("Target X: ", AutoBuilder.getCurrentPose().getX());
         SmartDashboard.putNumber("Target Y: ", AutoBuilder.getCurrentPose().getY());

@@ -90,25 +90,25 @@ public class RobotContainer {
             )
         );
     
-    driver.leftTrigger().onTrue(new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
-    driver.leftTrigger().onFalse(new ParallelCommandGroup(intakeRollers.stop(), treadmill.stop()));
+    operator.leftBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(-1)));
+    operator.leftBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop()));
 
     driver.rightTrigger().whileTrue(drivetrain.holdAllignmentToTrench(driver));
-
-    driver.leftBumper().onTrue(drivetrain.toggleSlowMode());
 
     driver.rightBumper().onTrue(drivetrain.applyRequest(() -> brake));
     driver.rightBumper().onFalse(drivetrain.getDefaultCommand());
 
-
-
-    //driver.x().onTrue(intakePivot.shake());
+    driver.start().onTrue(drivetrain.pointTowardsHub(driver));
+    driver.start().onFalse(drivetrain.getDefaultCommand());
 
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
-    driver.povDown().onTrue(intakePivot.dropIntake()); //Intake down
-    driver.povUp().onTrue(intakePivot.bringUpIntake());
+    operator.povDown().onTrue(intakePivot.dropIntake()); //Intake down
+    operator.povUp().onTrue(intakePivot.bringUpIntake());
 
-    operator.leftTrigger().whileTrue(new ParallelCommandGroup(drivetrain.pointTowardsHub(driver), shooter.aimForHub(() -> drivetrain.distanceToHub())));
+    operator.b().onTrue(intakePivot.bringUpIntake());
+    operator.b().onFalse(intakePivot.dropIntake());
+
+    operator.leftTrigger().whileTrue(shooter.setAngleAndVelocity(0, -45));
     operator.leftTrigger().onFalse(shooter.setAngleAndVelocity(0, 0));
 
     operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
