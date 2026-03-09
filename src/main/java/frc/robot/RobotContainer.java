@@ -89,41 +89,45 @@ public class RobotContainer {
                     .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate - 0.25 * operator.getRightX() * MaxAngularRate * 2)) // Drive counterclockwise with negative X (left)
             )
         );
+
+    /* --- driver controls --- */
     
-    operator.leftBumper().onTrue(new ParallelCommandGroup(intakeRollers.run(-1)));
-    operator.leftBumper().onFalse(new ParallelCommandGroup(intakeRollers.stop()));
+    // brake mode with x
+    driver.x().onTrue(drivetrain.applyRequest(() -> brake));
+    driver.x().onFalse(drivetrain.getDefaultCommand());
 
-    driver.rightTrigger().whileTrue(drivetrain.holdAllignmentToTrench(driver));
+    // hub alignment with left trigger
+    driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
+    driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
 
-    driver.rightBumper().onTrue(drivetrain.applyRequest(() -> brake));
-    driver.rightBumper().onFalse(drivetrain.getDefaultCommand());
+    // reset heading with pov right
+    driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
 
-    driver.start().onTrue(drivetrain.pointTowardsHub(driver));
-    driver.start().onFalse(drivetrain.getDefaultCommand());
+    /* --- operator controls ---  */
 
-    driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading())); //Reset field view, DONT USE OFTEN
-    operator.povDown().onTrue(intakePivot.dropIntake()); //Intake down
+    // run intake rollers with left bumper
+    operator.leftBumper().onTrue(intakeRollers.run(-1));
+    operator.leftBumper().onFalse(intakeRollers.stop());
+
+    // raise/drop intake with vertical dpad
+    operator.povDown().onTrue(intakePivot.dropIntake());
     operator.povUp().onTrue(intakePivot.bringUpIntake());
 
+    // twerk intake with b
     operator.b().onTrue(intakePivot.bringUpIntake());
     operator.b().onFalse(intakePivot.dropIntake());
 
+    // run shooter (manual)
     operator.leftTrigger().whileTrue(shooter.setAngleAndVelocity(0, -45));
     operator.leftTrigger().onFalse(shooter.setAngleAndVelocity(0, 0));
 
+    // run feeder & treadmill with right trigger
     operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
     operator.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
-    
-    //Climber Up
-    //operator.leftBumper().onTrue(climber.climberUp());
-    //operator.leftBumper().onFalse(climber.stop());
-    
-    //Climber Down
-    //operator.rightBumper().onTrue(climber.climberDown()); 
-    //operator.rightBumper().onFalse(climber.stop());
 
-    operator.a().onTrue(new ParallelCommandGroup(indexer.run(-1), treadmill.run(-1)));
-    operator.a().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop()));
+    // reverse feeder with a
+    operator.a().onTrue(indexer.run(-1));
+    operator.a().onFalse(indexer.stop());
 
   }
    
