@@ -3,7 +3,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.generated.TunerConstants;
+import frc.robot.lib.TunerConstants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Rollers;
