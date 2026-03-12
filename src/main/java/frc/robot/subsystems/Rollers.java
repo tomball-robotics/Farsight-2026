@@ -12,13 +12,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.T3Lib;
+import frc.robot.lib.T3Lib;
 
-public class Roller extends SubsystemBase {
+public class Rollers extends SubsystemBase {
   TalonFX motor;
   double speed;
   
-  public Roller(int motorID, double speed) {
+  public Rollers(int motorID, double speed) {
 
     this.speed = speed;
     motor = new TalonFX(motorID);

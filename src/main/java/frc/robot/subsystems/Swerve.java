@@ -43,11 +43,11 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.LimelightHelpers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.lib.LimelightHelpers;
 
-public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
+public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     private static final double kSimLoopPeriod = 0.005;
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -91,7 +91,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    public CommandSwerveDrivetrain(
+    public Swerve(
         SwerveDrivetrainConstants drivetrainConstants,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
@@ -99,7 +99,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         initialize();
     }
 
-    public CommandSwerveDrivetrain(
+    public Swerve(
         SwerveDrivetrainConstants drivetrainConstants,
         double odometryUpdateFrequency,
         SwerveModuleConstants<?, ?, ?>... modules
@@ -108,7 +108,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         initialize();
     }
 
-    public CommandSwerveDrivetrain(
+    public Swerve(
         SwerveDrivetrainConstants drivetrainConstants,
         double odometryUpdateFrequency,
         Matrix<N3, N1> odometryStandardDeviation,

@@ -4,9 +4,9 @@ import static edu.wpi.first.units.Units.*;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.IntakePivot;
-import frc.robot.subsystems.Roller;
+import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Rollers;
 import frc.robot.subsystems.Shooter;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -29,11 +29,11 @@ public class RobotContainer {
 
   // subsystems
   private Shooter shooter = new Shooter();
-  private IntakePivot intakePivot = new IntakePivot();
-  private Roller intakeRollers = new Roller(Constants.IntakeRollerConstants.INTAKE_ROLLERS_ID, Constants.IntakeRollerConstants.INTAKE_ROLLERS_SPEED);
-  private Roller treadmill = new Roller(Constants.TreadmillConstants.TREADMILL_ID, Constants.TreadmillConstants.TREADMILL_SPEED);
-  private Roller indexer = new Roller(Constants.IndexerConstants.INDEXER_ID, Constants.IndexerConstants.INDEXER_SPEED);
-  private CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  private Intake intakePivot = new Intake();
+  private Rollers intakeRollers = new Rollers(Constants.IntakeRollerConstants.INTAKE_ROLLERS_ID, Constants.IntakeRollerConstants.INTAKE_ROLLERS_SPEED);
+  private Rollers treadmill = new Rollers(Constants.TreadmillConstants.TREADMILL_ID, Constants.TreadmillConstants.TREADMILL_SPEED);
+  private Rollers indexer = new Rollers(Constants.IndexerConstants.INDEXER_ID, Constants.IndexerConstants.INDEXER_SPEED);
+  private Swerve drivetrain = TunerConstants.createDrivetrain();
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveDriveBrake brake = new SwerveDriveBrake();

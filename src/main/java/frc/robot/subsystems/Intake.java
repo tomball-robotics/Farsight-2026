@@ -17,14 +17,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.T3Lib;
+import frc.robot.lib.T3Lib;
 
-public class IntakePivot extends SubsystemBase {
+public class Intake extends SubsystemBase {
   
   TalonFX leader;
   TalonFX follower;
   
-  public IntakePivot() {
+  public Intake() {
     leader = new TalonFX(Constants.IntakePivotConstants.INTAKE_PIVOT_LEADER_ID);
     follower = new TalonFX(Constants.IntakePivotConstants.INTAKE_PIVOT_FOLLOWER_ID);
     TalonFXConfiguration config = new TalonFXConfiguration();
