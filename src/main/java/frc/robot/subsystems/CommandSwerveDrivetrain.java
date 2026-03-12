@@ -241,7 +241,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
             double dx = hubX - pose.getX();
             double dy = hubY - pose.getY();
-            Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx)).rotateBy(Rotation2d.k180deg);
+            Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx));
 
             SmartDashboard.putNumber("dx", dx);
             SmartDashboard.putNumber("dy", dy);
@@ -276,19 +276,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void updateOdometry() {
         m_poseEstimator.update(getPigeon2().getRotation2d().plus(addedRotation), getState().ModulePositions);
 
-        LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front");
-        if (mt1.tagCount == 0) return;
+        try {
+            LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front");
+            if (mt1.tagCount == 0) return;
 
-        boolean rejectUpdate = false;
-        if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-            if (mt1.rawFiducials[0].ambiguity > 0.7 || mt1.rawFiducials[0].distToCamera > 3) {
-                rejectUpdate = true;
+            boolean rejectUpdate = false;
+            if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
+                if (mt1.rawFiducials[0].ambiguity > 0.7 || mt1.rawFiducials[0].distToCamera > 3) {
+                    rejectUpdate = true;
+                }
             }
-        }
 
-        if (!rejectUpdate) {
-            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, 1e9));
-            m_poseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+            if (!rejectUpdate) {
+                m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
+                m_poseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+            }
+        } catch (Exception e) {
+            System.out.println("limelight not booted - mt2 null");
         }
     }
 

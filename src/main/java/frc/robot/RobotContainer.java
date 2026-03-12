@@ -58,13 +58,16 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()));
     NamedCommands.registerCommand("Stop Shooter", shooter.setVelocity(0, 0));
-    NamedCommands.registerCommand("Run Feeder", new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
+    NamedCommands.registerCommand("R  un Feeder", new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakePivot.bringUpIntake()));
 
     NamedCommands.registerCommand("Drop Intake", intakePivot.dropIntake());
     NamedCommands.registerCommand("Run Intake", new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
     NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
     NamedCommands.registerCommand("Raise Intake", intakePivot.bringUpIntake());
 
+    NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver));
+    NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
+  
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
@@ -109,12 +112,16 @@ public class RobotContainer {
     operator.povUp().onTrue(intakePivot.bringUpIntake());
 
     // run shooter (manual)
-    operator.leftTrigger().whileTrue(shooter.setVelocity(0, -45));
+    operator.leftTrigger().whileTrue(shooter.aimForHub(() -> drivetrain.distanceToHub()));
     operator.leftTrigger().onFalse(shooter.setVelocity(0, 0));
 
     // run feeder & treadmill with right trigger
-    operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1), intakePivot.twerk()));
-    operator.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop(), intakePivot.dropIntake()));
+    operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
+    operator.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
+
+    // twerk with b
+    operator.b().onTrue(intakePivot.bringUpIntake());
+    operator.b().onFalse(intakePivot.dropIntake());
 
     // reverse feeder with a
     operator.a().onTrue(indexer.run(-1));

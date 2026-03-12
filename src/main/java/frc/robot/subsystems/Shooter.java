@@ -91,7 +91,7 @@ public class Shooter extends SubsystemBase {
   public Command aimForHub(Supplier<Double> distance) {
     return run(() -> {
       DistanceSolution target = solveForPosition(distance.get());
-      velocityMotor.setControl(new VelocityVoltage(target.velocity).withSlot(0));
+      velocityMotor.setControl(new VelocityVoltage(target.velocity-4 ).withSlot(0));
       SmartDashboard.putNumber("Shooter/Setpoint", target.velocity);
     });
   }

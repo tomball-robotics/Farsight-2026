@@ -77,6 +77,7 @@ public class IntakePivot extends SubsystemBase {
   
   public Command twerk() {
     return run(() -> {
+      System.out.println("twerking");
       double pos = leader.getPosition().getValueAsDouble();
       if (pos >= Constants.IntakePivotConstants.UP_POSITION - 0.05) {
         leader.setControl(new PositionVoltage(Constants.IntakePivotConstants.DOWN_POSITION).withSlot(0));
