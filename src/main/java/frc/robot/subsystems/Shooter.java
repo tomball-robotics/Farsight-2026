@@ -1,49 +1,43 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Supplier;
-import static edu.wpi.first.units.Units.*;
-
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.T3Lib;
 
 public class Shooter extends SubsystemBase {
   
-  private final TalonFX velocityMotor = new TalonFX(Constants.ShooterConstants.SHOOTER_VELOCITY_MOTOR_ID);
+  private final TalonFX rightShooterMotor = new TalonFX(Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID);
+  private final TalonFX leftShooterMotor = new TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_MOTOR_ID);
   
   private final ArrayList<DistanceSolution> distanceSolutions;
     
-  private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
-  new SysIdRoutine.Config(
-  null, null, null,
-  state -> SignalLogger.writeString("state", state.toString())
-  ),
-  new SysIdRoutine.Mechanism(
-  output -> velocityMotor.setControl(new VoltageOut(output)),
-  log -> log.motor("TalonFX-" + velocityMotor.getDeviceID())
-  .voltage(Volts.of(velocityMotor.getMotorVoltage().getValueAsDouble()))
-  .angularVelocity(velocityMotor.getVelocity().getValue())
-  .angularPosition(velocityMotor.getPosition().getValue()),
-  this
-  )
-  );
+  // private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
+  //   new SysIdRoutine.Config(
+  //     null, null, null,
+  //     state -> SignalLogger.writeString("state", state.toString())
+  //   ),
+  //   new SysIdRoutine.Mechanism(
+  //     output -> velocityMotor.setControl(new VoltageOut(output)),
+  //     log -> log.motor("TalonFX-" + velocityMotor.getDeviceID())
+  //     .voltage(Volts.of(velocityMotor.getMotorVoltage().getValueAsDouble()))
+  //     .angularVelocity(velocityMotor.getVelocity().getValue())
+  //     .angularPosition(velocityMotor.getPosition().getValue()),
+  //     this
+  //   )
+  // );
   
   public Shooter() {
     
@@ -52,10 +46,12 @@ public class Shooter extends SubsystemBase {
     velocityConfig.Slot0.kV = 0.12664;
     velocityConfig.Slot0.kA = 0.017248;
     velocityConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    velocityConfig.CurrentLimits.SupplyCurrentLimit = 40;
     velocityConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     
-    T3Lib.applyConfig(velocityMotor, velocityConfig);
-    
+    T3Lib.applyConfig(rightShooterMotor, velocityConfig);
+    leftShooterMotor.setControl(new Follower(rightShooterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+
     distanceSolutions = new ArrayList<>();
     distanceSolutions.add(new DistanceSolution(1.89, 0, -30));
     distanceSolutions.add(new DistanceSolution(2.496, 0, -35));
@@ -64,11 +60,13 @@ public class Shooter extends SubsystemBase {
     Collections.sort(distanceSolutions, (d1, d2) -> Double.compare(d1.distance, d2.distance));
     
     SmartDashboard.putNumber("Shooter/Velocity Manual Set", 0);
+    SmartDashboard.putData("Shooter/Set Velocity to Dashboard", setVelocityToDashboard());
+    SmartDashboard.putData("Shooter/Stop", stop());
   }
   
   public Command setVelocity(double degrees, double velocity) {
     return runOnce(() -> {
-      velocityMotor.setControl(new VelocityVoltage(velocity).withSlot(0));
+      rightShooterMotor.setControl(new VelocityVoltage(velocity).withSlot(0));
       SmartDashboard.putNumber("Shooter/Setpoint", velocity);
     });
   }
@@ -76,14 +74,14 @@ public class Shooter extends SubsystemBase {
   public Command setVelocityToDashboard() {
     return runOnce(() -> {
       double velocity = SmartDashboard.getNumber("Shooter/Velocity Manual Set", 0);
-      velocityMotor.setControl(new VelocityVoltage(velocity).withSlot(0));
+      rightShooterMotor.setControl(new VelocityVoltage(velocity).withSlot(0));
       SmartDashboard.putNumber("Shooter/Setpoint", velocity);
     });
   }
   
   public Command stop() {
     return runOnce(() -> {
-      velocityMotor.setControl(new CoastOut());
+      rightShooterMotor.setControl(new CoastOut());
       SmartDashboard.putNumber("Shooter/Setpoint", 0);
     });
   }
@@ -91,18 +89,18 @@ public class Shooter extends SubsystemBase {
   public Command aimForHub(Supplier<Double> distance) {
     return run(() -> {
       DistanceSolution target = solveForPosition(distance.get());
-      velocityMotor.setControl(new VelocityVoltage(target.velocity-4 ).withSlot(0));
+      rightShooterMotor.setControl(new VelocityVoltage(target.velocity-4 ).withSlot(0));
       SmartDashboard.putNumber("Shooter/Setpoint", target.velocity);
     });
   }
   
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysIdRoutine.quasistatic(direction);
-  }
+  // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+  //   return sysIdRoutine.quasistatic(direction);
+  // }
   
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysIdRoutine.dynamic(direction);
-  }
+  // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+  //   return sysIdRoutine.dynamic(direction);
+  // }
   
   public DistanceSolution solveForPosition(double distance) {
     if (distance <= distanceSolutions.get(0).distance) return distanceSolutions.get(0);
@@ -127,8 +125,12 @@ public class Shooter extends SubsystemBase {
   
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Shooter/Velocity", velocityMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Shooter/Applied Current", velocityMotor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter/Right Velocity", rightShooterMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter/Right Applied Current", rightShooterMotor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter/Right Motor Voltage", rightShooterMotor.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter/Left Velocity", leftShooterMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter/Left Applied Current", leftShooterMotor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Shooter/Left Motor Voltage", leftShooterMotor.getMotorVoltage().getValueAsDouble());
   }
 }
 
