@@ -2,9 +2,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ControlConstants;
 import frc.robot.lib.TunerConstants;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Rollers;
 import frc.robot.subsystems.Shooter;
@@ -29,10 +30,9 @@ public class RobotContainer {
 
   // subsystems
   private Shooter shooter = new Shooter();
-  private Intake intakePivot = new Intake();
-  private Rollers intakeRollers = new Rollers(Constants.IntakeRollerConstants.INTAKE_ROLLERS_ID, Constants.IntakeRollerConstants.INTAKE_ROLLERS_SPEED);
-  private Rollers treadmill = new Rollers(Constants.TreadmillConstants.TREADMILL_ID, Constants.TreadmillConstants.TREADMILL_SPEED);
-  private Rollers indexer = new Rollers(Constants.IndexerConstants.INDEXER_ID, Constants.IndexerConstants.INDEXER_SPEED);
+  private Intake intake = new Intake();
+  private Rollers rollers = new Rollers();
+  private Feeder feeder = new Feeder();
   private Swerve drivetrain = TunerConstants.createDrivetrain();
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
@@ -40,8 +40,8 @@ public class RobotContainer {
 
 
   // controllers
-  private final CommandXboxController driver = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_ID);
-  private final CommandXboxController operator = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_ID);
+  private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);
+  private final CommandXboxController operator = new CommandXboxController(ControlConstants.OPERATOR_CONTROLLER_ID);
 
   // autonomous
   private final SendableChooser<Command> autoChooser;
@@ -49,21 +49,21 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    SmartDashboard.putData("Intake Down", intakePivot.dropIntake());
-    SmartDashboard.putData("Intake Up", intakePivot.bringUpIntake());
-    SmartDashboard.putData("Intake Coast", intakePivot.coast());
+    SmartDashboard.putData("Intake Down", intake.dropIntake());
+    SmartDashboard.putData("Intake Up", intake.raiseIntake());
+    SmartDashboard.putData("Intake Coast", intake.setPivotToCoast());
 
     SmartDashboard.putData("Shooter Down", shooter.setVelocity(0, -40));
     SmartDashboard.putData("Shooter Coast",shooter.stop());
 
     NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()));
     NamedCommands.registerCommand("Stop Shooter", shooter.setVelocity(0, 0));
-    NamedCommands.registerCommand("R  un Feeder", new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakePivot.bringUpIntake()));
+    NamedCommands.registerCommand("Run Feeder", new ParallelCommandGroup(feeder.run(), rollers.run(), intake.raiseIntake()));
 
-    NamedCommands.registerCommand("Drop Intake", intakePivot.dropIntake());
-    NamedCommands.registerCommand("Run Intake", new ParallelCommandGroup(intakeRollers.run(-1), treadmill.run(1)));
-    NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
-    NamedCommands.registerCommand("Raise Intake", intakePivot.bringUpIntake());
+    NamedCommands.registerCommand("Drop Intake", intake.dropIntake());
+    NamedCommands.registerCommand("Run Intake", new ParallelCommandGroup(rollers.run(), rollers.run()));
+    NamedCommands.registerCommand("Stop Intake", rollers.stop());
+    NamedCommands.registerCommand("Raise Intake", intake.raiseIntake());
 
     NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
@@ -104,28 +104,28 @@ public class RobotContainer {
     /* --- operator controls ---  */
 
     // run intake rollers with left bumper
-    operator.leftBumper().onTrue(intakeRollers.run(-1));
-    operator.leftBumper().onFalse(intakeRollers.stop());
+    operator.leftBumper().onTrue(intake.runRollers());
+    operator.leftBumper().onFalse(intake.stopRollers());
 
     // raise/drop intake with vertical dpad
-    operator.povDown().onTrue(intakePivot.dropIntake());
-    operator.povUp().onTrue(intakePivot.bringUpIntake());
+    operator.povDown().onTrue(intake.dropIntake());
+    operator.povUp().onTrue(intake.raiseIntake());
 
-    // run shooter (manual)
+    // run shooter
     operator.leftTrigger().whileTrue(shooter.aimForHub(() -> drivetrain.distanceToHub()));
     operator.leftTrigger().onFalse(shooter.setVelocity(0, 0));
 
-    // run feeder & treadmill with right trigger
-    operator.rightTrigger().onTrue(new ParallelCommandGroup(indexer.run(1), treadmill.run(1), intakeRollers.run(-1)));
-    operator.rightTrigger().onFalse(new ParallelCommandGroup(indexer.stop(), treadmill.stop(), intakeRollers.stop()));
+    // run feeder & rollers with right trigger
+    operator.rightTrigger().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run(), intake.runRollers()));
+    operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop(), intake.stopRollers()));
 
     // twerk with b
-    operator.b().onTrue(intakePivot.bringUpIntake());
-    operator.b().onFalse(intakePivot.dropIntake());
+    operator.b().onTrue(intake.raiseIntake());
+    operator.b().onFalse(intake.dropIntake());
 
     // reverse feeder with a
-    operator.a().onTrue(indexer.run(-1));
-    operator.a().onFalse(indexer.stop());
+    operator.a().onTrue(feeder.runReverse());
+    operator.a().onFalse(feeder.stop());
 
   }
    

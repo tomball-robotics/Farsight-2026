@@ -16,13 +16,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.T3Lib;
 
-public class Rollers extends SubsystemBase {
+public class Feeder extends SubsystemBase {
 
   TalonFX motor;
   
-  public Rollers() {
+  public Feeder() {
 
-    motor = new TalonFX(Constants.RollerConstants.ROLLER_MOTOR_ID);
+    motor = new TalonFX(Constants.FeederConstants.FEEDER_MOTOR_ID);
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -32,19 +32,19 @@ public class Rollers extends SubsystemBase {
     T3Lib.applyConfig(motor, config);
   }
 
-  public Command run() {
+  public Command run(){
     return runOnce(() -> {
-      motor.setControl(new VoltageOut(Constants.RollerConstants.ROLLER_SPEED));
+      motor.setControl(new VoltageOut(Constants.FeederConstants.FEEDER_SPEED));
     });
   }
 
-  public Command runReverse() {
+  public Command runReverse(){
     return runOnce(() -> {
-      motor.setControl(new VoltageOut(-Constants.RollerConstants.ROLLER_SPEED));
+      motor.setControl(new VoltageOut(-Constants.FeederConstants.FEEDER_SPEED));
     });
   }
 
-  public Command runWithVoltage(double voltage) {
+  public Command runWithVoltage(double voltage){
     return runOnce(() -> {
       motor.setControl(new VoltageOut(voltage));
     });
@@ -58,9 +58,9 @@ public class Rollers extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Rollers/Velocity", motor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Rollers/Applied Current", motor.getSupplyCurrent().getValueAsDouble());
-    SmartDashboard.putNumber("Rollers/Motor Voltage", motor.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putBoolean("Rollers/Running", motor.getSupplyCurrent().getValueAsDouble() > 0);
+    SmartDashboard.putNumber("Feeder/Velocity", motor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Feeder/Applied Current", motor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Feeder/Motor Voltage", motor.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putBoolean("Feeder/Running", motor.getSupplyCurrent().getValueAsDouble() > 0);
   }
 }
