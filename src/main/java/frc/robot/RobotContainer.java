@@ -27,6 +27,8 @@ public class RobotContainer {
   // swerve
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveDriveBrake brake = new SwerveDriveBrake();
 
   // subsystems
   private Shooter shooter = new Shooter();
@@ -34,10 +36,6 @@ public class RobotContainer {
   private Rollers rollers = new Rollers();
   private Feeder feeder = new Feeder();
   private Swerve drivetrain = TunerConstants.createDrivetrain();
-
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-  private final SwerveDriveBrake brake = new SwerveDriveBrake();
-
 
   // controllers
   private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);
@@ -73,7 +71,6 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-
     //driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
     //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
     //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
@@ -126,10 +123,10 @@ public class RobotContainer {
     // reverse feeder with a
     operator.a().onTrue(feeder.runReverse());
     operator.a().onFalse(feeder.stop());
-
   }
    
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
+
 }

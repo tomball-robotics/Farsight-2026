@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -21,7 +17,6 @@ public class Feeder extends SubsystemBase {
   TalonFX motor;
   
   public Feeder() {
-
     motor = new TalonFX(Constants.FeederConstants.FEEDER_MOTOR_ID);
     TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -63,4 +58,5 @@ public class Feeder extends SubsystemBase {
     SmartDashboard.putNumber("Feeder/Motor Voltage", motor.getMotorVoltage().getValueAsDouble());
     SmartDashboard.putBoolean("Feeder/Running", motor.getSupplyCurrent().getValueAsDouble() > 0);
   }
+
 }
