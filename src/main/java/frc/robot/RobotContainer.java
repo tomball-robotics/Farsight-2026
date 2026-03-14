@@ -2,14 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import frc.robot.Constants.ControlConstants;
-import frc.robot.lib.TunerConstants;
-import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Rollers;
-import frc.robot.subsystems.Shooter;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -20,6 +12,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.ControlConstants;
+import frc.robot.lib.TunerConstants;
+import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Rollers;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Swerve;
 
 
 public class RobotContainer {
@@ -47,23 +46,19 @@ public class RobotContainer {
   public RobotContainer() {
     configureBindings();
 
-    SmartDashboard.putData("Intake Down", intake.dropIntake());
-    SmartDashboard.putData("Intake Up", intake.raiseIntake());
-    SmartDashboard.putData("Intake Coast", intake.setPivotToCoast());
-
-    SmartDashboard.putData("Shooter Down", shooter.setVelocity(0, -40));
-    SmartDashboard.putData("Shooter Coast",shooter.stop());
-
-    NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()));
+    NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()).withTimeout(.1));
     NamedCommands.registerCommand("Stop Shooter", shooter.setVelocity(0, 0));
-    NamedCommands.registerCommand("Run Feeder", new ParallelCommandGroup(feeder.run(), rollers.run(), intake.raiseIntake()));
+
+    NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
+    NamedCommands.registerCommand("Stop Feed", new ParallelCommandGroup(feeder.stop(), rollers.stop()));
 
     NamedCommands.registerCommand("Drop Intake", intake.dropIntake());
-    NamedCommands.registerCommand("Run Intake", new ParallelCommandGroup(rollers.run(), rollers.run()));
-    NamedCommands.registerCommand("Stop Intake", rollers.stop());
-    NamedCommands.registerCommand("Raise Intake", intake.raiseIntake());
+    NamedCommands.registerCommand("Raise Intake", intake.raiseIntake().withTimeout(.1));
 
-    NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver));
+    NamedCommands.registerCommand("Run Intake", intake.runRollers().withTimeout(.1));
+    NamedCommands.registerCommand("Stop Intake", intake.stopRollers().withTimeout(.1));
+
+    NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver).withTimeout(1.5));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
   
     autoChooser = AutoBuilder.buildAutoChooser();

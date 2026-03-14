@@ -54,13 +54,13 @@ public class Intake extends SubsystemBase {
   }
   
   public Command dropIntake(){
-    return run(() -> {
-      if(getPivotPosition() < Constants.IntakeConstants.DOWN_POSITION/2){
-        requestPosition(Constants.IntakeConstants.DOWN_POSITION);
-      }else {
+    if(getPivotPosition() < Constants.IntakeConstants.DOWN_POSITION/2){
+      return requestPosition(Constants.IntakeConstants.DOWN_POSITION);
+    }else {
+      return runOnce(() -> {
         leader.setControl(new CoastOut());
-      }
-    });
+      });
+    }
   }
   
   public Command raiseIntake(){

@@ -19,6 +19,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -168,7 +169,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                     new PIDConstants(0.0, 0, 0)
                 ),
                 config,
-                () -> !(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
+                () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
                 this
             );
         } catch (Exception ex) {
@@ -251,8 +252,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             this.setControl(new SwerveRequest.FieldCentric()
                 .withDeadband(MaxSpeed * 0.005)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                .withVelocityX(joystick.getLeftY() * MaxSpeed)
-                .withVelocityY(joystick.getLeftX() * MaxSpeed)
+                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .05) * MaxSpeed)
+                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .05) * MaxSpeed)
                 .withRotationalRate(
                     yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())
                 )
@@ -317,11 +318,11 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
-                    allianceColor == Alliance.Red
+                    allianceColor == Alliance.Blue
                         ? kRedAlliancePerspectiveRotation
                         : kBlueAlliancePerspectiveRotation
                 );
-                m_hasAppliedOperatorPerspective = true;
+                m_hasAppliedOperatorPerspective = false;
             });
         }
 

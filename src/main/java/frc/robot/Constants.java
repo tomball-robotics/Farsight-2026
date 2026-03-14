@@ -35,15 +35,15 @@ public final class Constants {
   public static final class IntakeConstants{
     public static final int INTAKE_PIVOT_LEADER_ID = 2; 
     public static final int INTAKE_PIVOT_FOLLOWER_ID = 4; 
-    public static final double DOWN_POSITION = 3.31640625;
+    public static final double DOWN_POSITION = 4.220215;
     public static final double UP_POSITION = 0;
     public static final int SUPPLY_CURRENT_LIMIT = 40;
     public static final int INTAKE_ROLLERS_ID = 1; 
-    public static final double INTAKE_ROLLERS_SPEED = 6.7;
+    public static final double INTAKE_ROLLERS_SPEED = -6.7;
   } 
-
+ 
   public static final class RollerConstants {
-    public static final int ROLLER_MOTOR_ID = 8; 
+    public static final int ROLLER_MOTOR_ID = 6; 
     public static final double ROLLER_SPEED = 6.7;
   }
 

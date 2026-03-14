@@ -27,7 +27,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "Drop Intake"
+                        "name": "g"
                       }
                     },
                     {
@@ -61,6 +61,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Aim"
+          }
+        },
+        {
           "type": "wait",
           "data": {
             "waitTime": 1.0
@@ -69,7 +75,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Run Feeder"
+            "name": "Feed"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Default"
           }
         }
       ]
