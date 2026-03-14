@@ -81,6 +81,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         .getStructTopic("Pose3D", Pose3d.struct).publish();
     private final StructPublisher<Pose2d> pose2DPublisher = NetworkTableInstance.getDefault()
         .getStructTopic("Pose2D", Pose2d.struct).publish();
+    private final StructPublisher<ChassisSpeeds> chassisSpeedsPublisher = NetworkTableInstance.getDefault()
+        .getStructTopic("ChassisSpeeds", ChassisSpeeds.struct).publish();
 
     public SwerveDrivePoseEstimator m_poseEstimator;
     public boolean slowModeEnabled = false;
@@ -328,12 +330,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
         pose3DPublisher.set(new Pose3d(pose));
         pose2DPublisher.set(pose);
+        chassisSpeedsPublisher.set(getState().Speeds);
 
-        SmartDashboard.putBoolean("FieldAlive", true);
-        SmartDashboard.putNumber("Target X", AutoBuilder.getCurrentPose().getX());
-        SmartDashboard.putNumber("Target Y", AutoBuilder.getCurrentPose().getY());
-        SmartDashboard.putBoolean("Pointing Hub", yawController.atSetpoint());
-        SmartDashboard.putNumber("Distance to Hub", distanceToHub());
+        SmartDashboard.putNumber("Odometry/Target X", AutoBuilder.getCurrentPose().getX());
+        SmartDashboard.putNumber("Odometry/Target Y", AutoBuilder.getCurrentPose().getY());
+        SmartDashboard.putBoolean("Odometry/Pointing Hub", yawController.atSetpoint());
+        SmartDashboard.putNumber("Odometry/Distance to Hub", distanceToHub());
+        SmartDashboard.putBoolean("Swerve/Slow Mode", slowModeEnabled);
     }
 
     private void startSimThread() {
