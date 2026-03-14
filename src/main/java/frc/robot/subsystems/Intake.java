@@ -9,9 +9,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.lib.T3Lib;
 
@@ -54,22 +56,24 @@ public class Intake extends SubsystemBase {
   }
   
   public Command dropIntake(){
-    if(getPivotPosition() < Constants.IntakeConstants.DOWN_POSITION/2){
-      return requestPosition(Constants.IntakeConstants.DOWN_POSITION);
-    }else {
-      return runOnce(() -> {
-        leader.setControl(new CoastOut());
-      });
-    }
+    return 
+      requestPosition(Constants.IntakeConstants.DOWN_POSITION)
+      .andThen(new WaitCommand(.5))
+      .andThen(setPivotToCoast());
   }
   
   public Command raiseIntake(){
     return requestPosition(Constants.IntakeConstants.UP_POSITION);
   }
+
+  public boolean intakeDown() {
+    return leader.getPosition().getValueAsDouble() > Constants.IntakeConstants.DOWN_POSITION/2;
+  }
   
   public Command setPivotToCoast(){
     return runOnce(() -> {
       leader.setControl(new CoastOut());
+      DriverStation.reportWarning("Intake Pivot set to Coast", false);
     });
   }
 
@@ -105,7 +109,7 @@ public class Intake extends SubsystemBase {
   
   @Override
   public void periodic() {
-    SmartDashboard.putBoolean("Intake/Pivot/Extended", Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakeConstants.DOWN_POSITION) < 0.02);
+    SmartDashboard.putBoolean("Intake/Pivot/Extended", intakeDown());
     SmartDashboard.putNumber("Intake/Pivot/Position Leader", leader.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("Intake/Pivot/Applied Output", leader.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Intake/Pivot/Position Follower", follower.getPosition().getValueAsDouble());
