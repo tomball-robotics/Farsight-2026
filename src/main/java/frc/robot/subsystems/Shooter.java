@@ -45,10 +45,10 @@ public class Shooter extends SubsystemBase {
     rightMotor.setControl(coastRequest);
     
     distanceSolutions = new ArrayList<>();
-    distanceSolutions.add(new DistanceSolution(1.89,  0, -30));
-    distanceSolutions.add(new DistanceSolution(2.496, 0, -35));
-    distanceSolutions.add(new DistanceSolution(3.48,  0, -40));
-    distanceSolutions.add(new DistanceSolution(4.78,  0, -41.61));
+    distanceSolutions.add(new DistanceSolution(1.89,  -30));
+    distanceSolutions.add(new DistanceSolution(2.496, -35));
+    distanceSolutions.add(new DistanceSolution(3.48,  -40));
+    distanceSolutions.add(new DistanceSolution(4.78,  -41.61));
     Collections.sort(distanceSolutions, (d1, d2) -> Double.compare(d1.distance, d2.distance));
     
     SmartDashboard.putNumber("Shooter/Velocity Manual Set", 0);
@@ -92,9 +92,8 @@ public class Shooter extends SubsystemBase {
       DistanceSolution lo = distanceSolutions.get(i);
       DistanceSolution hi = distanceSolutions.get(i + 1);
       if (distance >= lo.distance && distance <= hi.distance) {
-        double angle    = interpolate(lo.distance, hi.distance, lo.angle,    hi.angle,    distance);
         double velocity = interpolate(lo.distance, hi.distance, lo.velocity, hi.velocity, distance);
-        return new DistanceSolution(distance, angle, velocity);
+        return new DistanceSolution(distance, velocity);
       }
     }
     return distanceSolutions.get(distanceSolutions.size() - 1);
@@ -116,12 +115,10 @@ public class Shooter extends SubsystemBase {
 
 class DistanceSolution {
   final double distance;
-  final double angle;
   final double velocity;
   
-  public DistanceSolution(double distance, double angle, double velocity) {
+  public DistanceSolution(double distance, double velocity) {
     this.distance = distance;
-    this.angle = angle;
     this.velocity = velocity;
   }
 }

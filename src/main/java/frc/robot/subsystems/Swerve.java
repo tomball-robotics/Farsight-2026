@@ -165,8 +165,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                     m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
                 ),
                 new PPHolonomicDriveController(
-                    new PIDConstants(0.1, 0, 0),
-                    new PIDConstants(0.0, 0, 0)
+                    new PIDConstants(5, 0, 0),
+                    new PIDConstants(5, 0, 0)
                 ),
                 config,
                 () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
@@ -240,7 +240,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             );
         });
     }
-    
+
     public Command pointTowardsHub(CommandXboxController joystick) {
         return this.run(() -> {
             System.out.println("Pointing towards hub");
@@ -264,6 +264,31 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())
             )
             );
+        });
+    }
+    
+    public Command autoPointTowardsHub() {
+        return this.run(() -> {
+            System.out.println("Pointing towards hub");
+            boolean isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
+            double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+            double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
+            
+            double dx = hubX - pose.getX();
+            double dy = hubY - pose.getY();
+            Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx));
+            
+            SmartDashboard.putNumber("dx", dx);
+            SmartDashboard.putNumber("dy", dy);
+            
+            this.setControl(new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * 0.005)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withVelocityX(9)
+            .withVelocityY(0)
+            .withRotationalRate(
+            yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())
+            ));
         }).until(() -> {
             boolean isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
             double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;

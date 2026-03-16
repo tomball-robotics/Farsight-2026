@@ -60,7 +60,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Run Intake", intakeRollers.run());
     NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
     
-    NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver).withTimeout(1.5));
+    NamedCommands.registerCommand("Aim", drivetrain.autoPointTowardsHub().withTimeout(1.5));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
     
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -123,8 +123,7 @@ public class RobotContainer {
   
 }
 
-    //driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
-    //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
-    //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
-    //driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
-    
+//driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+//driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+//driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+//driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));

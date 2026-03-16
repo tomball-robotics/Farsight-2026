@@ -130,9 +130,7 @@ public class T3Lib {
         applyConfig(motor, config, DEFAULT_CONFIG_ATTEMPTS);
         return motor;
     }
-    
-    // ---- Private Helpers ----
-    
+        
     private static TalonFXConfiguration buildBaseConfig(NeutralModeValue neutralMode, boolean inverted, double supplyCurrentLimit, double statorCurrentLimit) {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = neutralMode;

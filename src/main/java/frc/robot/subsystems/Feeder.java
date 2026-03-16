@@ -25,8 +25,6 @@ public class Feeder extends SubsystemBase {
       NeutralModeValue.Coast,
       false
     );
-    
-    motor.setControl(coastRequest);
   }
   
   public Command run() {
