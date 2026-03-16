@@ -60,7 +60,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Run Intake", intakeRollers.run());
     NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
     
-    NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver));
+    NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver).withTimeout(1.5));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
     
     autoChooser = AutoBuilder.buildAutoChooser();

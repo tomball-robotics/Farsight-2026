@@ -30,11 +30,11 @@ public class Feeder extends SubsystemBase {
   }
   
   public Command run() {
-    return this.run(() -> motor.setControl(runRequest));
+    return runOnce(() -> motor.setControl(runRequest));
   }
   
   public Command runReverse() {
-    return this.run(() -> motor.setControl(reverseRunRequest));
+    return runOnce(() -> motor.setControl(reverseRunRequest));
   }
   
   public Command stop() {

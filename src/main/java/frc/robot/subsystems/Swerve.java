@@ -243,6 +243,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     
     public Command pointTowardsHub(CommandXboxController joystick) {
         return this.run(() -> {
+            System.out.println("Pointing towards hub");
             boolean isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
             double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
             double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
@@ -263,6 +264,16 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())
             )
             );
+        }).until(() -> {
+            boolean isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
+            double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+            double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
+            
+            Rotation2d targetAngle = new Rotation2d(Math.atan2(hubY - pose.getY(), hubX - pose.getX()));
+            double errorRadians = targetAngle.minus(pose.getRotation()).getRadians();
+            double errorDegrees = Math.abs(Math.toDegrees(errorRadians));
+            System.out.println("Yaw error: " + errorDegrees);
+            return errorDegrees < 10;
         });
     }
     
