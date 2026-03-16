@@ -158,23 +158,28 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-            () -> pose,
-            this::resetPose,
-            () -> getState().Speeds,
-            (speeds, feedforwards) -> setControl(
-            m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
-            ),
-            new PPHolonomicDriveController(
-            new PIDConstants(0.1, 0, 0),
-            new PIDConstants(0.0, 0, 0)
-            ),
-            config,
-            () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
-            this
+                () -> pose,
+                this::resetPose,
+                () -> getState().Speeds,
+                (speeds, feedforwards) -> setControl(
+                    m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
+                ),
+                new PPHolonomicDriveController(
+                    new PIDConstants(0.1, 0, 0),
+                    new PIDConstants(0.0, 0, 0)
+                ),
+                config,
+                () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
+                this
             );
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
+    }
+
+    @Override
+    public void resetPose(Pose2d pose) {
+        m_poseEstimator.resetPosition(getPigeon2().getRotation2d().plus(addedRotation), getState().ModulePositions, pose);
     }
     
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
