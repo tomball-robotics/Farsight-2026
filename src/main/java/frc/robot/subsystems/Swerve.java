@@ -94,6 +94,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
     
+    // Limelight names for multi-camera vision
+    private static final String[] LIMELIGHT_NAMES = {
+        "limelight-front",
+        "limelight-left",
+        "limelight-right"
+    };
+    
     public Swerve(
     SwerveDrivetrainConstants drivetrainConstants,
     SwerveModuleConstants<?, ?, ?>... modules
@@ -126,6 +133,14 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        m_poseEstimator = new SwerveDrivePoseEstimator(
+            getKinematics(),
+            getState().Pose.getRotation(),
+            getState().ModulePositions,
+            new Pose2d(),
+            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
+        );
         configureAutoBuilder();
         setUpPIDs();
     }
@@ -140,18 +155,6 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         xController.setTolerance(0.05);
         yController.setTolerance(0.05);
         yawController.setTolerance(0.005);
-        
-        m_poseEstimator = new SwerveDrivePoseEstimator(
-        getKinematics(),
-        getState().Pose.getRotation(),
-        getState().ModulePositions,
-        new Pose2d(),
-        VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-        VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
-        );
-        
-        LimelightHelpers.SetIMUMode("limelight-front", 1);
-        LimelightHelpers.SetIMUMode("limelight-back", 1);
     }
     
     private void configureAutoBuilder() {
@@ -320,25 +323,48 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public void updateOdometry() {
         m_poseEstimator.update(getPigeon2().getRotation2d().plus(addedRotation), getState().ModulePositions);
         
-        try {
-            LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front");
-            if (mt1.tagCount == 0) return;
-            
-            boolean rejectUpdate = false;
-            if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-                if (mt1.rawFiducials[0].ambiguity > 0.7 || mt1.rawFiducials[0].distToCamera > 3) {
-                    rejectUpdate = true;
+        updateVisionMeasurements();
+    }
+    
+    private void updateVisionMeasurements() {
+        boolean anyLimelightBooted = false;
+        
+        for (String limelightName : LIMELIGHT_NAMES) {
+            try {
+                LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+                
+                // no tags detected
+                if (poseEstimate.tagCount == 0) {
+                    SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", false);
+                    continue;
                 }
+                
+                boolean rejectUpdate = false;
+                
+                // filtering for single-tag measurements
+                if (poseEstimate.tagCount == 1 && poseEstimate.rawFiducials.length == 1) {
+                    if (poseEstimate.rawFiducials[0].ambiguity > 0.7 || poseEstimate.rawFiducials[0].distToCamera > 3) {
+                        rejectUpdate = true;
+                    }
+                }
+                
+                if (!rejectUpdate) {
+                    m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
+                    m_poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+                }
+                
+                anyLimelightBooted = true;
+                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Connected", true);
+                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", true);
+                SmartDashboard.putNumber("Limelight/" + limelightName + "/Tag Count", poseEstimate.tagCount);
+                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Update Rejected", rejectUpdate);
+            } catch (Exception e) {
+                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Connected", false);
+                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", false);
             }
-            
-            if (!rejectUpdate) {
-                m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
-                m_poseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
-            }
-            SmartDashboard.putBoolean("Limelight Booted", true);
-        } catch (Exception e) {
-            SmartDashboard.putBoolean("Limelight Booted", false);
         }
+        
+        SmartDashboard.putBoolean("Limelight Booted", anyLimelightBooted);
     }
     
     @Override

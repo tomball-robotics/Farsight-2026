@@ -12,41 +12,45 @@ import frc.robot.Constants;
 import frc.robot.lib.T3Lib;
 
 public class IntakeRollers extends SubsystemBase {
-
+  
   private final TalonFX motor;
-
+  
   private final VoltageOut runRequest = new VoltageOut(Constants.IntakeConstants.INTAKE_ROLLERS_SPEED);
   private final VoltageOut reverseRunRequest = new VoltageOut(-Constants.IntakeConstants.INTAKE_ROLLERS_SPEED);
   private final CoastOut coastRequest = new CoastOut();
-
+  
   public IntakeRollers() {
     motor = T3Lib.createTalonFX(
-      Constants.IntakeConstants.INTAKE_ROLLERS_ID,
+      Constants.IntakeConstants.INTAKE_ROLLER_ID,
       NeutralModeValue.Coast,
       false
     );
 
-    motor.setControl(coastRequest);
+    SmartDashboard.putData("Commands/Run Intake Rollers", run());
+    SmartDashboard.putData("Commands/Run Reverse Intake Rollers", runReverse());
+    SmartDashboard.putData("Commands/Stop Intake Rollers", stop());
   }
-
+  
   public Command run() {
     return runOnce(() -> motor.setControl(runRequest));
   }
-
+  
   public Command runReverse() {
     return runOnce(() -> motor.setControl(reverseRunRequest));
   }
-
+  
   public Command stop() {
     return runOnce(() -> motor.setControl(coastRequest));
   }
-
+  
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Intake/Rollers/Velocity", motor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Intake/Rollers/Supply Current", motor.getSupplyCurrent().getValueAsDouble());
-    SmartDashboard.putNumber("Intake/Rollers/Stator Current", motor.getStatorCurrent().getValueAsDouble());
-    SmartDashboard.putNumber("Intake/Rollers/Motor Voltage", motor.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putBoolean("Intake/Rollers/Running", Math.abs(motor.getVelocity().getValueAsDouble()) > 0.5);
+    double velocity = motor.getVelocity().getValueAsDouble();
+
+    SmartDashboard.putNumber("Intake Rollers/Velocity", velocity);
+    SmartDashboard.putNumber("Intake Rollers/Supply Current", motor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Intake Rollers/Stator Current", motor.getStatorCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Intake Rollers/Voltage", motor.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putBoolean("Intake Rollers/Running", velocity > 0.5);
   }
 }

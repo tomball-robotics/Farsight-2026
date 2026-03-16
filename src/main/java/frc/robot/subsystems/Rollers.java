@@ -12,13 +12,13 @@ import frc.robot.Constants;
 import frc.robot.lib.T3Lib;
 
 public class Rollers extends SubsystemBase {
-
+  
   private final TalonFX motor;
-
+  
   private final VoltageOut runRequest = new VoltageOut(Constants.RollerConstants.ROLLER_SPEED);
   private final VoltageOut reverseRunRequest = new VoltageOut(-Constants.RollerConstants.ROLLER_SPEED);
   private final CoastOut coastRequest = new CoastOut();
-
+  
   public Rollers() {
     motor = T3Lib.createTalonFX(
       Constants.RollerConstants.ROLLER_MOTOR_ID,
@@ -26,27 +26,31 @@ public class Rollers extends SubsystemBase {
       false
     );
 
-    motor.setControl(coastRequest);
+    SmartDashboard.putData("Commands/Run Rollers", run());
+    SmartDashboard.putData("Commands/Run Reverse Rollers", runReverse());
+    SmartDashboard.putData("Commands/Stop Rollers", stop());
   }
-
+  
   public Command run() {
     return runOnce(() -> motor.setControl(runRequest));
   }
-
+  
   public Command runReverse() {
     return runOnce(() -> motor.setControl(reverseRunRequest));
   }
-
+  
   public Command stop() {
     return runOnce(() -> motor.setControl(coastRequest));
   }
-
+  
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Rollers/Velocity", motor.getVelocity().getValueAsDouble());
+    double velocity = motor.getVelocity().getValueAsDouble();
+
+    SmartDashboard.putNumber("Rollers/Velocity", velocity);
     SmartDashboard.putNumber("Rollers/Supply Current", motor.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Rollers/Stator Current", motor.getStatorCurrent().getValueAsDouble());
-    SmartDashboard.putNumber("Rollers/Motor Voltage", motor.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putBoolean("Rollers/Running", Math.abs(motor.getVelocity().getValueAsDouble()) > 0.5);
+    SmartDashboard.putNumber("Rollers/Voltage", motor.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putBoolean("Rollers/Running", velocity > 0.5);
   }
 }

@@ -37,11 +37,18 @@ public class IntakePivot extends SubsystemBase {
 
     follower.setControl(new Follower(Constants.IntakeConstants.INTAKE_PIVOT_LEADER_ID, MotorAlignmentValue.Opposed));
     leader.setControl(positionRequest.withPosition(Constants.IntakeConstants.UP_POSITION));
+
+    SmartDashboard.putData("Commands/Drop Intake", dropIntake());
+    SmartDashboard.putData("Commands/Raise Intake", raiseIntake());
+    SmartDashboard.putData("Commands/Set Pivot to Coast", setPivotToCoast());
+    SmartDashboard.putNumber("Intake/Pivot/Setpoint", 0);
   }
 
   public Command requestPosition(double position) {
-    return this.run(() -> leader.setControl(positionRequest.withPosition(position)))
-      .until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.5);
+    return this.run(() -> {
+      leader.setControl(positionRequest.withPosition(position));
+      SmartDashboard.putNumber("Intake/Pivot/Setpoint", position);
+    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.5);
   }
 
   public Command dropIntake() {
@@ -67,7 +74,8 @@ public class IntakePivot extends SubsystemBase {
     SmartDashboard.putBoolean("Intake/Pivot/Coast", leader.getAppliedControl() instanceof CoastOut);
     SmartDashboard.putNumber("Intake/Pivot/Position Leader", leader.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("Intake/Pivot/Position Follower", follower.getPosition().getValueAsDouble());
-    SmartDashboard.putNumber("Intake/Pivot/Supply Current", leader.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Intake/Pivot/Stator Current", leader.getStatorCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Intake/Pivot/Supply Current", leader.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Intake/Pivot/Voltage", leader.getMotorVoltage().getValueAsDouble());
   }
 }

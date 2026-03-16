@@ -51,6 +51,9 @@ public class Shooter extends SubsystemBase {
     distanceSolutions.add(new DistanceSolution(4.78,  -41.61));
     Collections.sort(distanceSolutions, (d1, d2) -> Double.compare(d1.distance, d2.distance));
     
+    SmartDashboard.putData("Commands/Set Shooter Velocity to Dashboard", setVelocityToDashboard());
+    SmartDashboard.putData("Commands/Set Shooter Velocity to Hub", setToHubVelocity(() -> SmartDashboard.getNumber("Odometry/Distance to Hub", 0)));
+    SmartDashboard.putData("Commands/Stop Shooter", stop());
     SmartDashboard.putNumber("Shooter/Velocity Manual Set", 0);
   }
   

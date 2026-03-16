@@ -35,7 +35,7 @@ public final class Constants {
   public static final class IntakeConstants{
     public static final int INTAKE_PIVOT_LEADER_ID = 2; 
     public static final int INTAKE_PIVOT_FOLLOWER_ID = 4; 
-    public static final int INTAKE_ROLLERS_ID = 1; 
+    public static final int INTAKE_ROLLER_ID = 1; 
 
     public static final double DOWN_POSITION = 4.220215;
     public static final double UP_POSITION = 0;

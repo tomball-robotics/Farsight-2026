@@ -25,6 +25,10 @@ public class Feeder extends SubsystemBase {
       NeutralModeValue.Coast,
       false
     );
+
+    SmartDashboard.putData("Commands/Run Feeder", run());
+    SmartDashboard.putData("Commands/Run Reverse Feeder", runReverse());
+    SmartDashboard.putData("Commands/Stop Feeder", stop());
   }
   
   public Command run() {
@@ -41,11 +45,12 @@ public class Feeder extends SubsystemBase {
   
   @Override
   public void periodic() {
-    double supplyCurrent = motor.getSupplyCurrent().getValueAsDouble();
-    SmartDashboard.putNumber("Feeder/Velocity", motor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Feeder/Supply Current", supplyCurrent);
+    double velocity = motor.getVelocity().getValueAsDouble();
+
+    SmartDashboard.putNumber("Feeder/Velocity", velocity);
+    SmartDashboard.putNumber("Feeder/Supply Current", motor.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Feeder/Stator Current", motor.getStatorCurrent().getValueAsDouble());
-    SmartDashboard.putNumber("Feeder/Motor Voltage", motor.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putBoolean("Feeder/Running", motor.getVelocity().getValueAsDouble() > 0.5);
+    SmartDashboard.putNumber("Feeder/Voltage", motor.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putBoolean("Feeder/Running", velocity > 0.5);
   }
 }
