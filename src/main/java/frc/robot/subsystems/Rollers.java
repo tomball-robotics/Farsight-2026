@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -14,49 +13,40 @@ import frc.robot.lib.T3Lib;
 
 public class Rollers extends SubsystemBase {
 
-  TalonFX motor;
-  
+  private final TalonFX motor;
+
+  private final VoltageOut runRequest = new VoltageOut(Constants.RollerConstants.ROLLER_SPEED);
+  private final VoltageOut reverseRunRequest = new VoltageOut(-Constants.RollerConstants.ROLLER_SPEED);
+  private final CoastOut coastRequest = new CoastOut();
+
   public Rollers() {
+    motor = T3Lib.createTalonFX(
+      Constants.RollerConstants.ROLLER_MOTOR_ID,
+      NeutralModeValue.Coast,
+      false
+    );
 
-    motor = new TalonFX(Constants.RollerConstants.ROLLER_MOTOR_ID);
-    TalonFXConfiguration config = new TalonFXConfiguration();
-
-    config.CurrentLimits.SupplyCurrentLimitEnable = true;
-    config.CurrentLimits.SupplyCurrentLimit = 30;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-    T3Lib.applyConfig(motor, config);
+    motor.setControl(coastRequest);
   }
 
   public Command run() {
-    return runOnce(() -> {
-      motor.setControl(new VoltageOut(Constants.RollerConstants.ROLLER_SPEED));
-    });
+    return this.run(() -> motor.setControl(runRequest));
   }
 
   public Command runReverse() {
-    return runOnce(() -> {
-      motor.setControl(new VoltageOut(-Constants.RollerConstants.ROLLER_SPEED));
-    });
+    return this.run(() -> motor.setControl(reverseRunRequest));
   }
 
-  public Command runWithVoltage(double voltage) {
-    return runOnce(() -> {
-      motor.setControl(new VoltageOut(voltage));
-    });
-  }
-
-  public Command stop(){
-    return runOnce(() -> {
-      motor.setControl(new NeutralOut());
-    });
+  public Command stop() {
+    return runOnce(() -> motor.setControl(coastRequest));
   }
 
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Rollers/Velocity", motor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Rollers/Applied Current", motor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Rollers/Supply Current", motor.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Rollers/Stator Current", motor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Rollers/Motor Voltage", motor.getMotorVoltage().getValueAsDouble());
-    SmartDashboard.putBoolean("Rollers/Running", motor.getSupplyCurrent().getValueAsDouble() > 0);
+    SmartDashboard.putBoolean("Rollers/Running", Math.abs(motor.getVelocity().getValueAsDouble()) > 0.5);
   }
 }

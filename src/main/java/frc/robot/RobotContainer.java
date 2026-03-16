@@ -15,113 +15,116 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControlConstants;
 import frc.robot.lib.TunerConstants;
 import frc.robot.subsystems.Feeder;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakePivot;
+import frc.robot.subsystems.IntakeRollers;
 import frc.robot.subsystems.Rollers;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 
 
 public class RobotContainer {
-
+  
   // swerve
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
-
+  
   // subsystems
   private Shooter shooter = new Shooter();
-  private Intake intake = new Intake();
+  private IntakePivot intakePivot = new IntakePivot();
+  private IntakeRollers intakeRollers = new IntakeRollers();
   private Rollers rollers = new Rollers();
   private Feeder feeder = new Feeder();
   private Swerve drivetrain = TunerConstants.createDrivetrain();
-
+  
   // controllers
   private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);
   private final CommandXboxController operator = new CommandXboxController(ControlConstants.OPERATOR_CONTROLLER_ID);
-
+  
   // autonomous
   private final SendableChooser<Command> autoChooser;
-
+  
   public RobotContainer() {
     configureBindings();
-
-    NamedCommands.registerCommand("Run Shooter", shooter.aimForHub(() -> drivetrain.distanceToHub()).withTimeout(.1));
-    NamedCommands.registerCommand("Stop Shooter", shooter.setVelocity(0, 0));
-
+    
+    NamedCommands.registerCommand("Run Shooter", shooter.setToHubVelocity(() -> drivetrain.distanceToHub()));
+    NamedCommands.registerCommand("Stop Shooter", shooter.stop());
+    
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
     NamedCommands.registerCommand("Stop Feed", new ParallelCommandGroup(feeder.stop(), rollers.stop()));
-
-    NamedCommands.registerCommand("Drop Intake", intake.dropIntake());
-    NamedCommands.registerCommand("Raise Intake", intake.raiseIntake().withTimeout(.1));
-
-    NamedCommands.registerCommand("Run Intake", intake.runRollers().withTimeout(.1));
-    NamedCommands.registerCommand("Stop Intake", intake.stopRollers().withTimeout(.1));
-
-    NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver).withTimeout(1.5));
+    
+    NamedCommands.registerCommand("Drop Intake", intakePivot.dropIntake());
+    NamedCommands.registerCommand("Raise Intake", intakePivot.raiseIntake());
+    
+    NamedCommands.registerCommand("Run Intake", intakeRollers.run());
+    NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
+    
+    NamedCommands.registerCommand("Aim", drivetrain.pointTowardsHub(driver));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
-  
+    
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
-
+  
   private void configureBindings() {
-    //driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
-    //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
-    //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
-    //driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
-
     //Swerve Controls
     drivetrain.setDefaultCommand(
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftY() * MaxSpeed + 0.25 * operator.getLeftY() * MaxSpeed)) // Drive forward with negative Y (forward)
-                    .withVelocityY((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftX() * MaxSpeed + 0.25 * operator.getLeftX() * MaxSpeed)) // Drive left with negative X (left)
-                    .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate - 0.25 * operator.getRightX() * MaxAngularRate * 2)) // Drive counterclockwise with negative X (left)
-            )
-        );
-
+      drivetrain.applyRequest(() ->
+        drive.withVelocityX((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftY() * MaxSpeed + 0.25 * operator.getLeftY() * MaxSpeed)) // Drive forward with negative Y (forward)
+        .withVelocityY((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftX() * MaxSpeed + 0.25 * operator.getLeftX() * MaxSpeed)) // Drive left with negative X (left)
+        .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate - 0.25 * operator.getRightX() * MaxAngularRate * 2)) // Drive counterclockwise with negative X (left)
+      )
+    );
+    
     /* --- driver controls --- */
     
     // brake mode with x
     driver.x().onTrue(drivetrain.applyRequest(() -> brake));
     driver.x().onFalse(drivetrain.getDefaultCommand());
-
+    
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
     driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
-
+    
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
-
+    
     /* --- operator controls ---  */
-
+    
     // run intake rollers with left bumper
-    operator.leftBumper().onTrue(intake.runRollers());
-    operator.leftBumper().onFalse(intake.stopRollers());
-
+    operator.leftBumper().onTrue(intakeRollers.run());
+    operator.leftBumper().onFalse(intakeRollers.stop());
+    
     // raise/drop intake with vertical dpad
-    operator.povDown().onTrue(intake.dropIntake());
-    operator.povUp().onTrue(intake.raiseIntake());
-
+    operator.povDown().onTrue(intakePivot.dropIntake());
+    operator.povUp().onTrue(intakePivot.raiseIntake());
+    
     // run shooter
-    operator.leftTrigger().whileTrue(shooter.aimForHub(() -> drivetrain.distanceToHub()));
-    operator.leftTrigger().onFalse(shooter.setVelocity(0, 0));
-
+    operator.leftTrigger().whileTrue(shooter.setToHubVelocity(() -> drivetrain.distanceToHub()));
+    operator.leftTrigger().onFalse(shooter.stop());
+    
     // run feeder & rollers with right trigger
-    operator.rightTrigger().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run(), intake.runRollers()));
-    operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop(), intake.stopRollers()));
-
+    operator.rightTrigger().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run(), intakeRollers.run()));
+    operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop(), intakeRollers.stop()));
+    
     // twerk with b
-    operator.b().onTrue(intake.raiseIntake());
-    operator.b().onFalse(intake.dropIntake());
-
+    operator.b().onTrue(intakePivot.raiseIntake());
+    operator.b().onFalse(intakePivot.dropIntake());
+    
     // reverse feeder with a
     operator.a().onTrue(feeder.runReverse());
     operator.a().onFalse(feeder.stop());
   }
-   
+  
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
-
+  
 }
+
+    //driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+    //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+    //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+    //driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
+    

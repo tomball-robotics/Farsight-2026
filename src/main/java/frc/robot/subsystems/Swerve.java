@@ -49,79 +49,79 @@ import frc.robot.lib.TunerConstants;
 import frc.robot.lib.TunerConstants.TunerSwerveDrivetrain;
 
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
-
+    
     private static final double kSimLoopPeriod = 0.005;
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
-
+    
     private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
-
+    
     private final Rotation2d addedRotation = DriverStation.getAlliance()
-        .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
-        .orElse(kBlueAlliancePerspectiveRotation);
-
+    .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
+    .orElse(kBlueAlliancePerspectiveRotation);
+    
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
-
+    
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,
-            Volts.of(4),
-            null,
-            state -> SignalLogger.writeString("state", state.toString())
-        ),
-        new SysIdRoutine.Mechanism(
-            output -> setControl(m_translationCharacterization.withVolts(output)),
-            null,
-            this
-        )
+    new SysIdRoutine.Config(
+    null,
+    Volts.of(4),
+    null,
+    state -> SignalLogger.writeString("state", state.toString())
+    ),
+    new SysIdRoutine.Mechanism(
+    output -> setControl(m_translationCharacterization.withVolts(output)),
+    null,
+    this
+    )
     );
-
+    
     private final StructPublisher<Pose3d> pose3DPublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("Pose3D", Pose3d.struct).publish();
+    .getStructTopic("Pose3D", Pose3d.struct).publish();
     private final StructPublisher<Pose2d> pose2DPublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("Pose2D", Pose2d.struct).publish();
+    .getStructTopic("Pose2D", Pose2d.struct).publish();
     private final StructPublisher<ChassisSpeeds> chassisSpeedsPublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("ChassisSpeeds", ChassisSpeeds.struct).publish();
-
+    .getStructTopic("ChassisSpeeds", ChassisSpeeds.struct).publish();
+    
     public SwerveDrivePoseEstimator m_poseEstimator;
     public boolean slowModeEnabled = false;
     public Pose2d pose = new Pose2d();
-
+    
     private PIDController xController, yController, yawController;
     private boolean m_hasAppliedOperatorPerspective = false;
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
-
+    
     public Swerve(
-        SwerveDrivetrainConstants drivetrainConstants,
-        SwerveModuleConstants<?, ?, ?>... modules
+    SwerveDrivetrainConstants drivetrainConstants,
+    SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, modules);
         initialize();
     }
-
+    
     public Swerve(
-        SwerveDrivetrainConstants drivetrainConstants,
-        double odometryUpdateFrequency,
-        SwerveModuleConstants<?, ?, ?>... modules
+    SwerveDrivetrainConstants drivetrainConstants,
+    double odometryUpdateFrequency,
+    SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, modules);
         initialize();
     }
-
+    
     public Swerve(
-        SwerveDrivetrainConstants drivetrainConstants,
-        double odometryUpdateFrequency,
-        Matrix<N3, N1> odometryStandardDeviation,
-        Matrix<N3, N1> visionStandardDeviation,
-        SwerveModuleConstants<?, ?, ?>... modules
+    SwerveDrivetrainConstants drivetrainConstants,
+    double odometryUpdateFrequency,
+    Matrix<N3, N1> odometryStandardDeviation,
+    Matrix<N3, N1> visionStandardDeviation,
+    SwerveModuleConstants<?, ?, ?>... modules
     ) {
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
         initialize();
     }
-
+    
     private void initialize() {
         if (Utils.isSimulation()) {
             startSimThread();
@@ -129,66 +129,66 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         configureAutoBuilder();
         setUpPIDs();
     }
-
+    
     private void setUpPIDs() {
         xController = new PIDController(0.85, 0, 0);
         yController = new PIDController(1.5, 0, 0);
         yawController = new PIDController(4, 0, 0.0001);
-
+        
         yawController.enableContinuousInput(-Math.PI, Math.PI);
-
+        
         xController.setTolerance(0.05);
         yController.setTolerance(0.05);
         yawController.setTolerance(0.005);
-
+        
         m_poseEstimator = new SwerveDrivePoseEstimator(
-            getKinematics(),
-            getState().Pose.getRotation(),
-            getState().ModulePositions,
-            new Pose2d(),
-            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
+        getKinematics(),
+        getState().Pose.getRotation(),
+        getState().ModulePositions,
+        new Pose2d(),
+        VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+        VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
         );
-
+        
         LimelightHelpers.SetIMUMode("limelight-front", 1);
         LimelightHelpers.SetIMUMode("limelight-back", 1);
     }
-
+    
     private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                () -> pose,
-                this::resetPose,
-                () -> getState().Speeds,
-                (speeds, feedforwards) -> setControl(
-                    m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
-                ),
-                new PPHolonomicDriveController(
-                    new PIDConstants(0.1, 0, 0),
-                    new PIDConstants(0.0, 0, 0)
-                ),
-                config,
-                () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
-                this
+            () -> pose,
+            this::resetPose,
+            () -> getState().Speeds,
+            (speeds, feedforwards) -> setControl(
+            m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
+            ),
+            new PPHolonomicDriveController(
+            new PIDConstants(0.1, 0, 0),
+            new PIDConstants(0.0, 0, 0)
+            ),
+            config,
+            () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
+            this
             );
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
     }
-
+    
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
     }
-
+    
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineTranslation.quasistatic(direction);
     }
-
+    
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineTranslation.dynamic(direction);
     }
-
+    
     public Command driveTo(Supplier<Pose2d> targetSupplier) {
         return Commands.defer(() -> {
             Pose2d target = targetSupplier.get();
@@ -196,150 +196,151 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                 double xVel = xController.calculate(pose.getX(), target.getX());
                 double yVel = yController.calculate(pose.getY(), target.getY());
                 double rotationSpeed = yawController.calculate(
-                    pose.getRotation().getRadians(),
-                    target.getRotation().getRadians()
+                pose.getRotation().getRadians(),
+                target.getRotation().getRadians()
                 );
-
+                
                 SmartDashboard.putNumber("Target Rotation", target.getRotation().getRadians());
                 SmartDashboard.putNumber("Actual Rotation", pose.getRotation().getRadians());
-
+                
                 this.setControl(new SwerveRequest.FieldCentric()
-                    .withVelocityX(xVel)
-                    .withVelocityY(yVel)
-                    .withRotationalRate(rotationSpeed)
+                .withVelocityX(xVel)
+                .withVelocityY(yVel)
+                .withRotationalRate(rotationSpeed)
                 );
             }).until(this::atSetpoint);
         }, Set.of(this));
     }
-
+    
     public boolean atSetpoint() {
         return xController.atSetpoint() && yController.atSetpoint() && yawController.atSetpoint();
     }
-
+    
     public Command holdAlignmentToTrench(CommandXboxController joystick) {
         return this.run(() -> {
             double xInput = joystick.getLeftY();
             if (Math.abs(xInput) < 0.005) xInput = 0;
-
+            
             double midTrenchY = (Constants.SwervePositions.rightTrenchY + Constants.SwervePositions.leftTrenchY) / 2;
             double targetY = pose.getY() > midTrenchY
-                ? Constants.SwervePositions.rightTrenchY
-                : Constants.SwervePositions.leftTrenchY;
-
+            ? Constants.SwervePositions.rightTrenchY
+            : Constants.SwervePositions.leftTrenchY;
+            
             this.setControl(new SwerveRequest.FieldCentric()
-                .withRotationalDeadband(MaxAngularRate * 0.005)
-                .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                .withVelocityX(xInput * MaxSpeed)
-                .withVelocityY(yController.calculate(pose.getY(), targetY))
-                .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+            .withRotationalDeadband(MaxAngularRate * 0.005)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withVelocityX(xInput * MaxSpeed)
+            .withVelocityY(yController.calculate(pose.getY(), targetY))
+            .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             );
         });
     }
-
+    
     public Command pointTowardsHub(CommandXboxController joystick) {
         return this.run(() -> {
             boolean isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
             double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
             double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
-
+            
             double dx = hubX - pose.getX();
             double dy = hubY - pose.getY();
             Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx));
-
+            
             SmartDashboard.putNumber("dx", dx);
             SmartDashboard.putNumber("dy", dy);
-
+            
             this.setControl(new SwerveRequest.FieldCentric()
-                .withDeadband(MaxSpeed * 0.005)
-                .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .05) * MaxSpeed)
-                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .05) * MaxSpeed)
-                .withRotationalRate(
-                    yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())
-                )
+            .withDeadband(MaxSpeed * 0.005)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .05) * MaxSpeed)
+            .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .05) * MaxSpeed)
+            .withRotationalRate(
+            yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())
+            )
             );
         });
     }
-
+    
     public Command toggleSlowMode() {
         return runOnce(() -> slowModeEnabled = !slowModeEnabled);
     }
-
+    
     public double distanceToHub() {
-        boolean isBlue = DriverStation.getAlliance().get().equals(Alliance.Blue);
+        boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue);
         double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
         double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
         return Math.hypot(hubX - pose.getX(), hubY - pose.getY());
     }
-
+    
     public Command resetHeading() {
         return runOnce(() -> resetRotation(getState().Pose.getRotation().rotateBy(addedRotation)));
     }
-
+    
     public void updateOdometry() {
         m_poseEstimator.update(getPigeon2().getRotation2d().plus(addedRotation), getState().ModulePositions);
-
+        
         try {
             LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-front");
             if (mt1.tagCount == 0) return;
-
+            
             boolean rejectUpdate = false;
             if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
                 if (mt1.rawFiducials[0].ambiguity > 0.7 || mt1.rawFiducials[0].distToCamera > 3) {
                     rejectUpdate = true;
                 }
             }
-
+            
             if (!rejectUpdate) {
                 m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
                 m_poseEstimator.addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
             }
+            SmartDashboard.putBoolean("Limelight Booted", true);
         } catch (Exception e) {
-            System.out.println("limelight not booted - mt2 null");
+            SmartDashboard.putBoolean("Limelight Booted", false);
         }
     }
-
+    
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
     }
-
+    
     @Override
     public void addVisionMeasurement(
-        Pose2d visionRobotPoseMeters,
-        double timestampSeconds,
-        Matrix<N3, N1> visionMeasurementStdDevs
+    Pose2d visionRobotPoseMeters,
+    double timestampSeconds,
+    Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
-
+    
     @Override
     public void periodic() {
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
-                    allianceColor == Alliance.Blue
-                        ? kRedAlliancePerspectiveRotation
-                        : kBlueAlliancePerspectiveRotation
+                allianceColor == Alliance.Blue
+                ? kRedAlliancePerspectiveRotation
+                : kBlueAlliancePerspectiveRotation
                 );
                 m_hasAppliedOperatorPerspective = false;
             });
         }
-
+        
         updateOdometry();
         pose = m_poseEstimator.getEstimatedPosition();
-
+        
         pose3DPublisher.set(new Pose3d(pose));
         pose2DPublisher.set(pose);
         chassisSpeedsPublisher.set(getState().Speeds);
-
+        
         SmartDashboard.putNumber("Odometry/Target X", AutoBuilder.getCurrentPose().getX());
         SmartDashboard.putNumber("Odometry/Target Y", AutoBuilder.getCurrentPose().getY());
         SmartDashboard.putBoolean("Odometry/Pointing Hub", yawController.atSetpoint());
         SmartDashboard.putNumber("Odometry/Distance to Hub", distanceToHub());
         SmartDashboard.putBoolean("Swerve/Slow Mode", slowModeEnabled);
     }
-
+    
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
         m_simNotifier = new Notifier(() -> {
