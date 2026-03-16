@@ -1,9 +1,8 @@
-# 2026 — Farsight
+# T3 7312's 2026 Robot, Farsight's Code Repository
 
 ![Robot](image.png)
 
-Farsight is our 2026 FRC competition robot. It features a field-centric swerve drivetrain with vision-assisted odometry using three Limelights for AprilTag pose estimation. The shooter uses a velocity PID loop with a distance-based interpolation table to automatically adjust wheel speed based on the robot's live distance to the hub. The intake pivots down to collect game pieces off the floor and feeds them through a roller and feeder stage up to the shooter. Autonomous routines are built with PathPlanner and selected from the dashboard.
-
+Farsight is our 2026 FRC competition robot. It features a field-centric swerve drivetrain with vision-assisted odometry using three Limelights for AprilTag pose estimation. The shooter uses a velocity PID loop with a distance-based interpolation table to automatically adjust wheel speed based on the robot's live distance to the hub. The intake pivots down to collect game pieces off the floor and feeds them through a roller and feeder stage up to the shooter. Autonomous routines are built with PathPlanner.
 ---
 
 ## Subsystems
