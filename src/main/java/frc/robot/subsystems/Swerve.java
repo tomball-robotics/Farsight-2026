@@ -46,13 +46,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005;
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
-    
-    private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-    private final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
-    
+
     private final Rotation2d addedRotation = DriverStation.getAlliance()
     .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
     .orElse(kBlueAlliancePerspectiveRotation);
+    
+    private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    private final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
     
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -76,25 +76,17 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     Odometry odometry;
     
     
-    public Swerve(
-    SwerveDrivetrainConstants drivetrainConstants,
-    SwerveModuleConstants<?, ?, ?>... modules
-    ) {
+    public Swerve(SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, modules);
         initialize();
     }
     
-    public Swerve(
-    SwerveDrivetrainConstants drivetrainConstants,
-    double odometryUpdateFrequency,
-    SwerveModuleConstants<?, ?, ?>... modules
-    ) {
+    public Swerve(SwerveDrivetrainConstants drivetrainConstants, double odometryUpdateFrequency, SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, odometryUpdateFrequency, modules);
         initialize();
     }
     
-    public Swerve(
-    SwerveDrivetrainConstants drivetrainConstants,
+    public Swerve(SwerveDrivetrainConstants drivetrainConstants,
     double odometryUpdateFrequency,
     Matrix<N3, N1> odometryStandardDeviation,
     Matrix<N3, N1> visionStandardDeviation,
@@ -202,9 +194,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             if (Math.abs(xInput) < 0.005) xInput = 0;
             
             double midTrenchY = (Constants.SwervePositions.rightTrenchY + Constants.SwervePositions.leftTrenchY) / 2;
-            double targetY = pose.getY() > midTrenchY
-            ? Constants.SwervePositions.rightTrenchY
-            : Constants.SwervePositions.leftTrenchY;
+            double targetY = pose.getY() > midTrenchY ? Constants.SwervePositions.rightTrenchY : Constants.SwervePositions.leftTrenchY;
             
             this.setControl(new SwerveRequest.FieldCentric()
             .withRotationalDeadband(MaxAngularRate * 0.005)
@@ -301,12 +291,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     @Override
     public void periodic() {
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
-            DriverStation.getAlliance().ifPresent(allianceColor -> {
-                setOperatorPerspectiveForward(
-                allianceColor == Alliance.Blue
-                ? kRedAlliancePerspectiveRotation
-                : kBlueAlliancePerspectiveRotation
-                );
+            DriverStation.getAlliance().ifPresent(allianceColor -> {setOperatorPerspectiveForward(
+                allianceColor == Alliance.Blue ? kRedAlliancePerspectiveRotation : kBlueAlliancePerspectiveRotation);
                 m_hasAppliedOperatorPerspective = false;
             });
         }
