@@ -25,6 +25,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -74,6 +75,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private double m_lastSimTime;
 
     Odometry odometry;
+    SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleLocations());
     
     
     public Swerve(SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
@@ -231,6 +233,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             );
         });
     }
+
+    
     
     public Command autoPointTowardsHub() {
         return this.run(() -> {
@@ -266,6 +270,19 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             return errorDegrees < 10;
         });
     }
+
+    public Command pointTowardsAngle(CommandXboxController joystick, Rotation2d targetAngle) {
+        return this.run(() -> {            
+            
+            this.setControl(new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * 0.005)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .05) * MaxSpeed)
+            .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .05) * MaxSpeed)
+            .withRotationalRate(
+            yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())));
+        });
+    }
     
     public Command toggleSlowMode() {
         return runOnce(() -> slowModeEnabled = !slowModeEnabled);
@@ -286,6 +303,10 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+
+    public ChassisSpeeds getSwerveSpeeds() {
+        return kinematics.toChassisSpeeds(getState().ModuleStates);
     }
     
     @Override

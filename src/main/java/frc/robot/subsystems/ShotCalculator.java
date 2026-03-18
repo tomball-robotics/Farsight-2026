@@ -6,13 +6,15 @@ import java.util.Collections;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ShotCalculator {
-    InterpolatingTree solutionMap;
-
-    public ShotCalculator(){
-        solutionMap = new InterpolatingTree();
+    public static InterpolatingTree solutionMap = new InterpolatingTree();
+    public static double velocityMin = 0.5;
+    public static int iterations = 3;
+    static
+    {
+        //Add Tuned Solutions here
     }
 
-    public ShotSolution solveShot(double dx, double dy, double xVelocity, double yVelocity, double angularVelocity){
+    public static ShotSolution solveShot(double dx, double dy, double xVelocity, double yVelocity, double angularVelocity){
 
         ShotSolution out = null;
         double distance = Math.hypot(dx, dy);
@@ -20,14 +22,14 @@ public class ShotCalculator {
         double vx = xVelocity - dy * angularVelocity;
         double vy = yVelocity + dx * angularVelocity;
         
-        if(Math.hypot(vx, vy) < 0.1){
+        if(Math.hypot(vx, vy) < velocityMin){
             out = solutionMap.get(distance);
             out.setRotation(new Rotation2d(dx, dy));
         }
         else{
             double time = solutionMap.get(distance).getTimeOfFlight();
 
-            for(int i = 0; i < 3; i++){
+            for(int i = 0; i < iterations; i++){
                 double prx = dx - vx * time;
                 double pry = dy - vy * time;
                 distance = Math.hypot(prx, pry);
@@ -56,9 +58,6 @@ public class ShotCalculator {
            out.setRotation(new Rotation2d(prx, pry));
         }
         return out;
-
-        
-        
     }
 }
 

@@ -115,6 +115,17 @@ public class Odometry extends SubsystemBase{
         return Math.hypot(hubX - pose.getX(), hubY - pose.getY());
     }
 
+    public double[] getHubDxDy(){
+        boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue);
+        double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+        double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
+        return new double[]{hubX - pose.getX(), hubY - pose.getY()};
+    }
+
+
+
+
+
     @Override
     public void periodic(){
         updateOdometry();

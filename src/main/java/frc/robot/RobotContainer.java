@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControlConstants;
+import frc.robot.commands.SetupShot;
 import frc.robot.lib.TunerConstants;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.IntakePivot;
@@ -39,10 +40,14 @@ public class RobotContainer {
   private Feeder feeder = new Feeder();
   private Swerve drivetrain = TunerConstants.createDrivetrain();
   private Odometry odometry = new Odometry(drivetrain);
+
   
   // controllers
   private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);
   private final CommandXboxController operator = new CommandXboxController(ControlConstants.OPERATOR_CONTROLLER_ID);
+
+  //commands
+  private SetupShot setupShot = new SetupShot(drivetrain, shooter, odometry, driver);
   
   // autonomous
   private final SendableChooser<Command> autoChooser;
