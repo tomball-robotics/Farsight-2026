@@ -21,18 +21,12 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -44,7 +38,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.lib.LimelightHelpers;
 import frc.robot.lib.TunerConstants;
 import frc.robot.lib.TunerConstants.TunerSwerveDrivetrain;
 
@@ -65,27 +58,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
-    new SysIdRoutine.Config(
-    null,
-    Volts.of(4),
-    null,
-    state -> SignalLogger.writeString("state", state.toString())
-    ),
-    new SysIdRoutine.Mechanism(
-    output -> setControl(m_translationCharacterization.withVolts(output)),
-    null,
-    this
-    )
+    new SysIdRoutine.Config(null, Volts.of(4),null,
+        state -> SignalLogger.writeString("state", state.toString())), 
+        new SysIdRoutine.Mechanism(
+            output -> setControl(m_translationCharacterization.withVolts(output)),null,this)
     );
     
-    private final StructPublisher<Pose3d> pose3DPublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("Pose3D", Pose3d.struct).publish();
-    private final StructPublisher<Pose2d> pose2DPublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("Pose2D", Pose2d.struct).publish();
-    private final StructPublisher<ChassisSpeeds> chassisSpeedsPublisher = NetworkTableInstance.getDefault()
-    .getStructTopic("ChassisSpeeds", ChassisSpeeds.struct).publish();
     
-    public SwerveDrivePoseEstimator m_poseEstimator;
     public boolean slowModeEnabled = false;
     public Pose2d pose = new Pose2d();
     
@@ -93,13 +72,9 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private boolean m_hasAppliedOperatorPerspective = false;
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+
+    Odometry odometry;
     
-    // Limelight names for multi-camera vision
-    private static final String[] LIMELIGHT_NAMES = {
-        "limelight-front",
-        "limelight-left",
-        "limelight-right"
-    };
     
     public Swerve(
     SwerveDrivetrainConstants drivetrainConstants,
@@ -133,17 +108,14 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        m_poseEstimator = new SwerveDrivePoseEstimator(
-            getKinematics(),
-            getState().Pose.getRotation(),
-            getState().ModulePositions,
-            new Pose2d(),
-            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
-        );
         configureAutoBuilder();
         setUpPIDs();
+
+
+        
     }
+
+    public void setOdometry(Odometry odem){odometry = odem;}
     
     private void setUpPIDs() {
         xController = new PIDController(0.85, 0, 0);
@@ -182,7 +154,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     @Override
     public void resetPose(Pose2d pose) {
-        m_poseEstimator.resetPosition(getPigeon2().getRotation2d().plus(addedRotation), getState().ModulePositions, pose);
+        odometry.resetPose(pose);
     }
     
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -309,63 +281,12 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         return runOnce(() -> slowModeEnabled = !slowModeEnabled);
     }
     
-    public double distanceToHub() {
-        boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue);
-        double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
-        double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
-        return Math.hypot(hubX - pose.getX(), hubY - pose.getY());
-    }
     
     public Command resetHeading() {
         return runOnce(() -> resetRotation(getState().Pose.getRotation().rotateBy(addedRotation)));
     }
     
-    public void updateOdometry() {
-        m_poseEstimator.update(getPigeon2().getRotation2d().plus(addedRotation), getState().ModulePositions);
-        
-        updateVisionMeasurements();
-    }
     
-    private void updateVisionMeasurements() {
-        boolean anyLimelightBooted = false;
-        
-        for (String limelightName : LIMELIGHT_NAMES) {
-            try {
-                LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
-                
-                // no tags detected
-                if (poseEstimate.tagCount == 0) {
-                    SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", false);
-                    continue;
-                }
-                
-                boolean rejectUpdate = false;
-                
-                // filtering for single-tag measurements
-                if (poseEstimate.tagCount == 1 && poseEstimate.rawFiducials.length == 1) {
-                    if (poseEstimate.rawFiducials[0].ambiguity > 0.7 || poseEstimate.rawFiducials[0].distToCamera > 3) {
-                        rejectUpdate = true;
-                    }
-                }
-                
-                if (!rejectUpdate) {
-                    m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
-                    m_poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
-                }
-                
-                anyLimelightBooted = true;
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Connected", true);
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", true);
-                SmartDashboard.putNumber("Limelight/" + limelightName + "/Tag Count", poseEstimate.tagCount);
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Update Rejected", rejectUpdate);
-            } catch (Exception e) {
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Connected", false);
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", false);
-            }
-        }
-        
-        SmartDashboard.putBoolean("Limelight Booted", anyLimelightBooted);
-    }
     
     @Override
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
@@ -394,17 +315,16 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             });
         }
         
-        updateOdometry();
-        pose = m_poseEstimator.getEstimatedPosition();
+        //updateOdometry();
+        if(odometry != null){
+            pose = odometry.getPose();
+        }
         
-        pose3DPublisher.set(new Pose3d(pose));
-        pose2DPublisher.set(pose);
-        chassisSpeedsPublisher.set(getState().Speeds);
+
         
         SmartDashboard.putNumber("Odometry/Target X", AutoBuilder.getCurrentPose().getX());
         SmartDashboard.putNumber("Odometry/Target Y", AutoBuilder.getCurrentPose().getY());
         SmartDashboard.putBoolean("Odometry/Pointing Hub", yawController.atSetpoint());
-        SmartDashboard.putNumber("Odometry/Distance to Hub", distanceToHub());
         SmartDashboard.putBoolean("Swerve/Slow Mode", slowModeEnabled);
     }
     

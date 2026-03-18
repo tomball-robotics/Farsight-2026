@@ -20,6 +20,7 @@ import frc.robot.subsystems.IntakeRollers;
 import frc.robot.subsystems.Rollers;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Odometry;
 
 
 public class RobotContainer {
@@ -37,6 +38,7 @@ public class RobotContainer {
   private Rollers rollers = new Rollers();
   private Feeder feeder = new Feeder();
   private Swerve drivetrain = TunerConstants.createDrivetrain();
+  private Odometry odometry = new Odometry(drivetrain);
   
   // controllers
   private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);
@@ -46,9 +48,10 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
   
   public RobotContainer() {
+    drivetrain.setOdometry(odometry);
     configureBindings();
     
-    NamedCommands.registerCommand("Run Shooter", shooter.setToHubVelocity(() -> drivetrain.distanceToHub()));
+    NamedCommands.registerCommand("Run Shooter", shooter.setToHubVelocity(() -> odometry.distanceToHub()));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
@@ -101,7 +104,7 @@ public class RobotContainer {
     operator.povUp().onTrue(intakePivot.raiseIntake());
     
     // run shooter
-    operator.leftTrigger().whileTrue(shooter.setToHubVelocity(() -> drivetrain.distanceToHub()));
+    operator.leftTrigger().whileTrue(shooter.setToHubVelocity(() -> odometry.distanceToHub()));
     operator.leftTrigger().onFalse(shooter.stop());
     
     // run feeder & rollers with right trigger
