@@ -9,6 +9,9 @@ public class ShotCalculator {
     public static InterpolatingTree solutionMap = new InterpolatingTree();
     public static double velocityMin = 0.5;
     public static int iterations = 3;
+
+    public static double warmStart = -1;
+
     static
     {
         //Add Tuned Solutions here
@@ -27,7 +30,13 @@ public class ShotCalculator {
             out.setRotation(new Rotation2d(dx, dy));
         }
         else{
-            double time = solutionMap.get(distance).getTimeOfFlight();
+            double time;
+            if(warmStart < 0){
+                time = solutionMap.get(distance).getTimeOfFlight();
+            }
+            else{
+                time = warmStart;
+            }
 
             for(int i = 0; i < iterations; i++){
                 double prx = dx - vx * time;
@@ -48,6 +57,7 @@ public class ShotCalculator {
                 }
 
                 time = Math.max(0.05, Math.min(time, 2.0));
+                warmStart = time;
             }
 
             double prx = dx - vx * time;
