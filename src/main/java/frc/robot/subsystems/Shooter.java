@@ -37,16 +37,16 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
     rightMotor = T3Lib.createTalonFXVelocity(
-    Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
-    NeutralModeValue.Coast,
-    false,
-    0.03039, 0.0, 0.0, 0.12664
+      Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
+      NeutralModeValue.Coast,
+      false,
+      0.03039, 0.0, 0.0, 0.12664
     );
     
     leftMotor = T3Lib.createTalonFX(
-    Constants.ShooterConstants.LEFT_SHOOTER_MOTOR_ID,
-    NeutralModeValue.Coast,
-    false
+      Constants.ShooterConstants.LEFT_SHOOTER_MOTOR_ID,
+      NeutralModeValue.Coast,
+      false
     );
     
     leftMotor.setControl(new Follower(rightMotor.getDeviceID(), MotorAlignmentValue.Opposed));

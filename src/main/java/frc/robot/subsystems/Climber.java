@@ -41,6 +41,8 @@ public class Climber extends SubsystemBase {
 
   public Command climberUp(){return runClimber(Constants.ClimberConstants.CLIMBER_SPEED);}
   public Command climberDown(){return runClimber(-Constants.ClimberConstants.CLIMBER_SPEED);}
+  
+  public Command stop(){return runOnce(() -> rightClimberMotor.setControl(new NeutralOut()));}
 
   public Command autoClimberUp(){return run(() -> rightClimberMotor.setControl(request.withPosition(Constants.ClimberConstants.CLIMBER_EXTENDED_POSITION).withSlot(0)))
     .until(() -> Math.abs(Constants.ClimberConstants.CLIMBER_EXTENDED_POSITION - rightClimberMotor.getPosition().getValueAsDouble()) < 0.5).andThen(() ->

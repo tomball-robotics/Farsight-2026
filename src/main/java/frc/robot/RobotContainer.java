@@ -56,9 +56,7 @@ public class RobotContainer {
   
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
-    configureBindings();
-    
-    NamedCommands.registerCommand("Run Shooter", shooter.setToHubVelocity(() -> odometry.distanceToHub()));
+    NamedCommands.registerCommand("Run Shooter", setupShot);
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
@@ -75,6 +73,11 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Climbers Up", climber.autoClimberUp());
     NamedCommands.registerCommand("Climbers Down", climber.autoClimberDown());
+    
+    
+    configureBindings();
+    
+    
     
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -103,6 +106,12 @@ public class RobotContainer {
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
     
+    driver.leftBumper().onTrue(climber.climberUp());
+    driver.leftBumper().onFalse(climber.stop());
+
+    driver.rightBumper().onTrue(climber.climberDown());
+    driver.rightBumper().onFalse(climber.stop());
+
     /* --- operator controls ---  */
     
     // run intake rollers with left bumper
@@ -114,8 +123,8 @@ public class RobotContainer {
     operator.povUp().onTrue(intakePivot.raiseIntake());
     
     // run shooter
-    operator.leftTrigger().whileTrue(shooter.setToHubVelocity(() -> odometry.distanceToHub()));
-    operator.leftTrigger().onFalse(shooter.stop());
+    operator.leftTrigger().whileTrue(setupShot);
+    operator.leftTrigger().onFalse(new ParallelCommandGroup(shooter.stop(), drivetrain.getDefaultCommand()));
     
     // run feeder & rollers with right trigger
     operator.rightTrigger().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run(), intakeRollers.run()));
