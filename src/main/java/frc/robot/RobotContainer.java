@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControlConstants;
 import frc.robot.commands.SetupShot;
 import frc.robot.lib.TunerConstants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRollers;
@@ -38,6 +39,7 @@ public class RobotContainer {
   private IntakeRollers intakeRollers = new IntakeRollers();
   private Rollers rollers = new Rollers();
   private Feeder feeder = new Feeder();
+  private Climber climber = new Climber();
   private Swerve drivetrain = TunerConstants.createDrivetrain();
   private Odometry odometry = new Odometry(drivetrain);
 
@@ -70,6 +72,9 @@ public class RobotContainer {
     
     NamedCommands.registerCommand("Aim", drivetrain.autoPointTowardsHub().withTimeout(1.5));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
+
+    NamedCommands.registerCommand("Climbers Up", climber.autoClimberUp());
+    NamedCommands.registerCommand("Climbers Down", climber.autoClimberDown());
     
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);

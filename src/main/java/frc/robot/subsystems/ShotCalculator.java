@@ -6,7 +6,7 @@ import java.util.Collections;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ShotCalculator {
-    public static InterpolatingTree solutionMap = new InterpolatingTree();
+    public static InterpolatingList solutionMap = new InterpolatingList();
     public static double velocityMin = 0.5;
     public static int iterations = 3;
 
@@ -72,10 +72,10 @@ public class ShotCalculator {
 }
 
 
-class InterpolatingTree{
+class InterpolatingList{
     ArrayList<ShotSolution> tunedSolutions;
 
-    public InterpolatingTree(){
+    public InterpolatingList(){
         tunedSolutions = new ArrayList<ShotSolution>();
     }
 

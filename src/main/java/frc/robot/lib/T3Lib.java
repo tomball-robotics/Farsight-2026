@@ -65,6 +65,13 @@ public class T3Lib {
     public static TalonFX createTalonFX(int id, NeutralModeValue neutralMode, boolean inverted, double supplyCurrentLimit, double statorCurrentLimit) {
         return createTalonFX(id, null, neutralMode, inverted, supplyCurrentLimit, statorCurrentLimit);
     }
+    /**
+     * Creates a TalonFX on the RIO bus with only supply current limit
+     */
+
+    public static TalonFX createTalonFX(int id, NeutralModeValue neutralMode, boolean inverted, double supplyCurrentLimit) {
+        return createTalonFX(id, null, neutralMode, inverted, supplyCurrentLimit, DEFAULT_STATOR_CURRENT_LIMIT);
+    }
     
     /**
     * Creates a TalonFX on the specified CANivore bus with explicit current limits
@@ -116,6 +123,13 @@ public class T3Lib {
     */
     public static TalonFX createTalonFXPosition(int id, NeutralModeValue neutralMode, boolean inverted, double supplyCurrentLimit, double statorCurrentLimit, double kP, double kI, double kD) {
         return createTalonFXPosition(id, null, neutralMode, inverted, supplyCurrentLimit, statorCurrentLimit, kP, kI, kD);
+    }
+
+    /**
+    * Creates a TalonFX configured for position PID on the RIO bus with explicit supply current limit
+    */
+    public static TalonFX createTalonFXPosition(int id, NeutralModeValue neutralMode, boolean inverted, double supplyCurrentLimit, double kP, double kI, double kD) {
+        return createTalonFXPosition(id, null, neutralMode, inverted, supplyCurrentLimit, DEFAULT_STATOR_CURRENT_LIMIT, kP, kI, kD);
     }
     
     /**

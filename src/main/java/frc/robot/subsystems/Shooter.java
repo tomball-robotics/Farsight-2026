@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.Supplier;
 
+import static edu.wpi.first.units.Units.Volts;
+
+
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -14,6 +19,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.lib.T3Lib;
 
@@ -27,6 +33,8 @@ public class Shooter extends SubsystemBase {
   
   private final ArrayList<DistanceSolution> distanceSolutions;
   
+  private final SysIdRoutine sysIdRoutine;
+
   public Shooter() {
     rightMotor = T3Lib.createTalonFXVelocity(
     Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
@@ -55,6 +63,24 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putData("Commands/Set Shooter Velocity to Hub", setToHubVelocity(() -> SmartDashboard.getNumber("Odometry/Distance to Hub", 0)));
     SmartDashboard.putData("Commands/Stop Shooter", stop());
     SmartDashboard.putNumber("Shooter/Velocity Manual Set", 0);
+
+    sysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+    null, null, null,
+        state -> SignalLogger.writeString("state", state.toString())),
+      new SysIdRoutine.Mechanism(
+        output -> rightMotor.setControl(new VoltageOut(output)),
+        log -> {log.motor("TalonFX-" + rightMotor.getDeviceID())
+              .voltage(Volts.of(rightMotor.getMotorVoltage().getValueAsDouble()))
+              .angularVelocity(rightMotor.getVelocity().getValue())
+              .angularPosition(rightMotor.getPosition().getValue());
+        log.motor("TalonFX-" + leftMotor.getDeviceID())
+              .voltage(Volts.of(leftMotor.getMotorVoltage().getValueAsDouble()))
+              .angularVelocity(leftMotor.getVelocity().getValue())
+              .angularPosition(leftMotor.getPosition().getValue());},
+        this
+      )
+    );
   }
   
   public Command setVelocity(double velocity) {
@@ -105,6 +131,14 @@ public class Shooter extends SubsystemBase {
   private double interpolate(double x1, double x2, double y1, double y2, double x) {
     if (x1 == x2) return y1;
     return y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return sysIdRoutine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return sysIdRoutine.dynamic(direction);
   }
   
   @Override

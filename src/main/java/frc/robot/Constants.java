@@ -30,6 +30,9 @@ public final class Constants {
     public static final double MAX_EXTENSION = -1;
     public static final double CLIMBER_SPEED = 0;
     public static final int CLIMBER_CURRENT_LIMIT = 40;
+
+    public static final double CLIMBER_EXTENDED_POSITION = -1;
+    public static final double CLIMBER_DOWN_POSITION = -1;
   }
   
   public static final class IntakeConstants{
@@ -57,5 +60,7 @@ public final class Constants {
     public static final int FEEDER_SPEED = 4;
     public static final int SUPPLY_CURRENT_LIMIT = 40;
   }
+
+
   
 }
