@@ -208,6 +208,24 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         });
     }
 
+    public Command holdAllignmentToClimb(CommandXboxController joystick){
+        return this.run(() -> {
+            double xInput = joystick.getLeftY();
+            if (Math.abs(xInput) < 0.005) xInput = 0;
+
+            double targetY = DriverStation.getAlliance().get().equals(Alliance.Blue) ? 3.730244 : 4.323588;
+            this.setControl(new SwerveRequest.FieldCentric()
+                .withRotationalDeadband(MaxAngularRate * 0.005)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+                .withVelocityX(xInput * MaxSpeed)
+                .withVelocityY(yController.calculate(pose.getY(), targetY))
+                .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
+            );
+        });
+    }
+
+    
+
     public Command pointTowardsHub(CommandXboxController joystick) {
         return this.run(() -> {
             System.out.println("Pointing towards hub");
