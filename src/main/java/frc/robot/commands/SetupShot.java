@@ -39,7 +39,7 @@ public class SetupShot extends Command {
     ChassisSpeeds speeds = swerve.getSwerveSpeeds();
     ShotSolution solution = ShotCalculator.solveShot(distances[0], distances[1], speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
 
-    shooter.setVelocity(solution.getVelocity()).schedule();
+    shooter.setVelocity(solution.getVelocity());
     swerve.pointTowardsAngle(driver, solution.getAngle()).schedule();
   }
 

@@ -88,17 +88,15 @@ public class Shooter extends SubsystemBase {
     );
   }
   
-  public Command setVelocity(double velocity) {
-    return runOnce(() -> {
-      rightMotor.setControl(velocityRequest.withVelocity(velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
-      SmartDashboard.putNumber("Shooter/Setpoint", velocity);
-    });
+  public void setVelocity(double velocity) {  
+    rightMotor.setControl(velocityRequest.withVelocity(velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
+    SmartDashboard.putNumber("Shooter/Setpoint", velocity); 
   }
   
   public Command setVelocityToDashboard() {
     return runOnce(() -> {
       double velocity = SmartDashboard.getNumber("Shooter/Velocity Manual Set", 0);
-      rightMotor.setControl(velocityRequest.withVelocity(velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
+      setVelocity(velocity);
       SmartDashboard.putNumber("Shooter/Setpoint", velocity);
     });
   }
@@ -113,7 +111,7 @@ public class Shooter extends SubsystemBase {
   public Command setToHubVelocity(Supplier<Double> distance) {
     return runOnce(() -> {
       DistanceSolution target = solveForPosition(distance.get());
-      rightMotor.setControl(velocityRequest.withVelocity(target.velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
+      setVelocity(target.velocity);
       SmartDashboard.putNumber("Shooter/Setpoint", target.velocity);
     });
   }
@@ -145,6 +143,15 @@ public class Shooter extends SubsystemBase {
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return sysIdRoutine.dynamic(direction);
   }
+
+  public Command toggleVelocityIncrease(){
+    return runOnce(() -> velocityAdd = !velocityAdd);
+  }
+
+  public Command toggleVelocityDecrease(){
+    return runOnce(() -> velocityDec = !velocityDec);
+  }
+
   
   @Override
   public void periodic() {
