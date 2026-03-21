@@ -241,13 +241,11 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             SmartDashboard.putNumber("dy", dy);
             
             this.setControl(new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.005)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .05) * MaxSpeed)
-            .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .05) * MaxSpeed)
-            .withRotationalRate(
-            yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())
-            )
+                .withDeadband(MaxSpeed * 0.005)
+                .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .05) * MaxSpeed)
+                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .05) * MaxSpeed)
+                .withRotationalRate(yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians()))
             );
         });
     }

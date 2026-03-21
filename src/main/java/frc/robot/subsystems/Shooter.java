@@ -35,6 +35,11 @@ public class Shooter extends SubsystemBase {
   
   private final SysIdRoutine sysIdRoutine;
 
+  public boolean velocityAdd = false;
+  public boolean velocityDec = false;
+
+  public int velocityOffset = 4;
+
   public Shooter() {
     rightMotor = T3Lib.createTalonFXVelocity(
       Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
@@ -85,7 +90,7 @@ public class Shooter extends SubsystemBase {
   
   public Command setVelocity(double velocity) {
     return runOnce(() -> {
-      rightMotor.setControl(velocityRequest.withVelocity(velocity));
+      rightMotor.setControl(velocityRequest.withVelocity(velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
       SmartDashboard.putNumber("Shooter/Setpoint", velocity);
     });
   }
@@ -93,7 +98,7 @@ public class Shooter extends SubsystemBase {
   public Command setVelocityToDashboard() {
     return runOnce(() -> {
       double velocity = SmartDashboard.getNumber("Shooter/Velocity Manual Set", 0);
-      rightMotor.setControl(velocityRequest.withVelocity(velocity));
+      rightMotor.setControl(velocityRequest.withVelocity(velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
       SmartDashboard.putNumber("Shooter/Setpoint", velocity);
     });
   }
@@ -108,7 +113,7 @@ public class Shooter extends SubsystemBase {
   public Command setToHubVelocity(Supplier<Double> distance) {
     return runOnce(() -> {
       DistanceSolution target = solveForPosition(distance.get());
-      rightMotor.setControl(velocityRequest.withVelocity(target.velocity));
+      rightMotor.setControl(velocityRequest.withVelocity(target.velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
       SmartDashboard.putNumber("Shooter/Setpoint", target.velocity);
     });
   }

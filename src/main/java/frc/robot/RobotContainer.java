@@ -137,6 +137,10 @@ public class RobotContainer {
     // reverse feeder with a
     operator.a().onTrue(feeder.runReverse());
     operator.a().onFalse(feeder.stop());
+
+    //Velocity Offset
+    operator.start().onTrue(shooter.toggleVelocityIncrease());
+    operator.back().onTrue(shooter.toggleVelocityDecrease());
   }
   
   public Command getAutonomousCommand() {
