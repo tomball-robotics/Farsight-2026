@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -80,8 +79,9 @@ class InterpolatingList{
     }
 
     public void addSolution(double distance, double velocity, double time){
-        tunedSolutions.add(new ShotSolution(time, distance, velocity));
-        Collections.sort(tunedSolutions, (s1, s2) -> {return Double.compare(s1.getDistance(), s2.getDistance());});
+        int index = 0;
+        while(index < tunedSolutions.size() && tunedSolutions.get(index).getDistance() < distance){index++;}
+        tunedSolutions.add(index, new ShotSolution(time, distance, velocity));
     }
 
     public ShotSolution get(double distance){
