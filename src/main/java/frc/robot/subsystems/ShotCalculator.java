@@ -3,11 +3,12 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.Constants;
 
 public class ShotCalculator {
     public static InterpolatingList solutionMap = new InterpolatingList();
-    public static double velocityMin = 0.5;
-    public static int iterations = 3;
+
+    
 
     public static double warmStart = -1;
 
@@ -24,7 +25,7 @@ public class ShotCalculator {
         double vx = xVelocity - dy * angularVelocity;
         double vy = yVelocity + dx * angularVelocity;
         
-        if(Math.hypot(vx, vy) < velocityMin){
+        if(Math.hypot(vx, vy) < Constants.ShotSolutionConstants.VELOCITY_MIN){
             out = solutionMap.get(distance);
             out.setRotation(new Rotation2d(dx, dy));
         }
@@ -37,7 +38,7 @@ public class ShotCalculator {
                 time = warmStart;
             }
 
-            for(int i = 0; i < iterations; i++){
+            for(int i = 0; i < Constants.ShotSolutionConstants.ITERATIONS; i++){
                 double prx = dx - vx * time;
                 double pry = dy - vy * time;
                 distance = Math.hypot(prx, pry);
@@ -46,16 +47,16 @@ public class ShotCalculator {
                 double error = lookupTime - time;
 
                 double derivativeDistance = -(prx * vx + pry * vy) / distance;
-                double derivativeTime = (solutionMap.get(distance + 0.1).getTimeOfFlight() - solutionMap.get(distance - 0.1).getTimeOfFlight()) / 0.2;
+                double derivativeTime = (solutionMap.get(distance + Constants.ShotSolutionConstants.EPSILON).getTimeOfFlight() - solutionMap.get(distance - Constants.ShotSolutionConstants.EPSILON).getTimeOfFlight()) / (2*Constants.ShotSolutionConstants.EPSILON);
                 double derivative = derivativeDistance * derivativeTime - 1;
 
-                if (Math.abs(derivative) > 1e-3) {
+                if (Math.abs(derivative) > Constants.ShotSolutionConstants.DERIVATIVE_MINIMUM) {
                     time -= error / derivative;
                 } else {
                     time = lookupTime;
                 }
 
-                time = Math.max(0.05, Math.min(time, 2.0));
+                time = Math.max(Constants.ShotSolutionConstants.MINIMUM_TOF, Math.min(time, Constants.ShotSolutionConstants.MAXIMUM_TOF));
                 warmStart = time;
             }
 

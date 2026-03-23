@@ -65,6 +65,13 @@ public final class Constants {
     public static final int SUPPLY_CURRENT_LIMIT = 40;
   }
 
-
+  public static final class ShotSolutionConstants{
+    public static final int ITERATIONS = 3;
+    public static final double VELOCITY_MIN = 0.5;
+    public static final double EPSILON = 0.1;
+    public static final double DERIVATIVE_MINIMUM = 1e-3;
+    public static final double MINIMUM_TOF = 0.05;
+    public static final double MAXIMUM_TOF = 3.0;
+  }
   
 }
