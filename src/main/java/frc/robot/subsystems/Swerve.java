@@ -289,7 +289,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
     public Command pointTowardsAngle(CommandXboxController joystick, Rotation2d targetAngle) {
         return this.run(() -> {            
-            
+            yawController.setSetpoint(targetAngle.getRadians());
             this.setControl(new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.005)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
@@ -344,7 +344,14 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         SmartDashboard.putNumber("Odometry/Target X", AutoBuilder.getCurrentPose().getX());
         SmartDashboard.putNumber("Odometry/Target Y", AutoBuilder.getCurrentPose().getY());
         SmartDashboard.putBoolean("Odometry/Pointing Hub", yawController.atSetpoint());
+
+        SmartDashboard.putNumber("Odometry/Hub Dx", Odometry.getHubDxDy()[0]);
+        SmartDashboard.putNumber("Odometry/Hub Dy", Odometry.getHubDxDy()[1]);
+
         SmartDashboard.putBoolean("Swerve/Slow Mode", slowModeEnabled);
+
+
+
     }
     
     private void startSimThread() {

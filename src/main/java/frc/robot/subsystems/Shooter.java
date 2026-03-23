@@ -30,9 +30,7 @@ public class Shooter extends SubsystemBase {
   
   private final VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
   private final CoastOut coastRequest = new CoastOut();
-  
-  private final ArrayList<DistanceSolution> distanceSolutions;
-  
+    
   private final SysIdRoutine sysIdRoutine;
 
   public boolean velocityAdd = false;
@@ -56,17 +54,11 @@ public class Shooter extends SubsystemBase {
     
     leftMotor.setControl(new Follower(rightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     rightMotor.setControl(coastRequest);
-    
-    distanceSolutions = new ArrayList<>();
-    distanceSolutions.add(new DistanceSolution(1.89,  -30));
-    distanceSolutions.add(new DistanceSolution(2.496, -35));
-    distanceSolutions.add(new DistanceSolution(3.48,  -40));
-    distanceSolutions.add(new DistanceSolution(4.78,  -41.61));
-    Collections.sort(distanceSolutions, (d1, d2) -> Double.compare(d1.distance, d2.distance));
+
     
     SmartDashboard.putData("Commands/Set Shooter Velocity to Dashboard", setVelocityToDashboard());
-    SmartDashboard.putData("Commands/Set Shooter Velocity to Hub", setToHubVelocity(() -> SmartDashboard.getNumber("Odometry/Distance to Hub", 0)));
     SmartDashboard.putData("Commands/Stop Shooter", stop());
+    SmartDashboard.putData("Commands/Set Shooter Velocity to Hub", stationaryVelocityFallback(() -> Odometry.getHubDxDy()[0], () -> Odometry.getHubDxDy()[1]));
     SmartDashboard.putNumber("Shooter/Velocity Manual Set", 0);
 
     sysIdRoutine = new SysIdRoutine(
@@ -107,34 +99,6 @@ public class Shooter extends SubsystemBase {
       SmartDashboard.putNumber("Shooter/Setpoint", 0);
     });
   }
-  
-  public Command setToHubVelocity(Supplier<Double> distance) {
-    return runOnce(() -> {
-      DistanceSolution target = solveForPosition(distance.get());
-      setVelocity(target.velocity);
-      SmartDashboard.putNumber("Shooter/Setpoint", target.velocity);
-    });
-  }
-  
-  public DistanceSolution solveForPosition(double distance) {
-    if (distance <= distanceSolutions.get(0).distance) return distanceSolutions.get(0);
-    if (distance >= distanceSolutions.get(distanceSolutions.size() - 1).distance) return distanceSolutions.get(distanceSolutions.size() - 1);
-    
-    for (int i = 0; i < distanceSolutions.size() - 1; i++) {
-      DistanceSolution lo = distanceSolutions.get(i);
-      DistanceSolution hi = distanceSolutions.get(i + 1);
-      if (distance >= lo.distance && distance <= hi.distance) {
-        double velocity = interpolate(lo.distance, hi.distance, lo.velocity, hi.velocity, distance);
-        return new DistanceSolution(distance, velocity);
-      }
-    }
-    return distanceSolutions.get(distanceSolutions.size() - 1);
-  }
-  
-  private double interpolate(double x1, double x2, double y1, double y2, double x) {
-    if (x1 == x2) return y1;
-    return y1 + (x - x1) * (y2 - y1) / (x2 - x1);
-  }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return sysIdRoutine.quasistatic(direction);
@@ -152,6 +116,13 @@ public class Shooter extends SubsystemBase {
     return runOnce(() -> velocityDec = !velocityDec);
   }
 
+  public Command stationaryVelocityFallback(Supplier<Double> dxSupplier, Supplier<Double> dySupplier){
+    return runOnce(() -> {
+      ShotSolution solution = ShotCalculator.solveShot(dxSupplier.get(), dySupplier.get(), 0, 0, 0);
+      rightMotor.setControl(new VoltageOut(solution.getVelocity()));
+    });
+  }
+
   
   @Override
   public void periodic() {
@@ -159,15 +130,5 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Supply Current", rightMotor.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Stator Current", rightMotor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Voltage", rightMotor.getMotorVoltage().getValueAsDouble());
-  }
-}
-
-class DistanceSolution {
-  final double distance;
-  final double velocity;
-  
-  public DistanceSolution(double distance, double velocity) {
-    this.distance = distance;
-    this.velocity = velocity;
   }
 }
