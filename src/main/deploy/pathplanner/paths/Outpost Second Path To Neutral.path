@@ -3,71 +3,71 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.505768518522979,
-        "y": 4.748186487262781
+        "x": 2.693437945791726,
+        "y": 0.8456205420827394
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.587974322396576,
-        "y": 4.843666191155493
+        "x": 3.534450784593438,
+        "y": 0.5609700427960058
       },
       "isLocked": false,
-      "linkedName": "Depot Neutral Zone"
+      "linkedName": "Outpost First Shot return"
     },
     {
       "anchor": {
-        "x": 6.199814550641939,
-        "y": 5.89169757489301
+        "x": 4.634236804564908,
+        "y": 0.6515406562054205
       },
       "prevControl": {
-        "x": 6.343452716554268,
-        "y": 5.274053461469997
+        "x": 3.5862054208273886,
+        "y": 0.6644793152639101
       },
       "nextControl": {
-        "x": 5.811654778887304,
-        "y": 7.560784593437946
+        "x": 5.775395314977059,
+        "y": 0.6374522795336636
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.638094446728801,
-        "y": 7.393413228709795
+        "x": 7.144336661911555,
+        "y": 1.0785164051355207
       },
       "prevControl": {
-        "x": 5.953980028530669,
-        "y": 7.366704707560627
+        "x": 6.66061179330965,
+        "y": 0.8753519603227194
       },
       "nextControl": {
-        "x": 3.493292075571067,
-        "y": 7.416649275038242
+        "x": 7.791269614835947,
+        "y": 1.3502282453637668
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.809885877318117,
-        "y": 6.473937232524964
+        "x": 8.02416547788873,
+        "y": 2.514707560627676
       },
       "prevControl": {
-        "x": 3.0039657631954344,
-        "y": 7.263195435092724
+        "x": 8.14061340941512,
+        "y": 1.5960627674750354
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot Shoot Position"
+      "linkedName": "Outpost Side Neutral Zone"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.611994547932762,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.2,
-      "rotationDegrees": -1.5579576995697373
+      "waypointRelativePos": 0.9881871876419789,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -83,13 +83,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -53.47114463301479
+    "rotation": -139.49715161466773
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 59.300277449185614
   },
   "useDefaultConstraints": true
 }

@@ -20,12 +20,12 @@
         "y": 0.6386019971469341
       },
       "prevControl": {
-        "x": 5.782772008244828,
-        "y": 0.66265749595225
+        "x": 5.794845513027647,
+        "y": 0.5583421768574599
       },
       "nextControl": {
-        "x": 6.847127188152637,
-        "y": 0.5597656884921436
+        "x": 6.794992867332382,
+        "y": 0.8973751783166914
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 1.4019828815977178
       },
       "prevControl": {
-        "x": 6.771460754496812,
-        "y": 1.263208102632706
+        "x": 6.881549829692464,
+        "y": 1.054743954287042
       },
       "nextControl": {
-        "x": 7.64011328769102,
-        "y": 1.4971886782582915
+        "x": 7.648944365192582,
+        "y": 1.7125106990014274
       },
       "isLocked": false,
       "linkedName": null
@@ -57,12 +57,12 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Outpost Side Neutral Zone"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
+      "waypointRelativePos": 0.4102680599727486,
       "rotationDegrees": 0.0
     },
     {

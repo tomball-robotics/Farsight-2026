@@ -12,7 +12,7 @@
         "y": 7.260356990731573
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot Start"
     },
     {
       "anchor": {
@@ -83,7 +83,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 128.88449643371465
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,

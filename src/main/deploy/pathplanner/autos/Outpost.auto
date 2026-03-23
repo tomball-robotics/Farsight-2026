@@ -5,41 +5,21 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Depot To Neutral Zone"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "g"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Run Intake"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "name": "Drop Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Run Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Outpost To Neutral Zone"
           }
         },
         {
@@ -51,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Neutral Zone to Depot"
+            "pathName": "Outpost Neutral Zone to Shoot"
           }
         },
         {
@@ -63,7 +43,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Feed"
+            "name": "Run Feeder"
           }
         },
         {
@@ -87,7 +67,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Second Depot To Neutral Zone"
+            "pathName": "Outpost Second Path To Neutral"
           }
         },
         {
@@ -99,7 +79,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Neutral Zone to Depot"
+            "pathName": "Outpost Neutral Zone to Shoot"
           }
         },
         {
@@ -111,7 +91,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Feed"
+            "name": "Run Feeder"
           }
         }
       ]
