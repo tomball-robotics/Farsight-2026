@@ -33,6 +33,10 @@ public final class Constants {
 
     public static final double CLIMBER_EXTENDED_POSITION = -1;
     public static final double CLIMBER_DOWN_POSITION = -1;
+
+    public static final double HOMING_VOLTAGE = 0;
+    public static final double SUPPLY_CURRENT_THRESHOLD = 0;
+    public static final double HOMING_TIMEOUT = 3;
   }
   
   public static final class IntakeConstants{

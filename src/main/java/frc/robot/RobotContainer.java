@@ -73,6 +73,8 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Climbers Up", climber.autoClimberUp());
     NamedCommands.registerCommand("Climbers Down", climber.autoClimberDown());
+
+    NamedCommands.registerCommand("Climber Auto Home", climber.autonomousHome());
     
     
     configureBindings();

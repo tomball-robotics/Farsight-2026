@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.*;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -51,6 +50,20 @@ public class Climber extends SubsystemBase {
   public Command autoClimberDown(){return run(() -> rightClimberMotor.setControl(request.withPosition(Constants.ClimberConstants.CLIMBER_DOWN_POSITION).withSlot(0)))
     .until(() -> Math.abs(rightClimberMotor.getPosition().getValueAsDouble() - Constants.ClimberConstants.CLIMBER_DOWN_POSITION) < 0.5).andThen(() ->
     rightClimberMotor.setControl(new NeutralOut()));
+  }
+
+  public Command autonomousHome(){
+    return run(() -> { rightClimberMotor.setControl(new VoltageOut(Constants.ClimberConstants.HOMING_VOLTAGE));})
+    .until(() -> {return rightClimberMotor.getSupplyCurrent().getValueAsDouble() >= Constants.ClimberConstants.SUPPLY_CURRENT_THRESHOLD || 
+                         leftClimberMotor.getSupplyCurrent().getValueAsDouble() >= Constants.ClimberConstants.SUPPLY_CURRENT_THRESHOLD ;})
+    .withTimeout(Constants.ClimberConstants.HOMING_TIMEOUT)
+    .andThen(
+      () -> {
+        rightClimberMotor.setControl(new NeutralOut());
+        rightClimberMotor.setPosition(0);
+        leftClimberMotor.setPosition(0);
+      }
+    );
   }
 
   @Override
