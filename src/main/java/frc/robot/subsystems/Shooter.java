@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Volts;
