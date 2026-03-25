@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.02416547788873,
-        "y": 2.514707560627676
+        "x": 7.881840228245363,
+        "y": 2.851112696148359
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.044550641940085,
-        "y": 1.906590584878745
+        "x": 5.902225392296718,
+        "y": 2.242995720399428
       },
       "isLocked": false,
       "linkedName": "Outpost Side Neutral Zone"
@@ -73,7 +73,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -139.49715161466773
+    "rotation": -71.71865879702733
   },
   "useDefaultConstraints": true
 }
