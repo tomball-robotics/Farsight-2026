@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControlConstants;
 import frc.robot.commands.SetupShot;
 import frc.robot.lib.TunerConstants;
@@ -96,8 +97,15 @@ public class RobotContainer {
     /* --- driver controls --- */
     
     // brake mode with x
-    driver.x().onTrue(drivetrain.applyRequest(() -> brake));
-    driver.x().onFalse(drivetrain.getDefaultCommand());
+    //driver.x().onTrue(drivetrain.applyRequest(() -> brake));
+    //driver.x().onFalse(drivetrain.getDefaultCommand());
+
+    /* --- Sys ID Controls */
+
+    driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+    driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+    driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+    driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
     
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
