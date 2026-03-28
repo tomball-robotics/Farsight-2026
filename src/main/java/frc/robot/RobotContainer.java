@@ -114,11 +114,13 @@ public class RobotContainer {
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
     
-    //driver.leftBumper().onTrue(climber.climberUp());
-    //driver.leftBumper().onFalse(climber.stop());
+    /* 
+    driver.leftBumper().onTrue(climber.climberUp());
+    driver.leftBumper().onFalse(climber.stop());
 
-    //driver.rightBumper().onTrue(climber.climberDown());
-    //driver.rightBumper().onFalse(climber.stop());
+    driver.rightBumper().onTrue(climber.climberDown());
+    driver.rightBumper().onFalse(climber.stop());
+    */
 
     /* --- operator controls ---  */
     
