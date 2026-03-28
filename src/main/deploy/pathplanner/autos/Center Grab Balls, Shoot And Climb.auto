@@ -68,32 +68,8 @@
                     }
                   ]
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Climber Auto Home"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climbers Up"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot To Climb"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climbers Down"
           }
         }
       ]
