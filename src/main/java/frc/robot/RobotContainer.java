@@ -40,7 +40,7 @@ public class RobotContainer {
   private IntakeRollers intakeRollers = new IntakeRollers();
   private Rollers rollers = new Rollers();
   private Feeder feeder = new Feeder();
-  private Climber climber = new Climber();
+  //private Climber climber = new Climber();
   private Swerve drivetrain = TunerConstants.createDrivetrain();
   private Odometry odometry = new Odometry(drivetrain);
 
@@ -72,10 +72,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("Aim", drivetrain.autoPointTowardsHub().withTimeout(1.5));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
 
-    NamedCommands.registerCommand("Climbers Up", climber.autoClimberUp());
-    NamedCommands.registerCommand("Climbers Down", climber.autoClimberDown());
+    //NamedCommands.registerCommand("Climbers Up", climber.autoClimberUp());
+    //NamedCommands.registerCommand("Climbers Down", climber.autoClimberDown());
 
-    NamedCommands.registerCommand("Climber Auto Home", climber.autonomousHome());
+    //NamedCommands.registerCommand("Climber Auto Home", climber.autonomousHome());
     
     
     configureBindings();
@@ -114,11 +114,11 @@ public class RobotContainer {
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
     
-    driver.leftBumper().onTrue(climber.climberUp());
-    driver.leftBumper().onFalse(climber.stop());
+    //driver.leftBumper().onTrue(climber.climberUp());
+    //driver.leftBumper().onFalse(climber.stop());
 
-    driver.rightBumper().onTrue(climber.climberDown());
-    driver.rightBumper().onFalse(climber.stop());
+    //driver.rightBumper().onTrue(climber.climberDown());
+    //driver.rightBumper().onFalse(climber.stop());
 
     /* --- operator controls ---  */
     
