@@ -16,14 +16,12 @@ import frc.robot.subsystems.Swerve;
 public class SetupShot extends Command {
   private Swerve swerve;
   private Shooter shooter;
-  private Odometry odometry;
   CommandXboxController driver;
 
 
   public SetupShot(Swerve swerve, Shooter shooter, Odometry odometry, CommandXboxController driver) {
     this.swerve = swerve;
     this.shooter = shooter;
-    this.odometry = odometry;
     this.driver = driver;
     addRequirements(swerve, shooter, odometry);
   }
@@ -35,7 +33,7 @@ public class SetupShot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double[] distances = odometry.getHubDxDy();
+    double[] distances = Odometry.getHubDxDy();
     ChassisSpeeds speeds = swerve.getSwerveSpeeds();
     ShotSolution solution = ShotCalculator.solveShot(distances[0], distances[1], speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
 

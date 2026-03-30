@@ -37,89 +37,89 @@ public class Odometry extends SubsystemBase{
     private final StructPublisher<ChassisSpeeds> chassisSpeedsPublisher = NetworkTableInstance.getDefault()
     .getStructTopic("ChassisSpeeds", ChassisSpeeds.struct).publish();
 
-    Pose2d pose;
-
-    public Odometry(Swerve drivetrain){
-
-        poseEstimator = new SwerveDrivePoseEstimator(
-            drivetrain.getKinematics(),
-            drivetrain.getState().Pose.getRotation(),
-            drivetrain.getState().ModulePositions,
-            new Pose2d(),
-            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
-        );
-        swerve = drivetrain;
-    }
-
+    static Pose2d pose;
     
-    public void resetPose(Pose2d pose) {
-        poseEstimator.resetPosition(swerve.getPigeon2().getRotation2d().plus(addedRotation), swerve.getState().ModulePositions, pose);
-    }
-
-    public void updateOdometry() {
-        poseEstimator.update(swerve.getPigeon2().getRotation2d().plus(addedRotation), swerve.getState().ModulePositions);
+        public Odometry(Swerve drivetrain){
+    
+            poseEstimator = new SwerveDrivePoseEstimator(
+                drivetrain.getKinematics(),
+                drivetrain.getState().Pose.getRotation(),
+                drivetrain.getState().ModulePositions,
+                new Pose2d(),
+                VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+                VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
+            );
+            swerve = drivetrain;
+        }
+    
         
-        updateVisionMeasurements();
-    }
-
-    private void updateVisionMeasurements() {
-        boolean anyLimelightBooted = false;
-        
-        for (String limelightName : LIMELIGHT_NAMES) {
-            try {
-                LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
-                
-                // no tags detected
-                if (poseEstimate.tagCount == 0) {
-                    SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", false);
-                    continue;
-                }
-                
-                boolean rejectUpdate = false;
-                
-                // filtering for single-tag measurements
-                if (poseEstimate.tagCount == 1 && poseEstimate.rawFiducials.length == 1) {
-                    if (poseEstimate.rawFiducials[0].ambiguity > 0.7 || poseEstimate.rawFiducials[0].distToCamera > 3) {
-                        rejectUpdate = true;
+        public void resetPose(Pose2d pose) {
+            poseEstimator.resetPosition(swerve.getPigeon2().getRotation2d().plus(addedRotation), swerve.getState().ModulePositions, pose);
+        }
+    
+        public void updateOdometry() {
+            poseEstimator.update(swerve.getPigeon2().getRotation2d().plus(addedRotation), swerve.getState().ModulePositions);
+            
+            updateVisionMeasurements();
+        }
+    
+        private void updateVisionMeasurements() {
+            boolean anyLimelightBooted = false;
+            
+            for (String limelightName : LIMELIGHT_NAMES) {
+                try {
+                    LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+                    
+                    // no tags detected
+                    if (poseEstimate.tagCount == 0) {
+                        SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", false);
+                        continue;
                     }
+                    
+                    boolean rejectUpdate = false;
+                    
+                    // filtering for single-tag measurements
+                    if (poseEstimate.tagCount == 1 && poseEstimate.rawFiducials.length == 1) {
+                        if (poseEstimate.rawFiducials[0].ambiguity > 0.7 || poseEstimate.rawFiducials[0].distToCamera > 3) {
+                            rejectUpdate = true;
+                        }
+                    }
+                    
+                    if (!rejectUpdate) {
+                        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
+                        poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+                    }
+                    
+                    anyLimelightBooted = true;
+                    SmartDashboard.putBoolean("Limelight/" + limelightName + "/Connected", true);
+                    SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", true);
+                    SmartDashboard.putNumber("Limelight/" + limelightName + "/Tag Count", poseEstimate.tagCount);
+                    SmartDashboard.putBoolean("Limelight/" + limelightName + "/Update Rejected", rejectUpdate);
+                } catch (Exception e) {
+                    SmartDashboard.putBoolean("Limelight/" + limelightName + "/Connected", false);
+                    SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", false);
                 }
-                
-                if (!rejectUpdate) {
-                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
-                    poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
-                }
-                
-                anyLimelightBooted = true;
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Connected", true);
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", true);
-                SmartDashboard.putNumber("Limelight/" + limelightName + "/Tag Count", poseEstimate.tagCount);
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Update Rejected", rejectUpdate);
-            } catch (Exception e) {
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Connected", false);
-                SmartDashboard.putBoolean("Limelight/" + limelightName + "/Has Targets", false);
             }
+            
+            SmartDashboard.putBoolean("Limelight Booted", anyLimelightBooted);
         }
         
-        SmartDashboard.putBoolean("Limelight Booted", anyLimelightBooted);
-    }
+        public Pose2d getPose(){
+            return pose;
+        }
     
-    public Pose2d getPose(){
-        return pose;
-    }
-
-    public double distanceToHub() {
-        boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue);
-        double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
-        double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
-        return Math.hypot(hubX - pose.getX(), hubY - pose.getY());
-    }
-
-    public double[] getHubDxDy(){
-        boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue);
-        double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
-        double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
-        return new double[]{hubX - pose.getX(), hubY - pose.getY()};
+        public double distanceToHub() {
+            boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue);
+            double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+            double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
+            return Math.hypot(hubX - pose.getX(), hubY - pose.getY());
+        }
+    
+        public static double[] getHubDxDy(){
+            boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue);
+            double hubX = isBlue ? Constants.SwervePositions.blueHubX : Constants.SwervePositions.redHubX;
+            double hubY = isBlue ? Constants.SwervePositions.blueHubY : Constants.SwervePositions.redHubY;
+            return new double[]{hubX - pose.getX(), hubY - pose.getY()};
     }
 
 

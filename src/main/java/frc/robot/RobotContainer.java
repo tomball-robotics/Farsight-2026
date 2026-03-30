@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControlConstants;
 import frc.robot.commands.SetupShot;
+import frc.robot.lib.T3Blink;
 import frc.robot.lib.TunerConstants;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.IntakePivot;
@@ -34,6 +35,7 @@ public class RobotContainer {
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
   
   // subsystems
+  private T3Blink blink = new T3Blink();
   private Shooter shooter = new Shooter();
   private IntakePivot intakePivot = new IntakePivot();
   private IntakeRollers intakeRollers = new IntakeRollers();

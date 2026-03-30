@@ -339,8 +339,6 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             pose = odometry.getPose();
         }
         
-
-        
         SmartDashboard.putNumber("Odometry/Target X", AutoBuilder.getCurrentPose().getX());
         SmartDashboard.putNumber("Odometry/Target Y", AutoBuilder.getCurrentPose().getY());
         SmartDashboard.putBoolean("Odometry/Pointing Hub", yawController.atSetpoint());
@@ -349,8 +347,6 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         SmartDashboard.putNumber("Odometry/Hub Dy", Odometry.getHubDxDy()[1]);
 
         SmartDashboard.putBoolean("Swerve/Slow Mode", slowModeEnabled);
-
-
 
     }
     

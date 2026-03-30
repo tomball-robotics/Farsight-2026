@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.lib.T3Blink;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -52,7 +53,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    T3Blink.setFor(1, T3Blink.Pattern.COLOR1_STROBE, T3Blink.Pattern.RED);
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -81,6 +84,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    T3Blink.setFor(1, T3Blink.Pattern.COLOR2_STROBE, T3Blink.Pattern.RED);
+    
   }
 
   /** This function is called periodically during operator control. */
