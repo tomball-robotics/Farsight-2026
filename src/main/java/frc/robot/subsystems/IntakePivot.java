@@ -9,8 +9,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.T3Blink;
 import frc.robot.lib.T3Lib;
 
 public class IntakePivot extends SubsystemBase {
@@ -48,7 +50,8 @@ public class IntakePivot extends SubsystemBase {
     return this.run(() -> {
       leader.setControl(positionRequest.withPosition(position));
       SmartDashboard.putNumber("Intake/Pivot/Setpoint", position);
-    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.5);
+    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.5)
+      .andThen(new InstantCommand(() -> T3Blink.setFor(.25, T3Blink.Pattern.COLOR2_STROBE)));
   }
 
   public Command dropIntake() {
