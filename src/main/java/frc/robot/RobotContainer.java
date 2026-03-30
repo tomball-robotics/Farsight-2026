@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControlConstants;
 import frc.robot.commands.SetupShot;
 import frc.robot.lib.TunerConstants;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRollers;
@@ -25,7 +24,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Odometry;
 
-
+@SuppressWarnings("unused")
 public class RobotContainer {
   
   // swerve
