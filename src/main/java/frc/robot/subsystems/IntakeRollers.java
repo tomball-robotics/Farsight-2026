@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.T3Blink;
 import frc.robot.lib.T3Lib;
 
 public class IntakeRollers extends SubsystemBase {
@@ -32,7 +33,10 @@ public class IntakeRollers extends SubsystemBase {
   }
   
   public Command run() {
-    return runOnce(() -> motor.setControl(runRequest));
+    return runOnce(() -> {
+      motor.setControl(runRequest);
+      T3Blink.set(T3Blink.Pattern.COLOR_WAVES_COLOR1_AND_COLOR2);
+    });
   }
   
   public Command runReverse() {
@@ -40,7 +44,10 @@ public class IntakeRollers extends SubsystemBase {
   }
   
   public Command stop() {
-    return runOnce(() -> motor.setControl(coastRequest));
+    return runOnce(() -> {
+      motor.setControl(coastRequest);
+      T3Blink.set(T3Blink.Pattern.BLACK);
+    });
   }
   
   @Override

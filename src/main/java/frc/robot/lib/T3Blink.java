@@ -141,6 +141,10 @@ public class T3Blink extends SubsystemBase {
         }).start();
     }
 
+    public static void setDefault() {
+        set(Pattern.RAINBOW_RAINBOW);
+    }
+
     private static void set(double value) {
         blinkin.set(value);
     }
