@@ -66,13 +66,15 @@ public class Shooter extends SubsystemBase {
       new SysIdRoutine.Mechanism(
         output -> rightMotor.setControl(new VoltageOut(output)),
         log -> {log.motor("TalonFX-" + rightMotor.getDeviceID())
-              .voltage(Volts.of(rightMotor.getMotorVoltage().getValueAsDouble()))
-              .angularVelocity(rightMotor.getVelocity().getValue())
-              .angularPosition(rightMotor.getPosition().getValue());
-        log.motor("TalonFX-" + leftMotor.getDeviceID())
-              .voltage(Volts.of(leftMotor.getMotorVoltage().getValueAsDouble()))
-              .angularVelocity(leftMotor.getVelocity().getValue())
-              .angularPosition(leftMotor.getPosition().getValue());},
+                   .voltage(Volts.of(rightMotor.getMotorVoltage().getValueAsDouble()))
+                   .angularVelocity(rightMotor.getVelocity().getValue())
+                   .angularPosition(rightMotor.getPosition().getValue());
+
+                log.motor("TalonFX-" + leftMotor.getDeviceID())
+                   .voltage(Volts.of(leftMotor.getMotorVoltage().getValueAsDouble()))
+                   .angularVelocity(leftMotor.getVelocity().getValue())
+                   .angularPosition(leftMotor.getPosition().getValue());
+              },
         this
       )
     );

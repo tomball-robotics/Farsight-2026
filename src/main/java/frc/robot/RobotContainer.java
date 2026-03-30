@@ -50,15 +50,12 @@ public class RobotContainer {
   private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);
   private final CommandXboxController operator = new CommandXboxController(ControlConstants.OPERATOR_CONTROLLER_ID);
 
-  //commands
-  private SetupShot setupShot = new SetupShot(drivetrain, shooter, odometry, driver);
-  
   // autonomous
   private final SendableChooser<Command> autoChooser;
   
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
-    NamedCommands.registerCommand("Run Shooter", setupShot);
+    NamedCommands.registerCommand("Run Shooter", new SetupShot(drivetrain, shooter, odometry, driver));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
@@ -134,8 +131,8 @@ public class RobotContainer {
     operator.povUp().onTrue(intakePivot.raiseIntake());
     
     // run shooter
-    operator.leftTrigger().whileTrue(setupShot);
-    operator.leftTrigger().onFalse(new ParallelCommandGroup(shooter.stop(), drivetrain.getDefaultCommand()));
+    operator.leftTrigger().whileTrue(new SetupShot(drivetrain, shooter, odometry, driver));
+    operator.leftTrigger().onFalse(shooter.stop());
     
     // run feeder & rollers with right trigger
     operator.rightTrigger().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run(), intakeRollers.run()));
