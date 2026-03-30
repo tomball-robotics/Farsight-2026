@@ -15,6 +15,7 @@ public class ShotCalculator {
     static
     {
         //Add Tuned Solutions here
+        solutionMap.addSolution(1.0, 5, 1);
     }
 
     public static ShotSolution solveShot(double dx, double dy, double xVelocity, double yVelocity, double angularVelocity){

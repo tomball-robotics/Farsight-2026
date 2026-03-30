@@ -55,7 +55,7 @@ public class RobotContainer {
   
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
-    NamedCommands.registerCommand("Run Shooter", new SetupShot(drivetrain, shooter, odometry, driver));
+    NamedCommands.registerCommand("Run Shooter", new SetupShot(drivetrain, shooter, odometry, driver).withTimeout(4.0));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
