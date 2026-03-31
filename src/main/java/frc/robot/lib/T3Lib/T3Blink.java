@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class T3Blink extends SubsystemBase {
 
+    private static Pattern defaultPattern = Pattern.BREATH_RED;
     private static final int BLINKIN_PWM_PORT = 0;
     private static final Spark blinkin = new Spark(BLINKIN_PWM_PORT);
 
@@ -151,7 +152,7 @@ public class T3Blink extends SubsystemBase {
      * Sets the pattern to the default (RAINBOW_RAINBOW).
      */
     public static void setDefault() {
-        set(Pattern.RAINBOW_RAINBOW);
+        set(defaultPattern);
     }
 
     /**
@@ -178,5 +179,5 @@ public class T3Blink extends SubsystemBase {
     private static void set(double value) {
         blinkin.set(value);
     }
-    
+
 }
