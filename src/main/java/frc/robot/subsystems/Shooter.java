@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.lib.T3Lib;
+import frc.robot.lib.T3Lib.T3Kraken;
 
 public class Shooter extends SubsystemBase {
   
@@ -37,14 +37,14 @@ public class Shooter extends SubsystemBase {
   public int velocityOffset = 4;
 
   public Shooter() {
-    rightMotor = T3Lib.createTalonFXVelocity(
+    rightMotor = T3Kraken.createVelocity(
       Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
       NeutralModeValue.Coast,
       false,
       0.03039, 0.0, 0.0, 0.12664
     );
     
-    leftMotor = T3Lib.createTalonFX(
+    leftMotor = T3Kraken.create(
       Constants.ShooterConstants.LEFT_SHOOTER_MOTOR_ID,
       NeutralModeValue.Coast,
       false

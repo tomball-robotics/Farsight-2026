@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.lib.T3Lib;
+import frc.robot.lib.T3Lib.T3Kraken;
 
 public class Rollers extends SubsystemBase {
   
@@ -20,7 +20,7 @@ public class Rollers extends SubsystemBase {
   private final CoastOut coastRequest = new CoastOut();
   
   public Rollers() {
-    motor = T3Lib.createTalonFX(
+    motor = T3Kraken.create(
       Constants.RollerConstants.ROLLER_MOTOR_ID,
       NeutralModeValue.Coast,
       false

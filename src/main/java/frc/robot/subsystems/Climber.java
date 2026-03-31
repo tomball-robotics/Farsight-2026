@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ClimberConstants;
-import frc.robot.lib.T3Lib;
+import frc.robot.lib.T3Lib.T3Kraken;
 
 public class Climber extends SubsystemBase {
  
@@ -26,8 +26,8 @@ public class Climber extends SubsystemBase {
   PositionVoltage request = new PositionVoltage(0);
 
   public Climber() {
-    rightClimberMotor = T3Lib.createTalonFXPosition(Constants.ClimberConstants.RIGHT_CLIMBER_ID, NeutralModeValue.Brake, false, Constants.ClimberConstants.CLIMBER_CURRENT_LIMIT, 0.01, 0, 0);
-    leftClimberMotor = T3Lib.createTalonFXPosition(Constants.ClimberConstants.LEFT_CLIMBER_ID, NeutralModeValue.Brake, false, Constants.ClimberConstants.CLIMBER_CURRENT_LIMIT, 0.01, 0, 0);
+    rightClimberMotor = T3Kraken.createPosition(Constants.ClimberConstants.RIGHT_CLIMBER_ID, NeutralModeValue.Brake, false, Constants.ClimberConstants.CLIMBER_CURRENT_LIMIT, 0.01, 0, 0);
+    leftClimberMotor = T3Kraken.createPosition(Constants.ClimberConstants.LEFT_CLIMBER_ID, NeutralModeValue.Brake, false, Constants.ClimberConstants.CLIMBER_CURRENT_LIMIT, 0.01, 0, 0);
 
     
     leftClimberMotor.setControl(new Follower(Constants.ClimberConstants.RIGHT_CLIMBER_ID, MotorAlignmentValue.Opposed));

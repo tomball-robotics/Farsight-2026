@@ -1,4 +1,4 @@
-package frc.robot.lib;
+package frc.robot.lib.T3Lib;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -124,40 +124,59 @@ public class T3Blink extends SubsystemBase {
         }
     }
 
-    public static void setFor(double seconds, Pattern strobePattern) {
+    /**
+     * Sets the given pattern for the specified duration, then restores the previous pattern.
+     */
+    public static void setFor(double seconds, Pattern pattern) {
         Pattern previous = current;
-        set(strobePattern);
+        set(pattern);
         new Thread(() -> {
             Timer.delay(seconds);
             set(previous);
         }).start();
     }
 
-    public static void setFor(double seconds, Pattern strobePattern, Pattern endPattern) {
-        set(strobePattern);
+    /**
+     * Sets the given pattern for the specified duration, then switches to the provided end pattern.
+     */
+    public static void setFor(double seconds, Pattern pattern, Pattern endPattern) {
+        set(pattern);
         new Thread(() -> {
             Timer.delay(seconds);
             set(endPattern);
         }).start();
     }
 
+    /**
+     * Sets the pattern to the default (RAINBOW_RAINBOW).
+     */
     public static void setDefault() {
         set(Pattern.RAINBOW_RAINBOW);
+    }
+
+    /**
+     * Sets the Blinkin to the given pattern.
+     */
+    public static void set(Pattern pattern) {
+        set(pattern.value);
+    }
+
+    /**
+     * Sets the Blinkin to a raw PWM value in the range [-1.0, 1.0].
+     */
+    public static void setRaw(double value) {
+        set(value);
+    }
+
+    /**
+     * Turns the LEDs off (BLACK pattern).
+     */
+    public static void off() {
+        set(Pattern.BLACK);
     }
 
     private static void set(double value) {
         blinkin.set(value);
     }
-
-    public static void set(Pattern pattern) {
-        set(pattern.value);
-    }
-
-    public static void setRaw(double value) {
-        set(value);
-    }
-
-    public static void off() {
-        set(Pattern.BLACK);
-    }
+    
 }

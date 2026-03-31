@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.lib.T3Blink;
-import frc.robot.lib.T3Lib;
+import frc.robot.lib.T3Lib.T3Blink;
+import frc.robot.lib.T3Lib.T3Kraken;
 
 public class IntakePivot extends SubsystemBase {
 
@@ -24,14 +24,14 @@ public class IntakePivot extends SubsystemBase {
   private final CoastOut coastRequest = new CoastOut();
 
   public IntakePivot() {
-    leader = T3Lib.createTalonFXPosition(
+    leader = T3Kraken.createPosition(
       Constants.IntakeConstants.INTAKE_PIVOT_LEADER_ID,
       NeutralModeValue.Coast,
       false,
       0.7, 0.001, 0.0
     );
 
-    follower = T3Lib.createTalonFX(
+    follower = T3Kraken.create(
       Constants.IntakeConstants.INTAKE_PIVOT_FOLLOWER_ID,
       NeutralModeValue.Coast,
       false
