@@ -11,8 +11,6 @@ public class T3Kraken {
     private static final double DEFAULT_STATOR_CURRENT_LIMIT = 60.0;
     private static final int DEFAULT_CONFIG_ATTEMPTS = 5;
 
-    // ── Basic ────────────────────────────────────────────────────────────────
-
     /** Creates a TalonFX on the RIO bus with default current limits (40A supply, 60A stator). */
     public static TalonFX create(int id, NeutralModeValue neutralMode, boolean inverted) {
         return create(id, null, neutralMode, inverted, DEFAULT_SUPPLY_CURRENT_LIMIT, DEFAULT_STATOR_CURRENT_LIMIT);
