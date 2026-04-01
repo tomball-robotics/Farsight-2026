@@ -30,6 +30,7 @@ public class IntakePivot extends SubsystemBase {
       true,
       50, 0.001, 0.0, Constants.IntakeConstants.INTAKE_ENCODER_ID
     );
+    
 
     follower = T3Kraken.create(
       Constants.IntakeConstants.INTAKE_PIVOT_FOLLOWER_ID,
