@@ -28,7 +28,10 @@ public class IntakePivot extends SubsystemBase {
       Constants.IntakeConstants.INTAKE_PIVOT_LEADER_ID,
       NeutralModeValue.Coast,
       true,
-      50, 0.001, 0.0, Constants.IntakeConstants.INTAKE_ENCODER_ID
+
+      50, 0.001, 0.0, 
+      20, 0.001, 0.0,
+      Constants.IntakeConstants.INTAKE_ENCODER_ID
     );
     
 
@@ -47,6 +50,8 @@ public class IntakePivot extends SubsystemBase {
     SmartDashboard.putNumber("Intake/Pivot/Setpoint", 0);
   }
 
+
+
   public Command requestPosition(double position) {
     return this.run(() -> {
       leader.setControl(positionRequest.withPosition(position));
@@ -64,6 +69,14 @@ public class IntakePivot extends SubsystemBase {
     return requestPosition(Constants.IntakeConstants.UP_POSITION);
   }
 
+  public Command slowRaise() {
+    return this.run(() -> {
+      leader.setControl(positionRequest.withPosition(Constants.IntakeConstants.UP_POSITION).withSlot(1));
+      SmartDashboard.putNumber("Intake/Pivot/Setpoint", Constants.IntakeConstants.UP_POSITION);
+    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakeConstants.UP_POSITION) < 0.02)
+      .andThen(new InstantCommand(() -> T3Blink.setFor(.25, T3Blink.Pattern.COLOR2_STROBE)));
+  }
+  
   public Command setPivotToCoast() {
     return runOnce(() -> leader.setControl(coastRequest));
   }

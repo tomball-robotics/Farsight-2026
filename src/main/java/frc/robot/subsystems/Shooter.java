@@ -54,7 +54,6 @@ public class Shooter extends SubsystemBase {
     rightMotor.setControl(coastRequest);
 
     
-    SmartDashboard.putData("Commands/Set Shooter Velocity to Dashboard", setVelocityToDashboard());
     SmartDashboard.putData("Commands/Stop Shooter", stop());
     SmartDashboard.putData("Commands/Set Shooter Velocity to Hub", stationaryVelocityFallback(() -> Odometry.getHubDxDy()[0], () -> Odometry.getHubDxDy()[1]));
     SmartDashboard.putNumber("Shooter/Velocity Manual Set", 0);

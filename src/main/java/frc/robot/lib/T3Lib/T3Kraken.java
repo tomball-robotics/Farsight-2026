@@ -88,6 +88,26 @@ public class T3Kraken {
         return createTalonFXPosition(id, null, neutralMode, inverted, supplyCurrentLimit, DEFAULT_STATOR_CURRENT_LIMIT, kP, kI, kD, -1);
     }
     
+    public static TalonFX createTalonFXPosition(int id, NeutralModeValue neutralMode, boolean inverted, double kP, double kI, double kD, double kP2, double kI2, double kD2, int encoderID){
+        TalonFX motor = new TalonFX(id);
+        TalonFXConfiguration config = buildBaseConfig(neutralMode, inverted, DEFAULT_SUPPLY_CURRENT_LIMIT, DEFAULT_STATOR_CURRENT_LIMIT);
+        config.Slot0.kP = kP;
+        config.Slot0.kI = kI;
+        config.Slot0.kD = kD;
+
+        config.Slot1.kP = kP2;
+        config.Slot1.kI = kI2;
+        config.Slot1.kD = kD2;
+
+        config.Feedback.FeedbackRemoteSensorID = encoderID;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+
+        T3Util.applyConfig(motor, config, DEFAULT_CONFIG_ATTEMPTS);
+        return motor;
+
+
+    }
+
     /**
     * Creates a TalonFX configured for position PID on the specified CANivore bus with explicit current limits
     */

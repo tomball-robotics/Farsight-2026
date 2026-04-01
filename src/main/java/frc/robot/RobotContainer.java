@@ -124,7 +124,7 @@ public class RobotContainer {
     driver.b().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run()));
     driver.b().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
 
-    driver.y().onTrue(Commands.runOnce(() -> shooter.setVelocity(30)));
+    driver.y().onTrue(Commands.runOnce(() -> shooter.setVelocityToDashboard()));
     driver.y().onFalse(shooter.stop());
 
     //driver.leftBumper().onTrue(shooter.toggleVelocityIncrease());
@@ -181,7 +181,7 @@ public class RobotContainer {
   
 }
 
-//driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+//driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForsward));
 //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
 //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
 //driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
