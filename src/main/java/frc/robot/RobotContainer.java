@@ -77,7 +77,6 @@ public class RobotContainer {
 
     //NamedCommands.registerCommand("Climber Auto Home", climber.autonomousHome());
     
-    
     configureBindings();
     
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -118,6 +117,7 @@ public class RobotContainer {
     driver.povUp().onTrue(intakePivot.raiseIntake());
     driver.povDown().onTrue(intakePivot.dropIntake());
 
+    
     driver.a().onTrue(intakeRollers.run());
     driver.a().onFalse(intakeRollers.stop());
 
@@ -127,7 +127,7 @@ public class RobotContainer {
     driver.y().onTrue(Commands.runOnce(() -> shooter.setVelocity(30)));
     driver.y().onFalse(shooter.stop());
 
-
+    //driver.leftBumper().onTrue(shooter.toggleVelocityIncrease());
 
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));

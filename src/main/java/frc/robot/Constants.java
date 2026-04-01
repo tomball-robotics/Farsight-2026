@@ -20,7 +20,7 @@ public final class Constants {
   
   public static final class ShooterConstants{
     public static final int RIGHT_SHOOTER_MOTOR_ID = 2; 
-    public static final int LEFT_SHOOTER_MOTOR_ID = 7; 
+    public static final int LEFT_SHOOTER_MOTOR_ID = 6; 
     public static final int SUPPLY_CURRENT_LIMIT = 40;
   }
   

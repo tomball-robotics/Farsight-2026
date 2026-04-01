@@ -125,6 +125,10 @@ public class T3Blink extends SubsystemBase {
         }
     }
 
+    public T3Blink(){
+        setDefault();
+    }
+
     /**
      * Sets the given pattern for the specified duration, then restores the previous pattern.
      */

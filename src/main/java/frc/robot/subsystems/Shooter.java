@@ -41,7 +41,7 @@ public class Shooter extends SubsystemBase {
       Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
       NeutralModeValue.Coast,
       true,
-      0.071543, 0.0, 0.0, 0.12493
+      0.0071543, 0.0, 0.0, 0.13
     );
     
     leftMotor = T3Kraken.create(

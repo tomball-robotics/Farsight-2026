@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -37,8 +38,11 @@ public class SetupShot extends Command {
     ChassisSpeeds speeds = swerve.getSwerveSpeeds();
     ShotSolution solution = ShotCalculator.solveShot(distances[0], distances[1], speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
 
-    shooter.setVelocity(solution.getVelocity());
-    swerve.pointTowardsAngle(driver, solution.getAngle()).schedule();
+    //shooter.setVelocity(solution.getVelocity());
+    //swerve.pointTowardsAngle(driver, solution.getAngle()).schedule();
+
+        swerve.pointTowardsAngle(driver, new Rotation2d(distances[0], distances[1])).schedule();
+
   }
 
   // Called once the command ends or is interrupted.

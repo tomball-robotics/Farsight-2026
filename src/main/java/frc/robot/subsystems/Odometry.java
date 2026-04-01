@@ -28,7 +28,7 @@ public class Odometry extends SubsystemBase{
     .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
     .orElse(kBlueAlliancePerspectiveRotation);
     
-    private static final String[] LIMELIGHT_NAMES = {"limelight-front", "limelight-left", "limelight-right"};
+    private static final String[] LIMELIGHT_NAMES = {"limelight-front"};
     
     private final StructPublisher<Pose3d> pose3DPublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Pose3D", Pose3d.struct).publish();
@@ -65,9 +65,15 @@ public class Odometry extends SubsystemBase{
     
     private void updateVisionMeasurements() {
         boolean anyLimelightBooted = false;
+        poseEstimator.update(swerve.getPigeon2().getRotation2d().plus(addedRotation), swerve.getState().ModulePositions);
+        SmartDashboard.putNumber("Yaw", swerve.getPigeon2().getRotation2d().getDegrees());
+        SmartDashboard.putNumber("estimated Yaw", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
         
         for (String limelightName : LIMELIGHT_NAMES) {
             try {
+                
+                LimelightHelpers.SetRobotOrientation(limelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+
                 LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
                 
                 // no tags detected
@@ -86,7 +92,7 @@ public class Odometry extends SubsystemBase{
                 }
                 
                 if (!rejectUpdate) {
-                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
+                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, 9999999));
                     poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
                 }
                 
@@ -142,5 +148,7 @@ public class Odometry extends SubsystemBase{
         
         SmartDashboard.putNumber("Odometry/Distance to Hub", distanceToHub());
         SmartDashboard.putBoolean("Odometry/Pointing Towards Hub", pointingTowardsHub());
+
+
     }
 }
