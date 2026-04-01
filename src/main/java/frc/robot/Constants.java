@@ -46,7 +46,7 @@ public final class Constants {
 
     public static final int INTAKE_ENCODER_ID = 0;
 
-    public static final double DOWN_POSITION = -0.393;
+    public static final double DOWN_POSITION = -0.382;
     public static final double UP_POSITION = -0.031;
 
     public static final double INTAKE_ROLLERS_SPEED = -6.7;

@@ -2,6 +2,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -10,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -31,7 +33,7 @@ public class RobotContainer {
   // swerve
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.025).withRotationalDeadband(MaxAngularRate * 0.025); // Add a 2.5% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.07).withRotationalDeadband(MaxAngularRate * 0.07); // Add a 2.5% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
   
   // subsystems
@@ -99,14 +101,33 @@ public class RobotContainer {
     //driver.x().onFalse(drivetrain.getDefaultCommand());
 
     /* --- Sys ID Controls */
-
-    //driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
-    //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
-    //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
-    //driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
     
-    driver.a().onTrue(intakePivot.raiseIntake());
-    driver.b().onTrue(intakePivot.dropIntake());
+    /* 
+    driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+    driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+    driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+    driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
+
+    driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    driver.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+    */
+    
+
+    
+    
+    driver.povUp().onTrue(intakePivot.raiseIntake());
+    driver.povDown().onTrue(intakePivot.dropIntake());
+
+    driver.a().onTrue(intakeRollers.run());
+    driver.a().onFalse(intakeRollers.stop());
+
+    driver.b().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run()));
+    driver.b().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
+
+    driver.y().onTrue(Commands.runOnce(() -> shooter.setVelocity(30)));
+    driver.y().onFalse(shooter.stop());
+
+
 
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
