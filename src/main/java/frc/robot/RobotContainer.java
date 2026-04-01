@@ -31,7 +31,7 @@ public class RobotContainer {
   // swerve
   private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.2); // Add a 10% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.025).withRotationalDeadband(MaxAngularRate * 0.025); // Add a 2.5% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
   
   // subsystems
