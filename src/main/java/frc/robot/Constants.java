@@ -19,7 +19,7 @@ public final class Constants {
   }
   
   public static final class ShooterConstants{
-    public static final int RIGHT_SHOOTER_MOTOR_ID = 5; 
+    public static final int RIGHT_SHOOTER_MOTOR_ID = 2; 
     public static final int LEFT_SHOOTER_MOTOR_ID = 7; 
     public static final int SUPPLY_CURRENT_LIMIT = 40;
   }
@@ -40,12 +40,14 @@ public final class Constants {
   }
   
   public static final class IntakeConstants{
-    public static final int INTAKE_PIVOT_LEADER_ID = 2; 
-    public static final int INTAKE_PIVOT_FOLLOWER_ID = 4; 
-    public static final int INTAKE_ROLLER_ID = 1; 
+    public static final int INTAKE_PIVOT_LEADER_ID = 3; 
+    public static final int INTAKE_PIVOT_FOLLOWER_ID = 1; 
+    public static final int INTAKE_ROLLER_ID = 7; 
 
-    public static final double DOWN_POSITION = 4.220215;
-    public static final double UP_POSITION = 0;
+    public static final int INTAKE_ENCODER_ID = 0;
+
+    public static final double DOWN_POSITION = -0.393;
+    public static final double UP_POSITION = -0.031;
 
     public static final double INTAKE_ROLLERS_SPEED = -6.7;
     
@@ -54,13 +56,13 @@ public final class Constants {
   } 
   
   public static final class RollerConstants {
-    public static final int ROLLER_MOTOR_ID = 6; 
+    public static final int ROLLER_MOTOR_ID = 0; 
     public static final double ROLLER_SPEED = 6.7;
     public static final int SUPPLY_CURRENT_LIMIT = 40;
   }
   
   public static final class FeederConstants {
-    public static final int FEEDER_MOTOR_ID = 3;
+    public static final int FEEDER_MOTOR_ID = 8;
     public static final int FEEDER_SPEED = 4;
     public static final int SUPPLY_CURRENT_LIMIT = 40;
   }

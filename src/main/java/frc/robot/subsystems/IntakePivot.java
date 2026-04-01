@@ -24,11 +24,11 @@ public class IntakePivot extends SubsystemBase {
   private final CoastOut coastRequest = new CoastOut();
 
   public IntakePivot() {
-    leader = T3Kraken.createPosition(
+    leader = T3Kraken.createTalonFXPosition(
       Constants.IntakeConstants.INTAKE_PIVOT_LEADER_ID,
       NeutralModeValue.Coast,
-      false,
-      0.7, 0.001, 0.0
+      true,
+      50, 0.001, 0.0, Constants.IntakeConstants.INTAKE_ENCODER_ID
     );
 
     follower = T3Kraken.create(
@@ -50,7 +50,7 @@ public class IntakePivot extends SubsystemBase {
     return this.run(() -> {
       leader.setControl(positionRequest.withPosition(position));
       SmartDashboard.putNumber("Intake/Pivot/Setpoint", position);
-    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.5)
+    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.02)
       .andThen(new InstantCommand(() -> T3Blink.setFor(.25, T3Blink.Pattern.COLOR2_STROBE)));
   }
 

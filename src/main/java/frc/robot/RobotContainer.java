@@ -100,11 +100,14 @@ public class RobotContainer {
 
     /* --- Sys ID Controls */
 
-    driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
-    driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
-    driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
-    driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
+    //driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+    //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+    //driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+    //driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
     
+    driver.a().onTrue(intakePivot.raiseIntake());
+    driver.b().onTrue(intakePivot.dropIntake());
+
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
     driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
@@ -135,8 +138,8 @@ public class RobotContainer {
     operator.leftTrigger().onFalse(shooter.stop());
     
     // run feeder & rollers with right trigger
-    operator.rightTrigger().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run(), intakeRollers.run()));
-    operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop(), intakeRollers.stop()));
+    operator.rightTrigger().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run()));
+    operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
     
     // twerk with b
     operator.b().onTrue(intakePivot.raiseIntake());
