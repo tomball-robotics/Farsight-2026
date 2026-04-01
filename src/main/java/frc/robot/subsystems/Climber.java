@@ -26,8 +26,8 @@ public class Climber extends SubsystemBase {
   PositionVoltage request = new PositionVoltage(0);
 
   public Climber() {
-    rightClimberMotor = T3Kraken.createPosition(Constants.ClimberConstants.RIGHT_CLIMBER_ID, NeutralModeValue.Brake, false, Constants.ClimberConstants.CLIMBER_CURRENT_LIMIT, 0.01, 0, 0);
-    leftClimberMotor = T3Kraken.createPosition(Constants.ClimberConstants.LEFT_CLIMBER_ID, NeutralModeValue.Brake, false, Constants.ClimberConstants.CLIMBER_CURRENT_LIMIT, 0.01, 0, 0);
+    rightClimberMotor = T3Kraken.createTalonFXPosition(Constants.ClimberConstants.RIGHT_CLIMBER_ID, NeutralModeValue.Brake, false, Constants.ClimberConstants.CLIMBER_CURRENT_LIMIT, 0.01, 0, 0, -1);
+    leftClimberMotor = T3Kraken.createTalonFXPosition(Constants.ClimberConstants.LEFT_CLIMBER_ID, NeutralModeValue.Brake, false, Constants.ClimberConstants.CLIMBER_CURRENT_LIMIT, 0.01, 0, 0, -1);
 
     
     leftClimberMotor.setControl(new Follower(Constants.ClimberConstants.RIGHT_CLIMBER_ID, MotorAlignmentValue.Opposed));
