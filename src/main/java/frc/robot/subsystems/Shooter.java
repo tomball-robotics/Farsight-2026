@@ -40,7 +40,7 @@ public class Shooter extends SubsystemBase {
     rightMotor = T3Kraken.createVelocity(
       Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
       NeutralModeValue.Coast,
-      false,
+      true,
       0.03039, 0.0, 0.0, 0.12664
     );
     
