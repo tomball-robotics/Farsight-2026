@@ -115,6 +115,12 @@ public class Shooter extends SubsystemBase {
     return runOnce(() -> velocityDec = !velocityDec);
   }
 
+  public Command shootToHub(Supplier<Double> distance){
+    return runOnce(() -> {
+      setVelocity(ShotCalculator.stationary(distance.get()).getVelocity());
+    });
+  }
+
   public Command stationaryVelocityFallback(Supplier<Double> dxSupplier, Supplier<Double> dySupplier){
     return runOnce(() -> {
       ShotSolution solution = ShotCalculator.solveShot(dxSupplier.get(), dySupplier.get(), 0, 0, 0);

@@ -235,16 +235,18 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             
             double dx = hubX - pose.getX();
             double dy = hubY - pose.getY();
-            Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx));
+            Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx)).plus(addedRotation);
             
             SmartDashboard.putNumber("dx", dx);
             SmartDashboard.putNumber("dy", dy);
+
+            SmartDashboard.putNumber("Target Angle", targetAngle.getDegrees());
             
             this.setControl(new SwerveRequest.FieldCentric()
-                .withDeadband(MaxSpeed * 0.025)
+                .withDeadband(MaxSpeed * 0.07)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .05) * MaxSpeed)
-                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .05) * MaxSpeed)
+                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .07) * MaxSpeed)
+                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .07) * MaxSpeed)
                 .withRotationalRate(yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians()))
             );
         });

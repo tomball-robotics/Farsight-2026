@@ -47,6 +47,14 @@ public class RobotContainer {
   private Swerve drivetrain = TunerConstants.createDrivetrain();
   private Odometry odometry = new Odometry(drivetrain);
 
+    /*
+   * LL Forward -> -.065
+   * LL Right -> 0.339
+   * LL Up -> 0.203
+   * LL Pitch -> 0
+   * LL Yaw -> 90
+   * LL Roll -> 0
+   */
   
   // controllers
   private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);

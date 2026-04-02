@@ -21,14 +21,14 @@ public class Odometry extends SubsystemBase{
     public SwerveDrivePoseEstimator poseEstimator;
     private Swerve swerve;
     
-    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
-    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
+    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.k180deg;
+    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.kZero;
     
     private final Rotation2d addedRotation = DriverStation.getAlliance()
     .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
     .orElse(kBlueAlliancePerspectiveRotation);
     
-    private static final String[] LIMELIGHT_NAMES = {"limelight-front"};
+    private static final String[] LIMELIGHT_NAMES = {"limelight-front", "limelight-left"};
     
     private final StructPublisher<Pose3d> pose3DPublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Pose3D", Pose3d.struct).publish();

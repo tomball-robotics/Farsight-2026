@@ -70,6 +70,10 @@ public class ShotCalculator {
         }
         return out;
     }
+
+    public static ShotSolution stationary(double distance){
+        return solutionMap.get(distance);
+    }
 }
 
 
