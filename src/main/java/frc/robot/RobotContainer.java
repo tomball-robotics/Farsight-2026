@@ -57,7 +57,8 @@ public class RobotContainer {
   
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
-    NamedCommands.registerCommand("Run Shooter", new SetupShot(drivetrain, shooter, odometry, driver).withTimeout(4.0));
+    //NamedCommands.registerCommand("Run Shooter", new SetupShot(drivetrain, shooter, odometry, driver).withTimeout(4.0));
+    NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(35)).withTimeout(2.0));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
@@ -71,6 +72,7 @@ public class RobotContainer {
     
     NamedCommands.registerCommand("Aim", drivetrain.autoPointTowardsHub().withTimeout(1.5));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
+    NamedCommands.registerCommand("Slow Raise Intake", intakePivot.slowRaise());
 
     //NamedCommands.registerCommand("Climbers Up", climber.autoClimberUp());
     //NamedCommands.registerCommand("Climbers Down", climber.autoClimberDown());
@@ -114,7 +116,7 @@ public class RobotContainer {
 
     
     
-    driver.povUp().onTrue(intakePivot.raiseIntake());
+    driver.povUp().onTrue(intakePivot.slowRaise());
     driver.povDown().onTrue(intakePivot.dropIntake());
 
     
@@ -124,7 +126,7 @@ public class RobotContainer {
     driver.b().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run()));
     driver.b().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
 
-    driver.y().onTrue(Commands.runOnce(() -> shooter.setVelocityToDashboard()));
+    driver.y().onTrue(shooter.setVelocityToDashboard());
     driver.y().onFalse(shooter.stop());
 
     //driver.leftBumper().onTrue(shooter.toggleVelocityIncrease());

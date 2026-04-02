@@ -29,8 +29,8 @@ public class IntakePivot extends SubsystemBase {
       NeutralModeValue.Coast,
       true,
 
-      50, 0.001, 0.0, 
-      20, 0.001, 0.0,
+      30, 0.001, 0.0, 
+      20, 0.001, 5,
       Constants.IntakeConstants.INTAKE_ENCODER_ID
     );
     
@@ -54,7 +54,7 @@ public class IntakePivot extends SubsystemBase {
 
   public Command requestPosition(double position) {
     return this.run(() -> {
-      leader.setControl(positionRequest.withPosition(position));
+      leader.setControl(positionRequest.withPosition(position).withSlot(0));
       SmartDashboard.putNumber("Intake/Pivot/Setpoint", position);
     }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.02)
       .andThen(new InstantCommand(() -> T3Blink.setFor(.25, T3Blink.Pattern.COLOR2_STROBE)));
@@ -70,13 +70,14 @@ public class IntakePivot extends SubsystemBase {
   }
 
   public Command slowRaise() {
-    return this.run(() -> {
-      leader.setControl(positionRequest.withPosition(Constants.IntakeConstants.UP_POSITION).withSlot(1));
-      SmartDashboard.putNumber("Intake/Pivot/Setpoint", Constants.IntakeConstants.UP_POSITION);
-    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakeConstants.UP_POSITION) < 0.02)
+    return run(() -> {
+      leader.setControl(positionRequest.withPosition(Constants.IntakeConstants.DOWN_POSITION/2).withSlot(1));
+      SmartDashboard.putNumber("Intake/Pivot/Setpoint", Constants.IntakeConstants.DOWN_POSITION/2);
+    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakeConstants.DOWN_POSITION/2) < 0.02)
+      .andThen(new InstantCommand(() -> leader.setControl(coastRequest)))
       .andThen(new InstantCommand(() -> T3Blink.setFor(.25, T3Blink.Pattern.COLOR2_STROBE)));
   }
-  
+
   public Command setPivotToCoast() {
     return runOnce(() -> leader.setControl(coastRequest));
   }
