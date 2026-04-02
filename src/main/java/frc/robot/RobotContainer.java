@@ -65,7 +65,7 @@ public class RobotContainer {
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
     //NamedCommands.registerCommand("Run Shooter", new SetupShot(drivetrain, shooter, odometry, driver).withTimeout(4.0));
-    NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(35)).withTimeout(2.0));
+    NamedCommands.registerCommand("Run Shooter", shooter.shootToHub(() -> odometry.distanceToHub()).withTimeout(1.0));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
@@ -105,8 +105,8 @@ public class RobotContainer {
     /* --- driver controls --- */
     
     // brake mode with x
-    //driver.x().onTrue(drivetrain.applyRequest(() -> brake));
-    //driver.x().onFalse(drivetrain.getDefaultCommand());
+    driver.x().onTrue(drivetrain.applyRequest(() -> brake));
+    driver.x().onFalse(drivetrain.getDefaultCommand());
 
     /* --- Sys ID Controls */
     
@@ -121,7 +121,7 @@ public class RobotContainer {
     */
     
 
-    
+    /* 
     
     driver.povUp().onTrue(intakePivot.slowRaise());
     driver.povDown().onTrue(intakePivot.dropIntake());
@@ -135,11 +135,12 @@ public class RobotContainer {
 
     //driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
 
-    driver.y().onTrue(shooter.setVelocityToDashboard());
+    driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     driver.y().onFalse(shooter.stop());
-
+    */
 
     //driver.leftBumper().onTrue(shooter.toggleVelocityIncrease());
+    //driver.rightBumper().onTrue(shooter.toggleVelocityDecrease());
 
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
@@ -167,7 +168,7 @@ public class RobotContainer {
     operator.povUp().onTrue(intakePivot.raiseIntake());
     
     // run shooter
-    //operator.leftTrigger().whileTrue(new SetupShot(drivetrain, shooter, odometry, driver));
+    operator.leftTrigger().whileTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     operator.leftTrigger().onFalse(shooter.stop());
     
     // run feeder & rollers with right trigger
@@ -175,16 +176,16 @@ public class RobotContainer {
     operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
     
     // twerk with b
-    operator.b().onTrue(intakePivot.raiseIntake());
-    operator.b().onFalse(intakePivot.dropIntake());
+    operator.b().onTrue(intakePivot.slowRaise());
+
     
     // reverse feeder with a
     operator.a().onTrue(feeder.runReverse());
     operator.a().onFalse(feeder.stop());
 
     //Velocity Offset
-    operator.start().onTrue(shooter.toggleVelocityIncrease());
-    operator.back().onTrue(shooter.toggleVelocityDecrease());
+    operator.y().onTrue(shooter.toggleVelocityIncrease());
+    operator.x().onTrue(shooter.toggleVelocityDecrease());
   }
   
   public Command getAutonomousCommand() {

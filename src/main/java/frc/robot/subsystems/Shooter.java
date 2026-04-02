@@ -141,10 +141,13 @@ class InterpolatingList{
     public InterpolatingList(){
         tunedSolutions = new ArrayList<ShotSolution>();
 
-        addSolution(1.89, 32, 1);
-        addSolution(1.5, 30, 1);
-        addSolution(2.42, 36, 1);
-        addSolution(3.35, 46, 1);
+        //addSolution(1.89, 32, 1);
+        //addSolution(1.5, 30, 1);
+        //addSolution(2.42, 36, 1);
+        addSolution(1.77, 32, 1);
+        addSolution(2.21, 34, 1);
+        addSolution(2.72, 37, 1);
+        addSolution(3.13, 40, 1);
     }
 
     public void addSolution(double distance, double velocity, double time){
