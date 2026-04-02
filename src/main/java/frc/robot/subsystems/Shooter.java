@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.Volts;
@@ -36,6 +37,8 @@ public class Shooter extends SubsystemBase {
 
   public int velocityOffset = 4;
 
+  private InterpolatingList map = new InterpolatingList();
+
   public Shooter() {
     rightMotor = T3Kraken.createVelocity(
       Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
@@ -55,7 +58,6 @@ public class Shooter extends SubsystemBase {
 
     
     SmartDashboard.putData("Commands/Stop Shooter", stop());
-    SmartDashboard.putData("Commands/Set Shooter Velocity to Hub", stationaryVelocityFallback(() -> Odometry.getHubDxDy()[0], () -> Odometry.getHubDxDy()[1]));
     SmartDashboard.putNumber("Shooter/Velocity Manual Set", 0);
 
     sysIdRoutine = new SysIdRoutine(
@@ -117,17 +119,10 @@ public class Shooter extends SubsystemBase {
 
   public Command shootToHub(Supplier<Double> distance){
     return runOnce(() -> {
-      setVelocity(ShotCalculator.stationary(distance.get()).getVelocity());
+      SmartDashboard.putNumber("Measured Distance", distance.get());
+      setVelocity(map.get(distance.get()).getVelocity());
     });
   }
-
-  public Command stationaryVelocityFallback(Supplier<Double> dxSupplier, Supplier<Double> dySupplier){
-    return runOnce(() -> {
-      ShotSolution solution = ShotCalculator.solveShot(dxSupplier.get(), dySupplier.get(), 0, 0, 0);
-      rightMotor.setControl(new VoltageOut(solution.getVelocity()));
-    });
-  }
-
   
   @Override
   public void periodic() {
@@ -136,4 +131,47 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Stator Current", rightMotor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Voltage", rightMotor.getMotorVoltage().getValueAsDouble());
   }
+}
+
+
+
+class InterpolatingList{
+    ArrayList<ShotSolution> tunedSolutions;
+
+    public InterpolatingList(){
+        tunedSolutions = new ArrayList<ShotSolution>();
+
+        addSolution(1.89, 32, 1);
+        addSolution(1.5, 30, 1);
+        addSolution(2.42, 36, 1);
+        addSolution(3.35, 46, 1);
+    }
+
+    public void addSolution(double distance, double velocity, double time){
+        int index = 0;
+        while(index < tunedSolutions.size() && tunedSolutions.get(index).getDistance() < distance){index++;}
+        tunedSolutions.add(index, new ShotSolution(time, distance, velocity));
+        SmartDashboard.putString("MAP", tunedSolutions.toString());
+    }
+
+    public ShotSolution get(double distance){
+        if (distance <= tunedSolutions.get(0).getDistance()) return tunedSolutions.get(0);
+        if (distance >= tunedSolutions.get(tunedSolutions.size() - 1).getDistance()) return tunedSolutions.get(tunedSolutions.size() - 1);
+    
+        for (int i = 0; i < tunedSolutions.size() - 1; i++) {
+            ShotSolution lo = tunedSolutions.get(i);
+            ShotSolution hi = tunedSolutions.get(i + 1);
+            if (distance >= lo.getDistance() && distance <= hi.getDistance()) {
+                double velocity = interpolate(lo.getDistance(), hi.getDistance(), lo.getVelocity(), hi.getVelocity(), distance);
+                double time = interpolate(lo.getDistance(), hi.getDistance(), lo.getTimeOfFlight(), hi.getTimeOfFlight(), distance);
+                return new ShotSolution(time, distance, velocity);
+            }
+        }
+        return tunedSolutions.get(tunedSolutions.size() - 1);
+    }
+
+    private double interpolate(double x1, double x2, double y1, double y2, double x) {
+        if (x1 == x2) {return y1;}
+        return y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+    }
 }

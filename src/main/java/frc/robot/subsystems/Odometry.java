@@ -43,7 +43,7 @@ public class Odometry extends SubsystemBase{
         
         poseEstimator = new SwerveDrivePoseEstimator(
         drivetrain.getKinematics(),
-        drivetrain.getState().Pose.getRotation(),
+        drivetrain.getState().Pose.getRotation().rotateBy(Rotation2d.k180deg),
         drivetrain.getState().ModulePositions,
         new Pose2d(),
         VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
@@ -58,7 +58,7 @@ public class Odometry extends SubsystemBase{
     }
     
     public void updateOdometry() {
-        poseEstimator.update(swerve.getPigeon2().getRotation2d().plus(addedRotation), swerve.getState().ModulePositions);
+        poseEstimator.update(swerve.getPigeon2().getRotation2d(), swerve.getState().ModulePositions);
         
         updateVisionMeasurements();
     }

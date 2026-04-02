@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControlConstants;
-import frc.robot.commands.SetupShot;
 import frc.robot.lib.TunerConstants;
 import frc.robot.lib.T3Lib.T3Blink;
 import frc.robot.subsystems.Feeder;
@@ -97,9 +96,9 @@ public class RobotContainer {
     //Swerve Controls
     drivetrain.setDefaultCommand(
       drivetrain.applyRequest(() ->
-        drive.withVelocityX((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftY() * MaxSpeed + 0.25 * operator.getLeftY() * MaxSpeed)) // Drive forward with negative Y (forward)
-        .withVelocityY((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftX() * MaxSpeed + 0.25 * operator.getLeftX() * MaxSpeed)) // Drive left with negative X (left)
-        .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate - 0.25 * operator.getRightX() * MaxAngularRate * 2)) // Drive counterclockwise with negative X (left)
+        drive.withVelocityX((drivetrain.slowModeEnabled ? -0.25 : -1.0) * (driver.getLeftY() * MaxSpeed)) // Drive forward with negative Y (forward)
+        .withVelocityY((drivetrain.slowModeEnabled ? -0.25 : -1.0) * (driver.getLeftX() * MaxSpeed)) // Drive left with negative X (left)
+        .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate)) // Drive counterclockwise with negative X (left)
       )
     );
     
@@ -134,8 +133,11 @@ public class RobotContainer {
     driver.b().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run()));
     driver.b().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
 
+    //driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
+
     driver.y().onTrue(shooter.setVelocityToDashboard());
     driver.y().onFalse(shooter.stop());
+
 
     //driver.leftBumper().onTrue(shooter.toggleVelocityIncrease());
 
@@ -165,7 +167,7 @@ public class RobotContainer {
     operator.povUp().onTrue(intakePivot.raiseIntake());
     
     // run shooter
-    operator.leftTrigger().whileTrue(new SetupShot(drivetrain, shooter, odometry, driver));
+    //operator.leftTrigger().whileTrue(new SetupShot(drivetrain, shooter, odometry, driver));
     operator.leftTrigger().onFalse(shooter.stop());
     
     // run feeder & rollers with right trigger

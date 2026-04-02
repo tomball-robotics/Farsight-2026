@@ -49,7 +49,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
 
     private final Rotation2d addedRotation = DriverStation.getAlliance()
-    .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
+    .map(a -> a != Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
     .orElse(kBlueAlliancePerspectiveRotation);
     
     private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
@@ -245,8 +245,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             this.setControl(new SwerveRequest.FieldCentric()
                 .withDeadband(MaxSpeed * 0.07)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .07) * MaxSpeed)
-                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .07) * MaxSpeed)
+                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .07) * -MaxSpeed)
+                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .07) * -MaxSpeed)
                 .withRotationalRate(yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians()))
             );
         });

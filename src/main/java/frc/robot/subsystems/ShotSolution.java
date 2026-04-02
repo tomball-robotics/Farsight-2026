@@ -21,4 +21,6 @@ public class ShotSolution {
     
     
     public void setRotation(Rotation2d a){angle=a;}
+
+    public String toString(){return ""+velocity;}
 }
