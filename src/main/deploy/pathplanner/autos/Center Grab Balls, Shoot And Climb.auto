@@ -35,41 +35,21 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Run Shooter"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Drop Intake"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Run Feeder"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 4.0
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "name": "Run Shooter"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Feed"
           }
         }
       ]

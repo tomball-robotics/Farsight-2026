@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.693437945791726,
-        "y": 0.8456205420827394
+        "x": 2.382910128388017,
+        "y": 1.337289586305278
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.534450784593438,
-        "y": 0.5609700427960058
+        "x": 3.029843081312411,
+        "y": 0.8197432239657633
       },
       "isLocked": false,
       "linkedName": "Outpost First Shot return"
@@ -20,12 +20,12 @@
         "y": 0.6515406562054205
       },
       "prevControl": {
-        "x": 3.5862054208273886,
-        "y": 0.6644793152639101
+        "x": 2.514049833941091,
+        "y": 0.7593467733557824
       },
       "nextControl": {
-        "x": 5.775395314977059,
-        "y": 0.6374522795336636
+        "x": 6.160998573466475,
+        "y": 0.5739087018544944
       },
       "isLocked": false,
       "linkedName": null
@@ -103,7 +103,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.300277449185614
+    "rotation": 51.5462907832941
   },
   "useDefaultConstraints": true
 }
