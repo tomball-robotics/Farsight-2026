@@ -156,6 +156,7 @@ public class T3Blink extends SubsystemBase {
      * Sets the pattern to the default (RAINBOW_RAINBOW).
      */
     public static void setDefault() {
+        current = defaultPattern;
         set(defaultPattern);
     }
 
