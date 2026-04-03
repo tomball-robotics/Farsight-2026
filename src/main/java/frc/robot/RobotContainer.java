@@ -133,7 +133,7 @@ public class RobotContainer {
     driver.b().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run()));
     driver.b().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
 
-    //driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
+driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
 
     driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     driver.y().onFalse(shooter.stop());
@@ -145,6 +145,11 @@ public class RobotContainer {
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
     driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
+
+    // driver.y().onTrue(shooter.setVelocityToDashboard());
+    //driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
+
+    //driver.y().onFalse(shooter.stop());
     
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
