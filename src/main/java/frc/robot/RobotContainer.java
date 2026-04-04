@@ -64,8 +64,8 @@ public class RobotContainer {
   
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
-    //NamedCommands.registerCommand("Run Shooter", new SetupShot(drivetrain, shooter, odometry, driver).withTimeout(4.0));
-    NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(33.5)).withTimeout(1.0));
+    //NamedCommands.registerCommand("Run Shooter", shooter.shootToHub(() -> odometry.distanceToHub()).withTimeout(1.0));
+    NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(33.5)));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
@@ -185,7 +185,8 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     operator.rightBumper().onFalse(shooter.stop());
     
     // twerk with b <---  PINEAPPLE
-    operator.b().onTrue(intakePivot.slowRaise());
+    operator.b().onTrue(new ParallelCommandGroup(intakePivot.slowRaise(), intakeRollers.run()));
+    operator.b().onFalse(intakeRollers.stop());
 
     
     // reverse feeder with a
