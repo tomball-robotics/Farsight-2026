@@ -30,8 +30,8 @@ import frc.robot.subsystems.Odometry;
 public class RobotContainer {
   
   // swerve
-  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8; // kSpeedAt12Volts desired top speed
+  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.8; // 3/4 of a rotation per second max angular velocity
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.07).withRotationalDeadband(MaxAngularRate * 0.07); // Add a 2.5% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
   
@@ -65,7 +65,7 @@ public class RobotContainer {
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
     //NamedCommands.registerCommand("Run Shooter", new SetupShot(drivetrain, shooter, odometry, driver).withTimeout(4.0));
-    NamedCommands.registerCommand("Run Shooter", shooter.shootToHub(() -> odometry.distanceToHub()).withTimeout(1.0));
+    NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(33.5)).withTimeout(1.0));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
@@ -146,8 +146,8 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
     driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
 
-    // driver.y().onTrue(shooter.setVelocityToDashboard());
-    //driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
+    driver.y().onTrue(shooter.setVelocityToDashboard());
+    driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
 
     //driver.y().onFalse(shooter.stop());
     
@@ -173,14 +173,16 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     operator.povUp().onTrue(intakePivot.raiseIntake());
     
     // run shooter
-    operator.leftTrigger().whileTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
+    //operator.leftTrigger().whileTrue(Commands.runOnce(() -> shooter.setVelocity(33.5)));
+    operator.leftTrigger().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     operator.leftTrigger().onFalse(shooter.stop());
     
     // run feeder & rollers with right trigger
-    operator.rightTrigger().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run()));
+    operator.rightTrigger().whileTrue(Commands.either(new ParallelCommandGroup(feeder.run(), rollers.run()), Commands.none(), () -> shooter.atSetpoint));
+    
     operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
     
-    // twerk with b
+    // twerk with b <---  PINEAPPLE
     operator.b().onTrue(intakePivot.slowRaise());
 
     

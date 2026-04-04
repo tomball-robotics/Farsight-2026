@@ -52,5 +52,6 @@ public class Feeder extends SubsystemBase {
     SmartDashboard.putNumber("Feeder/Stator Current", motor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Feeder/Voltage", motor.getMotorVoltage().getValueAsDouble());
     SmartDashboard.putBoolean("Feeder/Running", velocity > 0.5);
+    
   }
 }

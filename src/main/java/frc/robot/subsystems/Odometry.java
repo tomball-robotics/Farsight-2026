@@ -92,7 +92,7 @@ public class Odometry extends SubsystemBase{
                 }
                 
                 if (!rejectUpdate) {
-                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, 9999999));
+                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
                     poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
                 }
                 
@@ -146,7 +146,7 @@ public class Odometry extends SubsystemBase{
         pose2DPublisher.set(pose);
         chassisSpeedsPublisher.set(swerve.getState().Speeds);
         
-        SmartDashboard.putNumber("Odometry/Distance to Hub", distanceToHub());
+        SmartDashboard.putString("Odometry/Distance to Hub", String.format("%.2f", distanceToHub()));
         SmartDashboard.putBoolean("Odometry/Pointing Towards Hub", pointingTowardsHub());
 
 

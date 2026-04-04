@@ -37,6 +37,9 @@ public class Shooter extends SubsystemBase {
 
   public int velocityOffset = 4;
 
+  public boolean atSetpoint = false;
+  double velocitySetpoint = 0;
+
   private InterpolatingList map = new InterpolatingList();
 
   public Shooter() {
@@ -44,7 +47,7 @@ public class Shooter extends SubsystemBase {
       Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
       NeutralModeValue.Coast,
       true,
-      0.0071543, 0.0, 0.0, 0.13
+      0.05, 0.0, 0.0, 0.13
     );
     
     leftMotor = T3Kraken.create(
@@ -83,6 +86,7 @@ public class Shooter extends SubsystemBase {
   
   public void setVelocity(double velocity) {  
     rightMotor.setControl(velocityRequest.withVelocity(velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
+    velocitySetpoint = velocity;
     SmartDashboard.putNumber("Shooter/Setpoint", velocity); 
   }
   
@@ -130,6 +134,10 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Supply Current", rightMotor.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Stator Current", rightMotor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Voltage", rightMotor.getMotorVoltage().getValueAsDouble());
+;
+    atSetpoint = Math.abs(velocitySetpoint - rightMotor.getVelocity().getValueAsDouble()) < 2.5;
+
+    SmartDashboard.putBoolean("Shooter/At velocity setpoint", atSetpoint);
   }
 }
 
@@ -144,12 +152,12 @@ class InterpolatingList{
         //addSolution(1.89, 32, 1);
         //addSolution(1.5, 30, 1);
         //addSolution(2.42, 36, 1);
-
-        //  
-        addSolution(1.77, 32, 1);
-        addSolution(2.21, 34, 1);
-        addSolution(2.72, 37, 1);
-        addSolution(3.13, 40, 1);
+ 
+        addSolution(1.77, 31, 1);
+        addSolution(2.21, 32.5, 1);
+        addSolution(2.42,33.5,1);
+        addSolution(2.72, 35, 1);
+        addSolution(3.13, 38, 1);
     }
 
     public void addSolution(double distance, double velocity, double time){
