@@ -178,9 +178,11 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     operator.leftTrigger().onFalse(shooter.stop());
     
     // run feeder & rollers with right trigger
-    operator.rightTrigger().whileTrue(Commands.either(new ParallelCommandGroup(feeder.run(), rollers.run()), Commands.none(), () -> shooter.atSetpoint));
-    
+    operator.rightTrigger().onTrue(Commands.waitUntil(() -> shooter.atSetpoint).andThen(new ParallelCommandGroup(feeder.run(), rollers.run())));
     operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
+
+    operator.rightBumper().onTrue(Commands.runOnce(() -> shooter.setVelocity(43)));
+    operator.rightBumper().onFalse(shooter.stop());
     
     // twerk with b <---  PINEAPPLE
     operator.b().onTrue(intakePivot.slowRaise());
