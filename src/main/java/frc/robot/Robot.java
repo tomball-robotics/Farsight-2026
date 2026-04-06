@@ -84,6 +84,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    //m_robotContainer.resetOrientation();
+    
     T3Blink.setFor(1, T3Blink.Pattern.COLOR2_STROBE, T3Blink.Pattern.RED);
     
   }

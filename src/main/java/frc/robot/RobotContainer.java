@@ -96,8 +96,8 @@ public class RobotContainer {
     //Swerve Controls
     drivetrain.setDefaultCommand(
       drivetrain.applyRequest(() ->
-        drive.withVelocityX((drivetrain.slowModeEnabled ? -0.25 : -1.0) * (driver.getLeftY() * MaxSpeed)) // Drive forward with negative Y (forward)
-        .withVelocityY((drivetrain.slowModeEnabled ? -0.25 : -1.0) * (driver.getLeftX() * MaxSpeed)) // Drive left with negative X (left)
+        drive.withVelocityX((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftY() * -MaxSpeed)) // Drive forward with negative Y (forward)
+        .withVelocityY((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftX() * -MaxSpeed)) // Drive left with negative X (left)
         .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate)) // Drive counterclockwise with negative X (left)
       )
     );
@@ -147,9 +147,9 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
 
     driver.y().onTrue(shooter.setVelocityToDashboard());
-    driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
+    //driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
 
-    //driver.y().onFalse(shooter.stop());
+    driver.y().onFalse(shooter.stop());
     
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
@@ -201,8 +201,14 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
+
+  public void resetOrientation(){
+    drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()).schedule();
+  }
   
 }
+
+
 
 //driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForsward));
 //driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));

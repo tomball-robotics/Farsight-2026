@@ -139,6 +139,11 @@ public class Odometry extends SubsystemBase{
         SmartDashboard.putString("Odometry/Distance to Hub", String.format("%.2f", distanceToHub()));
         SmartDashboard.putBoolean("Odometry/Pointing Towards Hub", pointingTowardsHub());
 
+        double[] dyDx = getHubDxDy();
+
+        SmartDashboard.putNumber("Odometry/Hub Dx", dyDx[0]);
+        SmartDashboard.putNumber("Odometry/Hub Dy", dyDx[1]);
+
 
     }
 }

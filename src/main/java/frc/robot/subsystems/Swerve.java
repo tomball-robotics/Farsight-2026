@@ -45,8 +45,8 @@ import frc.robot.lib.TunerConstants.TunerSwerveDrivetrain;
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     
     private static final double kSimLoopPeriod = 0.005;
-    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
-    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
+    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.k180deg;
+    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.kZero;
 
     public Rotation2d addedRotation = DriverStation.getAlliance()
     .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
@@ -201,8 +201,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             this.setControl(new SwerveRequest.FieldCentric()
             .withRotationalDeadband(MaxAngularRate * 0.025)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withVelocityX(xInput * MaxSpeed)
-            .withVelocityY(yController.calculate(pose.getY(), targetY))
+            .withVelocityX(-xInput * MaxSpeed)
+            .withVelocityY(-yController.calculate(pose.getY(), targetY))
             .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             );
         });
@@ -217,8 +217,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             this.setControl(new SwerveRequest.FieldCentric()
                 .withRotationalDeadband(MaxAngularRate * 0.025)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                .withVelocityX(xInput * MaxSpeed)
-                .withVelocityY(yController.calculate(pose.getY(), targetY))
+                .withVelocityX(xInput * -MaxSpeed)
+                .withVelocityY(-yController.calculate(pose.getY(), targetY))
                 .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             );
         });
