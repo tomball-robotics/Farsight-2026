@@ -8,6 +8,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -203,7 +205,7 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
   }
 
   public void resetOrientation(){
-    drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()).schedule();
+    drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(drivetrain.getPigeon2().getYaw().getValueAsDouble() + ((DriverStation.getAlliance().get() == Alliance.Red) ? 180 : 0));}).andThen(drivetrain.resetHeading()).schedule();
   }
   
 }
