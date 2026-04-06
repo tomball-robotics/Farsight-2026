@@ -48,8 +48,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
 
-    private final Rotation2d addedRotation = DriverStation.getAlliance()
-    .map(a -> a != Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
+    public Rotation2d addedRotation = DriverStation.getAlliance()
+    .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
     .orElse(kBlueAlliancePerspectiveRotation);
     
     private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
@@ -329,6 +329,10 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     
     @Override
     public void periodic() {
+        addedRotation = DriverStation.getAlliance()
+    .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
+    .orElse(kBlueAlliancePerspectiveRotation);
+
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {setOperatorPerspectiveForward(
                 allianceColor == Alliance.Blue ? kRedAlliancePerspectiveRotation : kBlueAlliancePerspectiveRotation);

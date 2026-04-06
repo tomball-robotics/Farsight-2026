@@ -21,12 +21,6 @@ public class Odometry extends SubsystemBase{
     public SwerveDrivePoseEstimator poseEstimator;
     private Swerve swerve;
     
-    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.k180deg;
-    private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.kZero;
-    
-    private final Rotation2d addedRotation = DriverStation.getAlliance()
-    .map(a -> a == Alliance.Blue ? kBlueAlliancePerspectiveRotation : kRedAlliancePerspectiveRotation)
-    .orElse(kBlueAlliancePerspectiveRotation);
     
     private static final String[] LIMELIGHT_NAMES = {"limelight-front", "limelight-left"};
     
@@ -54,18 +48,13 @@ public class Odometry extends SubsystemBase{
     
     
     public void resetPose(Pose2d pose) {
-        poseEstimator.resetPosition(swerve.getPigeon2().getRotation2d().plus(addedRotation), swerve.getState().ModulePositions, pose);
+        poseEstimator.resetPosition(swerve.getPigeon2().getRotation2d().plus(swerve.addedRotation), swerve.getState().ModulePositions, pose);
     }
     
-    public void updateOdometry() {
-        poseEstimator.update(swerve.getPigeon2().getRotation2d(), swerve.getState().ModulePositions);
-        
-        updateVisionMeasurements();
-    }
     
     private void updateVisionMeasurements() {
         boolean anyLimelightBooted = false;
-        poseEstimator.update(swerve.getPigeon2().getRotation2d().plus(addedRotation), swerve.getState().ModulePositions);
+        poseEstimator.update(swerve.getPigeon2().getRotation2d().plus(swerve.addedRotation), swerve.getState().ModulePositions);
         SmartDashboard.putNumber("Yaw", swerve.getPigeon2().getRotation2d().getDegrees());
         SmartDashboard.putNumber("estimated Yaw", poseEstimator.getEstimatedPosition().getRotation().getDegrees());
         
@@ -74,7 +63,7 @@ public class Odometry extends SubsystemBase{
                 
                 LimelightHelpers.SetRobotOrientation(limelightName, poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
 
-                LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
+                LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
                 
                 // no tags detected
                 if (poseEstimate.tagCount == 0) {
@@ -92,7 +81,7 @@ public class Odometry extends SubsystemBase{
                 }
                 
                 if (!rejectUpdate) {
-                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, .9));
+                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, 999999999));
                     poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
                 }
                 
@@ -138,7 +127,8 @@ public class Odometry extends SubsystemBase{
     
     @Override
     public void periodic(){
-        updateOdometry();
+        updateVisionMeasurements();
+
         
         pose = poseEstimator.getEstimatedPosition();
         
