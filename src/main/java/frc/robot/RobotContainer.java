@@ -8,6 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -32,9 +33,9 @@ import frc.robot.subsystems.Odometry;
 public class RobotContainer {
   
   // swerve
-  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8; // kSpeedAt12Volts desired top speed
+  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8; // 80% of kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 0.8; // 3/4 of a rotation per second max angular velocity
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * 0.07).withRotationalDeadband(MaxAngularRate * 0.07); // Add a 2.5% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * Constants.ControlConstants.DEADBAND).withRotationalDeadband(MaxAngularRate * Constants.ControlConstants.DEADBAND); // Add a 7% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
   
   // subsystems
@@ -44,18 +45,8 @@ public class RobotContainer {
   private IntakeRollers intakeRollers = new IntakeRollers();
   private Rollers rollers = new Rollers();
   private Feeder feeder = new Feeder();
-  //private Climber climber = new Climber();
   private Swerve drivetrain = TunerConstants.createDrivetrain();
   private Odometry odometry = new Odometry(drivetrain);
-
-    /*
-   * LL Forward -> -.065
-   * LL Right -> 0.339
-   * LL Up -> 0.203
-   * LL Pitch -> 0
-   * LL Yaw -> 90
-   * LL Roll -> 0
-   */
   
   // controllers
   private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);
@@ -66,8 +57,8 @@ public class RobotContainer {
   
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
-    //NamedCommands.registerCommand("Run Shooter", shooter.shootToHub(() -> odometry.distanceToHub()).withTimeout(1.0));
-    NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(33.5)));
+    NamedCommands.registerCommand("Run Shooter", shooter.shootToHub(() -> odometry.distanceToHub()).withTimeout(1.0));
+    //NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(33.5)));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
@@ -82,11 +73,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("Aim", drivetrain.autoPointTowardsHub().withTimeout(1.5));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
     NamedCommands.registerCommand("Slow Raise Intake", intakePivot.slowRaise());
-
-    //NamedCommands.registerCommand("Climbers Up", climber.autoClimberUp());
-    //NamedCommands.registerCommand("Climbers Down", climber.autoClimberDown());
-
-    //NamedCommands.registerCommand("Climber Auto Home", climber.autonomousHome());
     
     configureBindings();
     
@@ -95,6 +81,7 @@ public class RobotContainer {
   }
   
   private void configureBindings() {
+
     //Swerve Controls
     drivetrain.setDefaultCommand(
       drivetrain.applyRequest(() ->
@@ -110,59 +97,16 @@ public class RobotContainer {
     driver.x().onTrue(drivetrain.applyRequest(() -> brake));
     driver.x().onFalse(drivetrain.getDefaultCommand());
 
-    /* --- Sys ID Controls */
-    
-    /* 
-    driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
-    driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
-    driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
-    driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
-
-    driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
-    driver.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
-    */
-    
-
-    /* 
-    
-    driver.povUp().onTrue(intakePivot.slowRaise());
-    driver.povDown().onTrue(intakePivot.dropIntake());
-
-    
-    driver.a().onTrue(intakeRollers.run());
-    driver.a().onFalse(intakeRollers.stop());
-
-    driver.b().onTrue(new ParallelCommandGroup(feeder.run(), rollers.run()));
-    driver.b().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
-
-driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
-
-    driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
-    driver.y().onFalse(shooter.stop());
-    */
-
-    //driver.leftBumper().onTrue(shooter.toggleVelocityIncrease());
-    //driver.rightBumper().onTrue(shooter.toggleVelocityDecrease());
-
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
     driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
 
+    //Shooter testing
     driver.y().onTrue(shooter.setVelocityToDashboard());
-    //driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
-
     driver.y().onFalse(shooter.stop());
     
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
-    
-    /* 
-    driver.leftBumper().onTrue(climber.climberUp());
-    driver.leftBumper().onFalse(climber.stop());
-
-    driver.rightBumper().onTrue(climber.climberDown());
-    driver.rightBumper().onFalse(climber.stop());
-    */
 
     /* --- operator controls ---  */
     
@@ -175,7 +119,6 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     operator.povUp().onTrue(intakePivot.raiseIntake());
     
     // run shooter
-    //operator.leftTrigger().whileTrue(Commands.runOnce(() -> shooter.setVelocity(33.5)));
     operator.leftTrigger().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     operator.leftTrigger().onFalse(shooter.stop());
     
@@ -198,6 +141,20 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     //Velocity Offset
     operator.y().onTrue(shooter.toggleVelocityIncrease());
     operator.x().onTrue(shooter.toggleVelocityDecrease());
+    
+    /* --- Sys ID Controls */
+    
+    /* 
+    driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+    driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+    driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+    driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
+
+    driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    driver.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+    */
+
+
   }
   
   public Command getAutonomousCommand() {
@@ -205,14 +162,10 @@ driver.y().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
   }
 
   public void resetOrientation(){
-    drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(drivetrain.getPigeon2().getYaw().getValueAsDouble() + ((DriverStation.getAlliance().get() == Alliance.Red) ? 180 : 0));}).andThen(drivetrain.resetHeading()).schedule();
+    drivetrain.runOnce(() -> {
+      drivetrain.seedFieldCentric(); 
+      drivetrain.getPigeon2().setYaw(drivetrain.getPigeon2().getYaw().getValueAsDouble() + drivetrain.addedRotation.plus(Rotation2d.k180deg).getDegrees());
+    }).andThen(drivetrain.resetHeading()).schedule();
   }
   
 }
-
-
-
-//driver.a().whileTrue(shooter.sysIdDynamic(Direction.kForsward));
-//driver.b().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
-//driver.y().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
-//driver.x().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));

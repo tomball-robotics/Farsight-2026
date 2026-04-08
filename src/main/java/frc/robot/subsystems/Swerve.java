@@ -193,13 +193,13 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public Command holdAlignmentToTrench(CommandXboxController joystick) {
         return this.run(() -> {
             double xInput = joystick.getLeftY();
-            if (Math.abs(xInput) < 0.005) xInput = 0;
+            if (Math.abs(xInput) < Constants.ControlConstants.DEADBAND) xInput = 0;
             
             double midTrenchY = (Constants.SwervePositions.rightTrenchY + Constants.SwervePositions.leftTrenchY) / 2;
             double targetY = pose.getY() > midTrenchY ? Constants.SwervePositions.rightTrenchY : Constants.SwervePositions.leftTrenchY;
             
             this.setControl(new SwerveRequest.FieldCentric()
-            .withRotationalDeadband(MaxAngularRate * 0.025)
+            .withRotationalDeadband(MaxAngularRate * Constants.ControlConstants.DEADBAND)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withVelocityX(-xInput * MaxSpeed)
             .withVelocityY(-yController.calculate(pose.getY(), targetY))
@@ -211,11 +211,11 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public Command holdAllignmentToClimb(CommandXboxController joystick){
         return this.run(() -> {
             double xInput = joystick.getLeftY();
-            if (Math.abs(xInput) < 0.005) xInput = 0;
+            if (Math.abs(xInput) < Constants.ControlConstants.DEADBAND) xInput = 0;
 
             double targetY = DriverStation.getAlliance().get().equals(Alliance.Blue) ? 3.730244 : 4.323588;
             this.setControl(new SwerveRequest.FieldCentric()
-                .withRotationalDeadband(MaxAngularRate * 0.025)
+                .withRotationalDeadband(MaxAngularRate * Constants.ControlConstants.DEADBAND)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
                 .withVelocityX(xInput * -MaxSpeed)
                 .withVelocityY(-yController.calculate(pose.getY(), targetY))
@@ -243,10 +243,10 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             SmartDashboard.putNumber("Target Angle", targetAngle.getDegrees());
             
             this.setControl(new SwerveRequest.FieldCentric()
-                .withDeadband(MaxSpeed * 0.07)
+                .withDeadband(MaxSpeed * Constants.ControlConstants.DEADBAND)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .07) * -MaxSpeed)
-                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .07) * -MaxSpeed)
+                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), Constants.ControlConstants.DEADBAND) * -MaxSpeed)
+                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), Constants.ControlConstants.DEADBAND) * -MaxSpeed)
                 .withRotationalRate(yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians()))
             );
         });
@@ -269,7 +269,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             SmartDashboard.putNumber("dy", dy);
             
             this.setControl(new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.025)
+            .withDeadband(MaxSpeed * Constants.ControlConstants.DEADBAND)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withVelocityX(0)
             .withVelocityY(0)
@@ -293,10 +293,10 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         return this.run(() -> {            
             yawController.setSetpoint(targetAngle.getRadians());
             this.setControl(new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.025)
+            .withDeadband(MaxSpeed * Constants.ControlConstants.DEADBAND)
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-            .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), .025) * MaxSpeed)
-            .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), .025) * MaxSpeed)
+            .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), Constants.ControlConstants.DEADBAND) * MaxSpeed)
+            .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), Constants.ControlConstants.DEADBAND) * MaxSpeed)
             .withRotationalRate(
             yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians())));
         });

@@ -5,6 +5,8 @@ public final class Constants {
   public static class ControlConstants {
     public static final int DRIVER_CONTROLLER_ID = 0;
     public static final int OPERATOR_CONTROLLER_ID = 1;
+
+    public static final double DEADBAND = 0.07;
   }
   
   public static final class SwervePositions{
