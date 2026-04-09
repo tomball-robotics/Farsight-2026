@@ -22,6 +22,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.lib.T3Lib.T3Kraken;
 
+/*
+ * 2.32 30
+ * 2.65 33
+ * 3.08 34.5
+ * 3.83 37
+ */
+
 public class Shooter extends SubsystemBase {
   
   private final TalonFX rightMotor;

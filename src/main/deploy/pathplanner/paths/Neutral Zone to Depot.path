@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.713637660485022,
-        "y": 4.7919115549215405
+        "x": 7.4548644793152645,
+        "y": 4.85660485021398
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.795843464358619,
-        "y": 4.887391258814253
+        "x": 6.537070283188862,
+        "y": 4.952084554106692
       },
       "isLocked": false,
       "linkedName": "Depot Neutral Zone"
@@ -89,7 +89,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 72.09555249375185
+    "rotation": 73.6104596659653
   },
   "useDefaultConstraints": true
 }

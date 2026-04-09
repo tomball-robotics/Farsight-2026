@@ -164,7 +164,7 @@ public class RobotContainer {
   public void resetOrientation(){
     drivetrain.runOnce(() -> {
       drivetrain.seedFieldCentric(); 
-      drivetrain.getPigeon2().setYaw(drivetrain.getPigeon2().getYaw().getValueAsDouble() + drivetrain.addedRotation.plus(Rotation2d.k180deg).getDegrees());
+      drivetrain.getPigeon2().setYaw(drivetrain.getPigeon2().getYaw().getValueAsDouble() + drivetrain.addedRotation.getDegrees());
     }).andThen(drivetrain.resetHeading()).schedule();
   }
   
