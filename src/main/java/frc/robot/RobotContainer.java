@@ -66,6 +66,7 @@ public class RobotContainer {
     
     NamedCommands.registerCommand("Drop Intake", intakePivot.dropIntake());
     NamedCommands.registerCommand("Raise Intake", intakePivot.raiseIntake());
+    NamedCommands.registerCommand("Slow Raise Intake", new ParallelCommandGroup(intakePivot.slowRaise(), intakeRollers.run()));
     
     NamedCommands.registerCommand("Run Intake", intakeRollers.run());
     NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
@@ -100,6 +101,10 @@ public class RobotContainer {
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
     driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
+
+    //Allign backwards for funneling
+    driver.rightTrigger().onTrue(drivetrain.pointTowardsAngle(driver, Rotation2d.kZero.plus(drivetrain.addedRotation)));
+    driver.rightTrigger().onFalse(drivetrain.getDefaultCommand());
 
     //Shooter testing
     driver.y().onTrue(shooter.setVelocityToDashboard());

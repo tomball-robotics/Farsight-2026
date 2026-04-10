@@ -85,7 +85,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost Second Path To Neutral"
+            "pathName": "Outpost Shoot Hub Sweep"
           }
         },
         {
@@ -97,7 +97,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost Neutral Zone to Shoot"
+            "pathName": "Outpost Hub Sweep To Shoot"
           }
         },
         {

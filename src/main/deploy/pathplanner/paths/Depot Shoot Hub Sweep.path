@@ -1,0 +1,83 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.809885877318117,
+        "y": 6.473937232524964
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.7840085592011405,
+        "y": 7.7419258202567764
+      },
+      "isLocked": false,
+      "linkedName": "Depot Shoot Position"
+    },
+    {
+      "anchor": {
+        "x": 4.621298145506419,
+        "y": 7.379643366619116
+      },
+      "prevControl": {
+        "x": 3.7716615543246004,
+        "y": 7.34197474927608
+      },
+      "nextControl": {
+        "x": 7.247845934379457,
+        "y": 7.496091298145506
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.355078459343795,
+        "y": 4.015592011412268
+      },
+      "prevControl": {
+        "x": 6.329201141226819,
+        "y": 6.344550641940085
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Depot Hub Sweep"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.3006396588485984,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.5437100213219705,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -53.47114463301484
+  },
+  "useDefaultConstraints": true
+}

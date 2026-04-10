@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost To Neutral Zone"
+            "pathName": "Depot To Neutral Zone"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost Neutral Zone to Shoot"
+            "pathName": "Neutral Zone to Depot"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.75
+            "waitTime": 1.5
           }
         },
         {
@@ -61,7 +61,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 3.0
           }
         },
         {
@@ -85,7 +85,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost Second Path To Neutral"
+            "pathName": "Depot Shoot Hub Sweep"
           }
         },
         {
@@ -97,7 +97,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost Neutral Zone to Shoot"
+            "pathName": "Depot Hub Sweep To Shoot"
           }
         },
         {
@@ -133,13 +133,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Stop Shooter"
+            "name": "Stop Feed"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Stop Feed"
+            "name": "Stop Shooter"
           }
         }
       ]

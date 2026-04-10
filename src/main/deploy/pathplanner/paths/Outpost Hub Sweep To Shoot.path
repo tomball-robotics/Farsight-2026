@@ -1,0 +1,79 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.355078459343795,
+        "y": 4.015592011412268
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.613851640513552,
+        "y": 0.3280741797432247
+      },
+      "isLocked": false,
+      "linkedName": "Outpost Hub Sweep"
+    },
+    {
+      "anchor": {
+        "x": 4.6730527817403695,
+        "y": 0.6644793152639101
+      },
+      "prevControl": {
+        "x": 6.057489300998572,
+        "y": 0.6774179743223976
+      },
+      "nextControl": {
+        "x": 3.3136579076953163,
+        "y": 0.6517746902728354
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.382910128388017,
+        "y": 1.337289586305278
+      },
+      "prevControl": {
+        "x": 3.0039657631954344,
+        "y": 0.6386019971469342
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Outpost First Shot return"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.505330490405086,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 50.65149488149767
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}
