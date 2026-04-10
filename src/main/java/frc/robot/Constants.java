@@ -59,13 +59,13 @@ public final class Constants {
   
   public static final class RollerConstants {
     public static final int ROLLER_MOTOR_ID = 0; 
-    public static final double ROLLER_SPEED = 6.7;
+    public static final double ROLLER_SPEED = 4;
     public static final int SUPPLY_CURRENT_LIMIT = 40;
   }
   
   public static final class FeederConstants {
     public static final int FEEDER_MOTOR_ID = 8;
-    public static final int FEEDER_SPEED = 4;
+    public static final int FEEDER_SPEED = 3;
     public static final int SUPPLY_CURRENT_LIMIT = 40;
   }
 

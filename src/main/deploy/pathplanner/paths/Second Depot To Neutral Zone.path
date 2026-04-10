@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7840085592080737,
-        "y": 7.7807417974317135
+        "x": 2.732253922967189,
+        "y": 7.41845934379458
       },
       "isLocked": false,
       "linkedName": "Depot Shoot Position"
@@ -48,12 +48,12 @@
     },
     {
       "anchor": {
-        "x": 7.4548644793152645,
-        "y": 4.85660485021398
+        "x": 7.584251069900143,
+        "y": 4.300242510699002
       },
       "prevControl": {
-        "x": 7.95947218259629,
-        "y": 6.241041369472183
+        "x": 8.088858773181169,
+        "y": 5.684679029957205
       },
       "nextControl": null,
       "isLocked": false,
@@ -80,7 +80,7 @@
       "minWaypointRelativePos": 2.3983794733288155,
       "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 1.5,
+        "maxVelocity": 1.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -101,7 +101,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 73.6104596659653
+    "rotation": 74.47588900324573
   },
   "reversed": false,
   "folder": null,

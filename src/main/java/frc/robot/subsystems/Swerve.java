@@ -134,8 +134,8 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
                     m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
                 ),
                 new PPHolonomicDriveController(
-                    new PIDConstants(0, 0, 0),
-                    new PIDConstants(0, 0, 0)  
+                    new PIDConstants(1.5, 0, 0),
+                    new PIDConstants(1.5, 0, 0)  
                 ),
                 config,
                 () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
