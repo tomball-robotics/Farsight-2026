@@ -22,7 +22,7 @@ public class Odometry extends SubsystemBase{
     private Swerve swerve;
     
     
-    private static final String[] LIMELIGHT_NAMES = {"limelight-front", "limelight-left"};
+    private static final String[] LIMELIGHT_NAMES = {"limelight-front"};
     
     private final StructPublisher<Pose3d> pose3DPublisher = NetworkTableInstance.getDefault()
     .getStructTopic("Pose3D", Pose3d.struct).publish();
@@ -81,7 +81,7 @@ public class Odometry extends SubsystemBase{
                 }
                 
                 if (!rejectUpdate) {
-                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.9, 0.9, 999999999));
+                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.6, 0.6, 999999999));
                     poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
                 }
                 

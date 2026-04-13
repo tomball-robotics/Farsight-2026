@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -22,12 +23,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.lib.T3Lib.T3Kraken;
 
-/*
- * 2.32 30
- * 2.65 33
- * 3.08 34.5
- * 3.83 37
- */
+
 
 public class Shooter extends SubsystemBase {
   
@@ -69,6 +65,8 @@ public class Shooter extends SubsystemBase {
     
     SmartDashboard.putData("Commands/Stop Shooter", stop());
     SmartDashboard.putNumber("Shooter/Velocity Manual Set", 0);
+    SmartDashboard.putNumber("Shooter/KV Manual Set", 0);
+
 
     sysIdRoutine = new SysIdRoutine(
       new SysIdRoutine.Config(
@@ -102,6 +100,15 @@ public class Shooter extends SubsystemBase {
       double velocity = SmartDashboard.getNumber("Shooter/Velocity Manual Set", 0);
       setVelocity(velocity);
       SmartDashboard.putNumber("Shooter/Setpoint", velocity);
+    });
+  }
+
+  public Command setKV(){
+    return runOnce(() -> {
+      Slot0Configs con = new Slot0Configs();
+      con.kP = 0.1;
+      con.kV = SmartDashboard.getNumber("Shooter/KV Manual Set", 0);
+      rightMotor.getConfigurator().apply(con);
     });
   }
   
@@ -149,6 +156,14 @@ public class Shooter extends SubsystemBase {
 }
 
 
+/*
+ * 2.32 30
+ * 2.65 33
+ * 3.08 34.5
+ * 3.31 35
+ * 3.83 37
+ * 
+ */
 
 class InterpolatingList{
     ArrayList<ShotSolution> tunedSolutions;
@@ -156,15 +171,19 @@ class InterpolatingList{
     public InterpolatingList(){
         tunedSolutions = new ArrayList<ShotSolution>();
 
-        //addSolution(1.89, 32, 1);
-        //addSolution(1.5, 30, 1);
-        //addSolution(2.42, 36, 1);
- 
+        addSolution(2.32, 30, 1);
+        addSolution(2.65, 33, 1);
+        addSolution(3.08, 34.5, 1);
+        addSolution(3.38, 35, 1);
+        addSolution(3.83, 37, 1);
+        /* 
         addSolution(1.77, 31, 1);
         addSolution(2.21, 32.5, 1);
         addSolution(2.42,33.5,1);
         addSolution(2.72, 35, 1);
         addSolution(3.13, 38, 1);
+        */
+
     }
 
     public void addSolution(double distance, double velocity, double time){
