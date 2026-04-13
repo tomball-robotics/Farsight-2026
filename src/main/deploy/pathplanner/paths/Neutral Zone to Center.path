@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.946533523537802,
-        "y": 4.235549215406562
+        "x": 8.282938659058486,
+        "y": 4.287303851640513
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.05089339303194,
-        "y": 7.4492457523948525
+        "x": 8.387298528552623,
+        "y": 7.501000388628804
       },
       "isLocked": false,
       "linkedName": "Depot Neutral Zone"
@@ -54,8 +54,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -71,5 +71,5 @@
     "velocity": 0,
     "rotation": 74.47588900324573
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

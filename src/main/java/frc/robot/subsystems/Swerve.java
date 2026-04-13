@@ -127,15 +127,15 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                () -> pose,
+                () -> getState().Pose,
                 this::resetPose,
                 () -> getState().Speeds,
                 (speeds, feedforwards) -> setControl(
                     m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
                 ),
                 new PPHolonomicDriveController(
-                    new PIDConstants(1.5, 0, 0),
-                    new PIDConstants(1.5, 0, 0)  
+                    new PIDConstants(5, 0, 0),
+                    new PIDConstants(3, 0, 0)  
                 ),
                 config,
                 () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
