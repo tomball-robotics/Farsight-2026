@@ -114,7 +114,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private void setUpPIDs() {
         xController = new PIDController(0.85, 0, 0);
         yController = new PIDController(1.5, 0, 0);
-        yawController = new PIDController(6.7, 0, 0);
+        yawController = new PIDController(6.7, 0.01, 0);
         
         yawController.enableContinuousInput(-Math.PI, Math.PI);
         
@@ -127,15 +127,15 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         try {
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
-                () -> getState().Pose,
+                () -> pose,
                 this::resetPose,
                 () -> getState().Speeds,
                 (speeds, feedforwards) -> setControl(
                     m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
                 ),
                 new PPHolonomicDriveController(
-                    new PIDConstants(5, 0, 0),
-                    new PIDConstants(3, 0, 0)  
+                    new PIDConstants(1.5, 0, 0),
+                    new PIDConstants(1.5, 0, 0)  
                 ),
                 config,
                 () -> (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red),
@@ -241,6 +241,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             SmartDashboard.putNumber("dy", dy);
 
             SmartDashboard.putNumber("Target Angle", targetAngle.getDegrees());
+            SmartDashboard.putNumber("Current Angle", pose.getRotation().getDegrees());
             
             this.setControl(new SwerveRequest.FieldCentric()
                 .withDeadband(MaxSpeed * Constants.ControlConstants.DEADBAND)

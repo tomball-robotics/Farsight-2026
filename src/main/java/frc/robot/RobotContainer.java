@@ -71,7 +71,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Run Intake", intakeRollers.run());
     NamedCommands.registerCommand("Stop Intake", intakeRollers.stop());
     
-    NamedCommands.registerCommand("Aim", drivetrain.autoPointTowardsHub().withTimeout(1.5));
+    NamedCommands.registerCommand("Aim", drivetrain.autoPointTowardsHub().withTimeout(0.2));
     NamedCommands.registerCommand("Default", drivetrain.getDefaultCommand());
     NamedCommands.registerCommand("Slow Raise Intake", intakePivot.slowRaise());
     
@@ -110,7 +110,7 @@ public class RobotContainer {
     driver.y().onTrue(shooter.setVelocityToDashboard());
     driver.y().onFalse(shooter.stop());
 
-    driver.leftBumper().onTrue(shooter.setKV());
+    driver.leftBumper().onTrue(feeder.setKV());
     
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
@@ -130,7 +130,7 @@ public class RobotContainer {
     operator.leftTrigger().onFalse(shooter.stop());
     
     // run feeder & rollers with right trigger
-    operator.rightTrigger().onTrue(Commands.waitUntil(() -> shooter.atSetpoint).andThen(new ParallelCommandGroup(feeder.run(), rollers.run())));
+    operator.rightTrigger().onTrue(Commands.waitUntil(() -> shooter.atSetpoint).andThen(new ParallelCommandGroup(feeder.runVelocity(), rollers.run())));
     operator.rightTrigger().onFalse(new ParallelCommandGroup(feeder.stop(), rollers.stop()));
 
     operator.rightBumper().onTrue(Commands.runOnce(() -> shooter.setVelocity(43)));

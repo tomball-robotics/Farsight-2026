@@ -50,7 +50,7 @@ public class Shooter extends SubsystemBase {
       Constants.ShooterConstants.RIGHT_SHOOTER_MOTOR_ID,
       NeutralModeValue.Coast,
       true,
-      0.1, 0.0, 0.0, 0.13
+      0.1, 0.0, 0.0, 0.125
     );
     
     leftMotor = T3Kraken.create(
@@ -173,9 +173,10 @@ class InterpolatingList{
 
         addSolution(2.32, 30, 1);
         addSolution(2.65, 33, 1);
-        addSolution(3.08, 34.5, 1);
+        addSolution(3.08, 34, 1);
         addSolution(3.38, 35, 1);
-        addSolution(3.83, 37, 1);
+        addSolution(3.83, 38.25, 1);
+
         /* 
         addSolution(1.77, 31, 1);
         addSolution(2.21, 32.5, 1);
