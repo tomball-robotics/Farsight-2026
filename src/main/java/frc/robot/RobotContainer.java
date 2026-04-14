@@ -61,7 +61,7 @@ public class RobotContainer {
     //NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(33.5)));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
-    NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.run(), rollers.run()));
+    NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.runVelocity(), rollers.run()));
     NamedCommands.registerCommand("Stop Feed", new ParallelCommandGroup(feeder.stop(), rollers.stop()));
     
     NamedCommands.registerCommand("Drop Intake", intakePivot.dropIntake());

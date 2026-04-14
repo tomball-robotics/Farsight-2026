@@ -81,7 +81,7 @@ public class Odometry extends SubsystemBase{
                 }
                 
                 if (!rejectUpdate) {
-                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.6, 0.6, 1));
+                    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.6, 0.6, 99999999));
                     poseEstimator.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
                 }
                 

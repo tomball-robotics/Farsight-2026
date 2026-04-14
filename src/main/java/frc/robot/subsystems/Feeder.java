@@ -26,10 +26,10 @@ public class Feeder extends SubsystemBase {
       Constants.FeederConstants.FEEDER_MOTOR_ID,
       NeutralModeValue.Coast,
       false,
-      0.1,
+      0.5,
       0,
       0,
-      0.2
+      0.105
     );
 
     SmartDashboard.putData("Commands/Run Feeder", run());

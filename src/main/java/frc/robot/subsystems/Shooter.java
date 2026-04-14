@@ -170,11 +170,11 @@ class InterpolatingList{
 
     public InterpolatingList(){
         tunedSolutions = new ArrayList<ShotSolution>();
-
-        addSolution(2.32, 30, 1);
+        addSolution(1.83, 31.5, 1);
+        addSolution(2.32, 31, 1);
         addSolution(2.65, 33, 1);
-        addSolution(3.08, 34, 1);
-        addSolution(3.38, 35, 1);
+        addSolution(3.08, 35.25, 1);
+        addSolution(3.38, 37, 1);
         addSolution(3.83, 38.25, 1);
 
         /* 

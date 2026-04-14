@@ -68,7 +68,7 @@ public final class Constants {
     public static final double FEEDER_SPEED = 16;
     public static final int SUPPLY_CURRENT_LIMIT = 60;
 
-    public static final double FEEDER_VELOCITY = 67;
+    public static final double FEEDER_VELOCITY = 70;
   }
 
   public static final class ShotSolutionConstants{
