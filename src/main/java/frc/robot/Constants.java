@@ -13,11 +13,11 @@ public final class Constants {
     public static final double leftTrenchY = 0.650748; 
     public static final double rightTrenchY = 7.391908;
     
-    public static final double redHubX = 11.915;
-    public static final double redHubY = 4.021;
+    public static final double redHubX = 11.915394;
+    public static final double redHubY = 4.03479;
     
-    public static final double blueHubX = 4.611624;
-    public static final double blueHubY = 4.021;
+    public static final double blueHubX = 4.625594;
+    public static final double blueHubY = 4.03479;
   }
   
   public static final class ShooterConstants{

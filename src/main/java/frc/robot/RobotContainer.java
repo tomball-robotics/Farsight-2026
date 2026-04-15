@@ -109,8 +109,6 @@ public class RobotContainer {
     //Shooter testing
     driver.y().onTrue(shooter.setVelocityToDashboard());
     driver.y().onFalse(shooter.stop());
-
-    driver.leftBumper().onTrue(feeder.setKV());
     
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
@@ -138,7 +136,7 @@ public class RobotContainer {
     
     // twerk with b <---  PINEAPPLE
     operator.b().onTrue(new ParallelCommandGroup(intakePivot.slowRaise(), intakeRollers.run()));
-    operator.b().onFalse(intakeRollers.stop());
+    operator.b().onFalse(new ParallelCommandGroup(intakeRollers.stop(), intakePivot.dropIntake()));
 
     
     // reverse feeder with a

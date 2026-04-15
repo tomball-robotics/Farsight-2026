@@ -104,9 +104,6 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
         }
         configureAutoBuilder();
         setUpPIDs();
-
-
-        
     }
 
     public void setOdometry(Odometry odem){odometry = odem;}
@@ -114,7 +111,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     private void setUpPIDs() {
         xController = new PIDController(0.85, 0, 0);
         yController = new PIDController(1.5, 0, 0);
-        yawController = new PIDController(6.7, 0.01, 0);
+        yawController = new PIDController(7.67, 0.04, 0);
         
         yawController.enableContinuousInput(-Math.PI, Math.PI);
         
