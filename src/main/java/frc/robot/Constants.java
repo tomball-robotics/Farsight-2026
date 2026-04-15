@@ -18,6 +18,9 @@ public final class Constants {
     
     public static final double blueHubX = 4.625594;
     public static final double blueHubY = 4.03479;
+
+    public static final double redAngleOffset = 0;
+    public static final double blueAngleOffset = -redAngleOffset;
   }
   
   public static final class ShooterConstants{

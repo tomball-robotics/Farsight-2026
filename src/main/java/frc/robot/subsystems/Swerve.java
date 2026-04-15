@@ -232,7 +232,7 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
             
             double dx = hubX - pose.getX();
             double dy = hubY - pose.getY();
-            Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx));
+            Rotation2d targetAngle = new Rotation2d(Math.atan2(dy, dx)).plus(new Rotation2d(Math.toRadians(isBlue ? Constants.SwervePositions.blueAngleOffset  : Constants.SwervePositions.redAngleOffset)));
             
             SmartDashboard.putNumber("dx", dx);
             SmartDashboard.putNumber("dy", dy);
