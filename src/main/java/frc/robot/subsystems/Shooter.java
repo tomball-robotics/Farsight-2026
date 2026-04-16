@@ -148,7 +148,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter/Supply Current", rightMotor.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Stator Current", rightMotor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Shooter/Voltage", rightMotor.getMotorVoltage().getValueAsDouble());
-;
+
     atSetpoint = Math.abs(velocitySetpoint - rightMotor.getVelocity().getValueAsDouble()) < 2.5;
 
     SmartDashboard.putBoolean("Shooter/At velocity setpoint", atSetpoint);
