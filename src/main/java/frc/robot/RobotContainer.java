@@ -33,7 +33,7 @@ import frc.robot.subsystems.Odometry;
 public class RobotContainer {
   
   // swerve
-  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.6; // 80% of kSpeedAt12Volts desired top speed
+  private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8; // 80% of kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond) * 1; // 3/4 of a rotation per second max angular velocity
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDeadband(MaxSpeed * Constants.ControlConstants.DEADBAND).withRotationalDeadband(MaxAngularRate * Constants.ControlConstants.DEADBAND); // Add a 7% deadband.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   private final SwerveDriveBrake brake = new SwerveDriveBrake();

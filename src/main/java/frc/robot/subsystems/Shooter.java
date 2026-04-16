@@ -38,7 +38,7 @@ public class Shooter extends SubsystemBase {
   public boolean velocityAdd = false;
   public boolean velocityDec = false;
 
-  public int velocityOffset = 4;
+  public int velocityOffset = 1;
 
   public boolean atSetpoint = false;
   double velocitySetpoint = 0;
@@ -91,7 +91,7 @@ public class Shooter extends SubsystemBase {
   
   public void setVelocity(double velocity) {  
     rightMotor.setControl(velocityRequest.withVelocity(velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0)));
-    velocitySetpoint = velocity;
+    velocitySetpoint = velocity + (velocityAdd ? velocityOffset : 0) + (velocityDec ? -velocityOffset : 0);
     SmartDashboard.putNumber("Shooter/Setpoint", velocity); 
   }
   
@@ -152,6 +152,8 @@ public class Shooter extends SubsystemBase {
     atSetpoint = Math.abs(velocitySetpoint - rightMotor.getVelocity().getValueAsDouble()) < 2.5;
 
     SmartDashboard.putBoolean("Shooter/At velocity setpoint", atSetpoint);
+    SmartDashboard.putBoolean("Shooter/Velocity Increase" , velocityAdd);
+    SmartDashboard.putBoolean("Shooter/Velocity Decrease", velocityDec);
   }
 }
 
@@ -171,11 +173,11 @@ class InterpolatingList{
     public InterpolatingList(){
         tunedSolutions = new ArrayList<ShotSolution>();
         addSolution(1.83, 31.5, 1);
-        addSolution(2.32, 31, 1);
-        addSolution(2.65, 33, 1);
-        addSolution(3.08, 35.25, 1);
-        addSolution(3.38, 37, 1);
-        addSolution(3.83, 38.25, 1);
+        addSolution(2.32, 31 + 1.5, 1);
+        addSolution(2.65, 33+1.5, 1);
+        addSolution(3.08, 35.25+1.5, 1);
+        addSolution(3.38+1.5, 37, 1);
+        addSolution(3.83+1.5, 38.25, 1);
 
         /* 
         addSolution(1.77, 31, 1);
