@@ -26,8 +26,8 @@ public class Feeder extends SubsystemBase {
       Constants.FeederConstants.FEEDER_MOTOR_ID,
       NeutralModeValue.Coast,
       false,
-      0.5,
-      0,
+      3,
+      0.001,
       0,
       0.105
     );
@@ -54,7 +54,7 @@ public class Feeder extends SubsystemBase {
   public Command stop() {
     return runOnce(() -> motor.setControl(coastRequest));
   }
-
+/* 
     public Command setKV(){
     return runOnce(() -> {
       Slot0Configs con = new Slot0Configs();
@@ -63,6 +63,7 @@ public class Feeder extends SubsystemBase {
       motor.getConfigurator().apply(con);
     });
   }
+    */
   
   @Override
   public void periodic() {
@@ -73,6 +74,7 @@ public class Feeder extends SubsystemBase {
     SmartDashboard.putNumber("Feeder/Stator Current", motor.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Feeder/Voltage", motor.getMotorVoltage().getValueAsDouble());
     SmartDashboard.putBoolean("Feeder/Running", velocity > 0.5);
+    SmartDashboard.putBoolean("Feeder/Feeder at Setpoint", Math.abs(motor.getVelocity().getValueAsDouble() - Constants.FeederConstants.FEEDER_VELOCITY) < 1);
     
   }
 }

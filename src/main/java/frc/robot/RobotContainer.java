@@ -2,6 +2,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
@@ -54,6 +56,7 @@ public class RobotContainer {
 
   // autonomous
   private final SendableChooser<Command> autoChooser;
+  private final Supplier<Boolean> blue = () -> isBlue();
   
   public RobotContainer() {
     drivetrain.setOdometry(odometry);
@@ -173,4 +176,17 @@ public class RobotContainer {
     }).andThen(drivetrain.resetHeading()).schedule();
   }
   
+  public boolean isBlue(){
+    return DriverStation.getAlliance().get() == Alliance.Blue;
+  }
+
+  public void invertSwerve(){
+    drivetrain.setDefaultCommand(
+      drivetrain.applyRequest(() ->
+        drive.withVelocityX((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftY() * MaxSpeed)) // Drive forward with negative Y (forward)
+        .withVelocityY((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftX() * MaxSpeed)) // Drive left with negative X (left)
+        .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate)) // Drive counterclockwise with negative X (left)
+      )
+    );
+  }
 }

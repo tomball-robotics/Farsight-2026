@@ -45,7 +45,7 @@ import frc.robot.lib.TunerConstants.TunerSwerveDrivetrain;
 public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     
     private static final double kSimLoopPeriod = 0.005;
-    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.k180deg;
+    private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.k180deg; 
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.kZero;
 
     public Rotation2d addedRotation = DriverStation.getAlliance()

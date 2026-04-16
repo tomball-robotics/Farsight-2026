@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -84,7 +85,12 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.resetOrientation();
+    if(!m_robotContainer.isBlue()){
+      m_robotContainer.resetOrientation();
+    }
+    else{
+      m_robotContainer.invertSwerve();
+    }
     
     T3Blink.setFor(1, T3Blink.Pattern.COLOR2_STROBE, T3Blink.Pattern.RED);
     
