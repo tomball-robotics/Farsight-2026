@@ -84,17 +84,12 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    /* 
-    if(!m_robotContainer.isBlue()){
-      m_robotContainer.resetOrientation();
-    }
-    else{
-      m_robotContainer.invertSwerve();
-    }
-    */
+
     if(m_robotContainer.isBlue()){
       m_robotContainer.invertSwerve();
     }
+
+
     T3Blink.setFor(1, T3Blink.Pattern.COLOR2_STROBE, T3Blink.Pattern.RED);
     
   }

@@ -88,15 +88,11 @@ public class RobotContainer {
   private void configureBindings() {
 
     //Swerve Controls
-    drivetrain.setDefaultCommand(
-      drivetrain.applyRequest(() ->
-        drive.withVelocityX((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftY() * -MaxSpeed)) // Drive forward with negative Y (forward)
-        .withVelocityY((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftX() * -MaxSpeed)) // Drive left with negative X (left)
-        .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate)) // Drive counterclockwise with negative X (left)
-      )
-    );
+
     
     /* --- driver controls --- */
+    
+    regularSwerve();
     
     // brake mode with x
     driver.x().onTrue(drivetrain.applyRequest(() -> brake));
@@ -104,7 +100,7 @@ public class RobotContainer {
 
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
-    driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
+    driver.leftTrigger().onFalse(drivetrain.getDefaultCommand()); //Commands.runOnce(() -> invertSwerve())
 
     //Allign backwards for funneling
     driver.rightTrigger().onTrue(drivetrain.pointTowardsAngle(driver, Rotation2d.kZero.plus(drivetrain.addedRotation)));
@@ -189,10 +185,14 @@ public class RobotContainer {
   }
 
   public void invertSwerve(){
+    MaxSpeed = -MaxSpeed;
+  }
+
+  public void regularSwerve(){
     drivetrain.setDefaultCommand(
       drivetrain.applyRequest(() ->
-        drive.withVelocityX((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftY() * MaxSpeed)) // Drive forward with negative Y (forward)
-        .withVelocityY((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftX() * MaxSpeed)) // Drive left with negative X (left)
+        drive.withVelocityX((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftY() * -MaxSpeed)) // Drive forward with negative Y (forward)
+        .withVelocityY((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (driver.getLeftX() * -MaxSpeed)) // Drive left with negative X (left)
         .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate)) // Drive counterclockwise with negative X (left)
       )
     );

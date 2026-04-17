@@ -239,12 +239,14 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
 
             SmartDashboard.putNumber("Target Angle", targetAngle.getDegrees());
             SmartDashboard.putNumber("Current Angle", pose.getRotation().getDegrees());
+
+            int mult = isBlue ? -1 : 1;
             
             this.setControl(new SwerveRequest.FieldCentric()
                 .withDeadband(MaxSpeed * Constants.ControlConstants.DEADBAND)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), Constants.ControlConstants.DEADBAND) * -MaxSpeed)
-                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), Constants.ControlConstants.DEADBAND) * -MaxSpeed)
+                .withVelocityX(MathUtil.applyDeadband(joystick.getLeftY(), Constants.ControlConstants.DEADBAND) * -MaxSpeed * mult)
+                .withVelocityY(MathUtil.applyDeadband(joystick.getLeftX(), Constants.ControlConstants.DEADBAND) * -MaxSpeed * mult)
                 .withRotationalRate(yawController.calculate(pose.getRotation().getRadians(), targetAngle.getRadians()))
             );
         });
