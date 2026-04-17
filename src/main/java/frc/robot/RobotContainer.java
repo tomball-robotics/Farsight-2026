@@ -168,16 +168,23 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
-
+  
+/* 
   public void resetOrientation(){
     drivetrain.runOnce(() -> {
       drivetrain.seedFieldCentric(); 
       drivetrain.getPigeon2().setYaw(drivetrain.getPigeon2().getYaw().getValueAsDouble() + drivetrain.addedRotation.getDegrees());
     }).andThen(drivetrain.resetHeading()).schedule();
   }
+*/
   
   public boolean isBlue(){
     return DriverStation.getAlliance().get() == Alliance.Blue;
+  }
+
+  public void seedField(){
+    drivetrain.seedFieldCentric();
+    drivetrain.resetHeading().schedule();
   }
 
   public void invertSwerve(){
