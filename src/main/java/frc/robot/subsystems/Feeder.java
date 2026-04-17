@@ -17,7 +17,7 @@ public class Feeder extends SubsystemBase {
   private final VoltageOut runRequest = new VoltageOut(Constants.FeederConstants.FEEDER_SPEED);
   private final VoltageOut reverseRunRequest = new VoltageOut(-Constants.FeederConstants.FEEDER_SPEED);
 
-  private final VelocityVoltage velocityRequest = new VelocityVoltage(Constants.FeederConstants.FEEDER_VELOCITY);
+  private final VelocityVoltage velocityRequest = new VelocityVoltage(Constants.FeederConstants.FEEDER_VELOCITY).withSlot(0);
   private final CoastOut coastRequest = new CoastOut();
   
   public Feeder() {
@@ -25,6 +25,8 @@ public class Feeder extends SubsystemBase {
       Constants.FeederConstants.FEEDER_MOTOR_ID,
       NeutralModeValue.Coast,
       false,
+      80,
+      80,
       3,
       0.001,
       0,

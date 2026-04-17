@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Reset"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
