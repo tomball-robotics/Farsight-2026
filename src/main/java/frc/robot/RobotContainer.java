@@ -105,10 +105,6 @@ public class RobotContainer {
     //Allign backwards for funneling
     driver.rightTrigger().onTrue(drivetrain.pointTowardsAngle(driver, Rotation2d.kZero.plus(drivetrain.addedRotation)));
     driver.rightTrigger().onFalse(drivetrain.getDefaultCommand());
-
-    //Shooter testing
-    driver.y().onTrue(shooter.setVelocityToDashboard());
-    driver.y().onFalse(shooter.stop());
     
     // reset heading with pov right
     driver.povRight().onTrue(drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
@@ -158,7 +154,6 @@ public class RobotContainer {
     driver.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
     driver.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
     */
-
 
   }
   

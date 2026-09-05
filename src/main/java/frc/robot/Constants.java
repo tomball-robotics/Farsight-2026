@@ -68,10 +68,10 @@ public final class Constants {
   
   public static final class FeederConstants {
     public static final int FEEDER_MOTOR_ID = 8;
-    public static final double FEEDER_SPEED = 16;
+    public static final double FEEDER_SPEED = 4.5;
     public static final int SUPPLY_CURRENT_LIMIT = 60;
 
-    public static final double FEEDER_VELOCITY = 70;
+    public static final double FEEDER_VELOCITY = 40.0;
   }
 
   public static final class ShotSolutionConstants{

@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -19,6 +20,7 @@ public class IntakePivot extends SubsystemBase {
 
   private final TalonFX leader;
   private final TalonFX follower;
+  private final CANcoder cancoder;
 
   private final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
   private final CoastOut coastRequest = new CoastOut();
@@ -34,12 +36,14 @@ public class IntakePivot extends SubsystemBase {
       Constants.IntakeConstants.INTAKE_ENCODER_ID
     );
     
-
     follower = T3Kraken.create(
       Constants.IntakeConstants.INTAKE_PIVOT_FOLLOWER_ID,
       NeutralModeValue.Coast,
       false
     );
+
+    cancoder = new CANcoder(Constants.IntakeConstants.INTAKE_ENCODER_ID);
+    cancoder.setPosition(0);
 
     follower.setControl(new Follower(Constants.IntakeConstants.INTAKE_PIVOT_LEADER_ID, MotorAlignmentValue.Opposed));
     leader.setControl(positionRequest.withPosition(Constants.IntakeConstants.UP_POSITION));
@@ -49,8 +53,6 @@ public class IntakePivot extends SubsystemBase {
     SmartDashboard.putData("Commands/Set Pivot to Coast", setPivotToCoast());
     SmartDashboard.putNumber("Intake/Pivot/Setpoint", 0);
   }
-
-
 
   public Command requestPosition(double position) {
     return this.run(() -> {
