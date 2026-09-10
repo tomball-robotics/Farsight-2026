@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.lib.T3Lib.T3Blink;
 import frc.robot.lib.T3Lib.T3Kraken;
 
 // to zero intake pivot, use phoenix tuner. 
@@ -58,8 +57,7 @@ public class IntakePivot extends SubsystemBase {
     return this.run(() -> {
       leader.setControl(positionRequest.withPosition(position).withSlot(0));
       SmartDashboard.putNumber("Intake/Pivot/Setpoint", position);
-    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.02)
-      .andThen(new InstantCommand(() -> T3Blink.setFor(.25, T3Blink.Pattern.COLOR2_STROBE)));
+    }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - position) < 0.02);
   }
 
   public Command dropIntake() {
@@ -76,8 +74,7 @@ public class IntakePivot extends SubsystemBase {
       leader.setControl(positionRequest.withPosition(Constants.IntakeConstants.DOWN_POSITION/2).withSlot(1));
       SmartDashboard.putNumber("Intake/Pivot/Setpoint", Constants.IntakeConstants.DOWN_POSITION/2);
     }).until(() -> Math.abs(leader.getPosition().getValueAsDouble() - Constants.IntakeConstants.DOWN_POSITION/2) < 0.02)
-      .andThen(new InstantCommand(() -> leader.setControl(coastRequest)))
-      .andThen(new InstantCommand(() -> T3Blink.setFor(.25, T3Blink.Pattern.COLOR2_STROBE)));
+      .andThen(new InstantCommand(() -> leader.setControl(coastRequest)));
   }
 
   public Command setPivotToCoast() {

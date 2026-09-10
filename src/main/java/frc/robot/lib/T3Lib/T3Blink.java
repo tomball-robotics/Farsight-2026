@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class T3Blink extends SubsystemBase {
 
-    private static Pattern defaultPattern = Pattern.BREATH_RED;
-    private static final int BLINKIN_PWM_PORT = 0;
-    private static final Spark blinkin = new Spark(BLINKIN_PWM_PORT);
+    private Pattern defaultPattern = Pattern.BREATH_RED;
+    private final int BLINKIN_PWM_PORT = 0;
+    private Spark blinkin;
 
-    private static Pattern current = Pattern.BLACK;
+    private Pattern current = Pattern.BLACK;
 
     public enum Pattern {
         RAINBOW_RAINBOW(-0.99),
@@ -126,13 +126,14 @@ public class T3Blink extends SubsystemBase {
     }
 
     public T3Blink(){
+        blinkin = new Spark(BLINKIN_PWM_PORT);
         setDefault();
     }
 
     /**
      * Sets the given pattern for the specified duration, then restores the previous pattern.
      */
-    public static void setFor(double seconds, Pattern pattern) {
+    public void setFor(double seconds, Pattern pattern) {
         Pattern previous = current;
         set(pattern);
         new Thread(() -> {
@@ -144,7 +145,7 @@ public class T3Blink extends SubsystemBase {
     /**
      * Sets the given pattern for the specified duration, then switches to the provided end pattern.
      */
-    public static void setFor(double seconds, Pattern pattern, Pattern endPattern) {
+    public void setFor(double seconds, Pattern pattern, Pattern endPattern) {
         set(pattern);
         new Thread(() -> {
             Timer.delay(seconds);
@@ -155,7 +156,7 @@ public class T3Blink extends SubsystemBase {
     /**
      * Sets the pattern to the default (RAINBOW_RAINBOW).
      */
-    public static void setDefault() {
+    public void setDefault() {
         current = defaultPattern;
         set(defaultPattern);
     }
@@ -163,25 +164,25 @@ public class T3Blink extends SubsystemBase {
     /**
      * Sets the Blinkin to the given pattern.
      */
-    public static void set(Pattern pattern) {
+    public void set(Pattern pattern) {
         set(pattern.value);
     }
 
     /**
      * Sets the Blinkin to a raw PWM value in the range [-1.0, 1.0].
      */
-    public static void setRaw(double value) {
+    public void setRaw(double value) {
         set(value);
     }
 
     /**
      * Turns the LEDs off (BLACK pattern).
      */
-    public static void off() {
+    public void off() {
         set(Pattern.BLACK);
     }
 
-    private static void set(double value) {
+    private void set(double value) {
         blinkin.set(value);
     }
 

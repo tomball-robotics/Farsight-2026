@@ -1,6 +1,8 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
@@ -16,15 +18,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControlConstants;
 import frc.robot.lib.TunerConstants;
+import frc.robot.lib.T3Lib.T3Blink;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRollers;
+import frc.robot.subsystems.Odometry;
 import frc.robot.subsystems.Rollers;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Odometry;
 
 public class RobotContainer {
   
@@ -35,6 +39,7 @@ public class RobotContainer {
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
   
   // subsystems
+  private T3Blink blink = new T3Blink();
   private Shooter shooter = new Shooter();
   private IntakePivot intakePivot = new IntakePivot();
   private IntakeRollers intakeRollers = new IntakeRollers();
@@ -43,9 +48,10 @@ public class RobotContainer {
   private Swerve drivetrain = TunerConstants.createDrivetrain();
   private Odometry odometry = new Odometry(drivetrain);
   
-  // controllers
+  // control
   private final CommandXboxController driver = new CommandXboxController(ControlConstants.DRIVER_CONTROLLER_ID);
   private final CommandXboxController operator = new CommandXboxController(ControlConstants.OPERATOR_CONTROLLER_ID);
+  private boolean shooterReadyFlashed = false;
 
   // autonomous
   private final SendableChooser<Command> autoChooser;
@@ -103,7 +109,9 @@ public class RobotContainer {
     
     // run intake rollers with left bumper
     operator.leftBumper().onTrue(intakeRollers.run());
+    operator.leftBumper().onTrue(Commands.runOnce(() -> blink.set(T3Blink.Pattern.LARSON_SCANNER_RED)));
     operator.leftBumper().onFalse(intakeRollers.stop());
+    operator.leftBumper().onFalse(Commands.runOnce(() -> blink.setDefault()));
     
     // raise/drop intake with vertical dpad
     operator.povDown().onTrue(intakePivot.dropIntake());
@@ -112,6 +120,15 @@ public class RobotContainer {
     // run shooter
     operator.leftTrigger().onTrue(shooter.shootToHub(() -> odometry.distanceToHub()));
     operator.leftTrigger().onFalse(shooter.stop());
+    operator.leftTrigger().onFalse(Commands.runOnce(() -> shooterReadyFlashed = false));
+
+    // flash LEDs green once when the shooter reaches speed, while the trigger is held
+    operator.leftTrigger().and(new Trigger(() -> shooter.atSetpoint && !shooterReadyFlashed))
+      .onTrue(Commands.runOnce(() -> {
+        shooterReadyFlashed = true;
+        blink.setFor(1.0, T3Blink.Pattern.STROBE_GOLD);
+      })
+    );
     
     // run feeder & rollers with right trigger
     operator.rightTrigger().onTrue(Commands.waitUntil(() -> shooter.atSetpoint).andThen(new ParallelCommandGroup(feeder.runVelocity(), rollers.run())));
@@ -181,5 +198,9 @@ public class RobotContainer {
         .withRotationalRate((drivetrain.slowModeEnabled ? 0.25 : 1.0) * (-driver.getRightX() * MaxAngularRate)) // Drive counterclockwise with negative X (left)
       )
     );
+  }
+
+  public T3Blink getBlink() {
+    return blink;
   }
 }

@@ -53,9 +53,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {
-    T3Blink.setFor(1, T3Blink.Pattern.COLOR1_STROBE, T3Blink.Pattern.RED);
-  }
+  public void disabledInit() {}
 
   @Override
   public void disabledPeriodic() {}
@@ -89,9 +87,7 @@ public class Robot extends TimedRobot {
       m_robotContainer.invertSwerve();
     }
 
-
-    T3Blink.setFor(1, T3Blink.Pattern.COLOR2_STROBE, T3Blink.Pattern.RED);
-    
+    m_robotContainer.getBlink().setFor(1, T3Blink.Pattern.COLOR2_STROBE);
   }
 
   /** This function is called periodically during operator control. */
