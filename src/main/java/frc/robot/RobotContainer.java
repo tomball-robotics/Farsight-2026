@@ -2,9 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -19,10 +16,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ControlConstants;
 import frc.robot.lib.TunerConstants;
-import frc.robot.lib.T3Lib.T3Blink;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.IntakePivot;
 import frc.robot.subsystems.IntakeRollers;
@@ -31,7 +26,6 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Odometry;
 
-@SuppressWarnings("unused")
 public class RobotContainer {
   
   // swerve
@@ -41,7 +35,6 @@ public class RobotContainer {
   private final SwerveDriveBrake brake = new SwerveDriveBrake();
   
   // subsystems
-  private T3Blink blink = new T3Blink();
   private Shooter shooter = new Shooter();
   private IntakePivot intakePivot = new IntakePivot();
   private IntakeRollers intakeRollers = new IntakeRollers();
@@ -56,7 +49,6 @@ public class RobotContainer {
 
   // autonomous
   private final SendableChooser<Command> autoChooser;
-  private final Supplier<Boolean> blue = () -> isBlue();
   
   public RobotContainer() {
 
