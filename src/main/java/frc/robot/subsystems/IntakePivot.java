@@ -16,11 +16,15 @@ import frc.robot.Constants;
 import frc.robot.lib.T3Lib.T3Blink;
 import frc.robot.lib.T3Lib.T3Kraken;
 
+// to zero intake pivot, use phoenix tuner. 
+// navigate to the intake pivot cancoder and 
+// press the zero button while the intake is 
+// on it's hardstop.
+
 public class IntakePivot extends SubsystemBase {
 
   private final TalonFX leader;
   private final TalonFX follower;
-  private final CANcoder cancoder;
 
   private final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
   private final CoastOut coastRequest = new CoastOut();
@@ -31,7 +35,7 @@ public class IntakePivot extends SubsystemBase {
       NeutralModeValue.Coast,
       true,
 
-      30, 0.001, 0.0, 
+      30, 0.001, 0.0,
       20, 0.001, 5,
       Constants.IntakeConstants.INTAKE_ENCODER_ID
     );
@@ -41,9 +45,6 @@ public class IntakePivot extends SubsystemBase {
       NeutralModeValue.Coast,
       false
     );
-
-    cancoder = new CANcoder(Constants.IntakeConstants.INTAKE_ENCODER_ID);
-    cancoder.setPosition(0);
 
     follower.setControl(new Follower(Constants.IntakeConstants.INTAKE_PIVOT_LEADER_ID, MotorAlignmentValue.Opposed));
     leader.setControl(positionRequest.withPosition(Constants.IntakeConstants.UP_POSITION));
