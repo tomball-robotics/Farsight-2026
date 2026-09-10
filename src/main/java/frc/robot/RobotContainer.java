@@ -59,10 +59,11 @@ public class RobotContainer {
   private final Supplier<Boolean> blue = () -> isBlue();
   
   public RobotContainer() {
+
     drivetrain.setOdometry(odometry);
+    
     NamedCommands.registerCommand("Reset", drivetrain.runOnce(() -> {drivetrain.seedFieldCentric(); drivetrain.getPigeon2().setYaw(0);}).andThen(drivetrain.resetHeading()));
     NamedCommands.registerCommand("Run Shooter", shooter.shootToHub(() -> odometry.distanceToHub()).withTimeout(1.0));
-    //NamedCommands.registerCommand("Run Shooter", Commands.runOnce(() -> shooter.setVelocity(33.5)));
     NamedCommands.registerCommand("Stop Shooter", shooter.stop());
     
     NamedCommands.registerCommand("Feed", new ParallelCommandGroup(feeder.runVelocity(), rollers.run()));
@@ -86,9 +87,6 @@ public class RobotContainer {
   }
   
   private void configureBindings() {
-
-    //Swerve Controls
-
     
     /* --- driver controls --- */
     
@@ -100,7 +98,7 @@ public class RobotContainer {
 
     // hub alignment with left trigger
     driver.leftTrigger().onTrue(drivetrain.pointTowardsHub(driver));
-    driver.leftTrigger().onFalse(drivetrain.getDefaultCommand()); //Commands.runOnce(() -> invertSwerve())
+    driver.leftTrigger().onFalse(drivetrain.getDefaultCommand());
 
     //Allign backwards for funneling
     driver.rightTrigger().onTrue(drivetrain.pointTowardsAngle(driver, Rotation2d.kZero.plus(drivetrain.addedRotation)));
